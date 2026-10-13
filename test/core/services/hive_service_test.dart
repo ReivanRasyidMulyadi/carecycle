@@ -7,10 +7,11 @@ void main() {
     setUpAll(() async {
       // Inisialisasi Hive untuk testing
       Hive.init('./test/hive_test');
-      await Hive.openBox(HiveService.sessionBox);
-      await Hive.openBox(HiveService.settingsBox);
-      await Hive.openBox(HiveService.draftsBox);
-      await Hive.openBox(HiveService.cacheBox);
+      final b1 = await Hive.openBox(HiveService.sessionBox);
+      final b2 = await Hive.openBox(HiveService.settingsBox);
+      final b3 = await Hive.openBox(HiveService.draftsBox);
+      final b4 = await Hive.openBox(HiveService.cacheBox);
+      await Future.wait([b1.clear(), b2.clear(), b3.clear(), b4.clear()]);
     });
 
     tearDownAll(() async {
@@ -18,6 +19,10 @@ void main() {
     });
 
     group('Settings', () {
+      setUp(() async {
+        await Hive.box(HiveService.settingsBox).clear();
+      });
+
       test('default dark mode adalah false', () {
         expect(HiveService.isDarkMode(), isFalse);
       });

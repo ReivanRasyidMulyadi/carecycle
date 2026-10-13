@@ -203,6 +203,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState();
   }
 
+  /// Perbarui objek komunitas dalam state aktif
+  void updateCommunity(CommunityModel community) {
+    state = state.copyWith(community: community);
+  }
+
+  /// Muat ulang profil dan status komunitas pengguna saat ini
+  Future<void> refreshCurrentUser() async {
+    if (state.user == null) return;
+    try {
+      final profile = await _repository.getCurrentProfile(userId: state.user!.id);
+      if (profile != null) {
+        CommunityModel? community;
+        if (profile.isKomunitas) {
+          community = await _repository.getCurrentCommunity(profileId: profile.id);
+        }
+        state = state.copyWith(user: profile, community: community);
+      }
+    } catch (_) {}
+  }
+
   /// Helper untuk menerjemahkan pesan kesalahan ke Bahasa Indonesia
   String _getReadableErrorMessage(dynamic error) {
     final msg = error.toString().toLowerCase();

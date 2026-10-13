@@ -84,6 +84,7 @@ class CommunityModel {
     DateTime? verifiedAt,
     String? verifiedBy,
     String? rejectionReason,
+    bool clearRejectionReason = false,
     DateTime? createdAt,
   }) {
     return CommunityModel(
@@ -95,7 +96,9 @@ class CommunityModel {
       verificationStatus: verificationStatus ?? this.verificationStatus,
       verifiedAt: verifiedAt ?? this.verifiedAt,
       verifiedBy: verifiedBy ?? this.verifiedBy,
-      rejectionReason: rejectionReason ?? this.rejectionReason,
+      rejectionReason: clearRejectionReason
+          ? null
+          : (rejectionReason ?? this.rejectionReason),
       createdAt: createdAt ?? this.createdAt,
     );
   }

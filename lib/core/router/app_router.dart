@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/admin/presentation/screens/admin_verification_screen.dart';
+import '../../features/auth/presentation/screens/community_verification_screen.dart';
 import '../../features/auth/presentation/screens/home_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/profile_screen.dart';
@@ -18,9 +20,12 @@ class AppRouter {
   static const String home = 'home';
   static const String catalog = 'catalog';
   static const String upload = 'upload';
+  static const String request = 'request';
   static const String campaign = 'campaign';
   static const String profile = 'profile';
   static const String settings = 'settings';
+  static const String communityVerification = 'communityVerification';
+  static const String adminVerification = 'adminVerification';
 
   // Path Route
   static const String splashPath = '/';
@@ -29,9 +34,12 @@ class AppRouter {
   static const String homePath = '/home';
   static const String catalogPath = '/catalog';
   static const String uploadPath = '/upload';
+  static const String requestPath = '/request';
   static const String campaignPath = '/campaign';
   static const String profilePath = '/profile';
   static const String settingsPath = '/settings';
+  static const String communityVerificationPath = '/community/verification';
+  static const String adminVerificationPath = '/admin/verification';
 
   static final GoRouter router = GoRouter(
     initialLocation: splashPath,
@@ -69,6 +77,11 @@ class AppRouter {
         builder: (context, state) => const _PlaceholderScreen(title: 'Unggah Donasi'),
       ),
       GoRoute(
+        path: requestPath,
+        name: request,
+        builder: (context, state) => const _PlaceholderScreen(title: 'Ajukan Permintaan Barang'),
+      ),
+      GoRoute(
         path: campaignPath,
         name: campaign,
         builder: (context, state) => const _PlaceholderScreen(title: 'Open Campaign'),
@@ -77,6 +90,16 @@ class AppRouter {
         path: profilePath,
         name: profile,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: communityVerificationPath,
+        name: communityVerification,
+        builder: (context, state) => const CommunityVerificationScreen(),
+      ),
+      GoRoute(
+        path: adminVerificationPath,
+        name: adminVerification,
+        builder: (context, state) => const AdminVerificationScreen(),
       ),
     ],
   );
