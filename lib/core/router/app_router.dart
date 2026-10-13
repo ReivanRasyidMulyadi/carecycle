@@ -7,6 +7,8 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/profile_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/items/presentation/screens/item_upload_screen.dart';
+import '../../features/items/presentation/screens/my_items_screen.dart';
 import '../services/hive_service.dart';
 
 /// Konfigurasi rute aplikasi CareCycle
@@ -20,6 +22,7 @@ class AppRouter {
   static const String home = 'home';
   static const String catalog = 'catalog';
   static const String upload = 'upload';
+  static const String myItems = 'myItems';
   static const String request = 'request';
   static const String campaign = 'campaign';
   static const String profile = 'profile';
@@ -34,6 +37,7 @@ class AppRouter {
   static const String homePath = '/home';
   static const String catalogPath = '/catalog';
   static const String uploadPath = '/upload';
+  static const String myItemsPath = '/my-items';
   static const String requestPath = '/request';
   static const String campaignPath = '/campaign';
   static const String profilePath = '/profile';
@@ -74,7 +78,12 @@ class AppRouter {
       GoRoute(
         path: uploadPath,
         name: upload,
-        builder: (context, state) => const _PlaceholderScreen(title: 'Unggah Donasi'),
+        builder: (context, state) => const ItemUploadScreen(),
+      ),
+      GoRoute(
+        path: myItemsPath,
+        name: myItems,
+        builder: (context, state) => const MyItemsScreen(),
       ),
       GoRoute(
         path: requestPath,
