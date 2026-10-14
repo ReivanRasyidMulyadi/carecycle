@@ -1,58 +1,71 @@
-# CareCycle - Figma UI/UX Design System & Artboards
+# CareCycle — Mobile UI/UX Design System & Master Figma Canvas
 
-Berkas desain UI/UX aplikasi **CareCycle** dalam format SVG vektor presisi tinggi (resolusi mobile 390x844 px — iPhone 14 / modern Android) yang **siap di-import langsung ke Figma**.
+Berkas desain UI/UX aplikasi **CareCycle** (Tugas Besar Pemrograman Mobile Semester 3) yang telah disusun secara rapi, profesional, dan realistis dengan standar presentasi portofolio mahasiswa Teknik Informatika.
 
----
-
-## 🚀 Cara Membuka di Figma (Hanya 5 Detik)
-
-Ada 2 cara super mudah untuk membuka berkas ini di Figma:
-
-### Cara 1: Drag & Drop Langsung (Direkomendasikan)
-1. Buka browser dan login ke [Figma](https://www.figma.com/) (atau buka Figma Desktop App).
-2. Buat dokumen baru (*New design file*) atau buka berkas kerja Anda.
-3. Buka File Explorer di komputer Anda, tuju ke folder:
-   `d:\KULIAH BUD\Ssemester 3\Pemrograman Mobile\carecycle\figma\`
-4. Tarik (**Drag & Drop**) berkas:
-   👉 **`carecycle_all_screens_figma_canvas.svg`** (Semua 10 layar dalam 1 kanvas rapi)
-   ke atas kanvas Figma.
-5. Figma akan secara instan mengubah semua elemen menjadi **Frames, Vector Layers, Groups, dan Editable Text** yang bisa Anda edit warna, teks, dan tata letaknya!
+Seluruh berkas dibuat dalam format **W3C SVG Vector murni (100% valid XML)** yang dapat langsung di-import atau disalin (**Ctrl + V**) ke dalam kanvas **Figma**.
 
 ---
 
-### Cara 2: Import File dari Figma Home / Drafts
-1. Di halaman utama Figma (Dashboard / Drafts), klik tombol **Import file** di pojok kanan atas.
-2. Pilih file `carecycle_all_screens_figma_canvas.svg` atau pilih layar individual di folder `figma/`.
-3. Tunggu 2-3 detik hingga proses import selesai, lalu klik **Done** dan buka filenya.
+## 👨‍💻 Informasi Proyek & Pengembang
+
+- **Aplikasi**: CareCycle (Siklus Berbagi & Donasi Komunitas)
+- **Mata Kuliah**: Pemrograman Mobile (Semester 3)
+- **Pengembang**: Reivan Rasyid Mulyadi (Teknik Informatika)
+- **Tech Stack**: Flutter 3.24.2 • Supabase • Google ML Kit On-Device • Hive NoSQL • Riverpod
 
 ---
 
-## 📱 Daftar Berkas Desain yang Tersedia
+## 🚀 Cara Membuka di Figma (Paling Cepat & Anti-Gagal)
 
-| No | Nama Berkas | Resolusi | Deskripsi Layar |
-|---|---|---|---|
-| ⭐ | **`carecycle_all_screens_figma_canvas.svg`** | 2300 x 1950 px | **Master Board**: Berisi seluruh 10 layar berjejer rapi dalam 1 kanvas |
-| 01 | `01_splash_screen.svg` | 390 x 844 px | Splash screen dengan logo CareCycle & tagline |
-| 02 | `02_login_screen.svg` | 390 x 844 px | Layar Login (Email, Password, Role Switcher, Tombol Masuk) |
-| 03 | `03_register_screen.svg` | 390 x 844 px | Layar Registrasi Donatur & Komunitas (Upload Dokumen Legalitas) |
-| 04 | `04_home_donatur.svg` | 390 x 844 px | Beranda Donatur (Banner, Statistik, Kartu Donasi, Lonceng Notif) |
-| 05 | `05_item_upload_ai.svg` | 390 x 844 px | Form Donasi Barang + Deteksi Label AI ML Kit + Indikator Offline |
-| 06 | `06_my_items.svg` | 390 x 844 px | Daftar "Barang Saya" dengan filter status (Draft, Tersedia, Diproses) |
-| 07 | `07_public_catalog.svg` | 390 x 844 px | Katalog Publik (Pencarian, Filter Kategori Keping, Grid 2 Kolom) |
-| 08 | `08_item_detail.svg` | 390 x 844 px | Detail Barang + Modal "Ajukan Permintaan" Komunitas Verified |
-| 09 | `09_donor_requests_handover.svg` | 390 x 844 px | Daftar Permintaan Masuk, Review Legalitas, & Modal Serah Terima |
-| 10 | `10_admin_verification.svg` | 390 x 844 px | Layar Admin Verifikasi Komunitas (Review Dokumen, Setujui/Tolak) |
+### Metode 1: Lewat Web Helper & Clipboard (Super Praktis - Rekomendasi)
+1. Buka file **`figma/index.html`** di browser komputer Anda (klik ganda filenya).
+2. Anda akan melihat seluruh alur layar berjejer rapi dalam 3 User Flow tematik.
+3. Klik tombol **"📋 Salin Master Canvas"** (atau salin layar satuan yang Anda pilih).
+4. Buka [Figma](https://www.figma.com/) dan tekan **`Ctrl + V`** (Paste).
+5. Layar ponsel modern lengkap dengan Dynamic Island, bezel, dan seluruh layer vektor akan langsung terpasang di kanvas Figma Anda!
+
+### Metode 2: Drag & Drop Langsung
+1. Buka Figma dan buat file kerja baru (*New design file*).
+2. Buka File Explorer ke folder: `d:\KULIAH BUD\Ssemester 3\Pemrograman Mobile\carecycle\figma\`
+3. Tarik (**Drag & Drop**) file:
+   👉 **`carecycle_all_screens_figma_canvas.svg`**
+   langsung ke kanvas Figma.
 
 ---
 
-## 🎨 Design Tokens & Palette
+## 📱 Struktur User Flow & Daftar Layar
 
-- **Primary Color**: `#047857` (Emerald 700)
-- **Secondary Color**: `#10B981` (Emerald 500)
-- **Dark Accent**: `#065F46` (Emerald 800)
-- **Light / Surface**: `#ECFDF5` (Emerald 50)
-- **Background**: `#F9FAFB` (Gray 50)
-- **Warning / Pending**: `#F59E0B` (Amber 500)
-- **Success / Verified**: `#10B981` (Emerald 500)
-- **Danger / Rejected**: `#EF4444` (Red 500)
-- **Typography**: Inter / Plus Jakarta Sans / Roboto / SF Pro
+Kanvas utama (`carecycle_all_screens_figma_canvas.svg`) berukuran **2800 x 3600 px** dan dibagi menjadi beberapa bagian tematik yang mencerminkan alur kerja sistem:
+
+### 1. Cover & Design System Tokens (Header Board)
+- Header cover Tugas Besar Pemrograman Mobile.
+- Metadata pengembang & Tech Stack.
+- Mini Style Guide: Color Palette tokens (Emerald `#047857`, Secondary Mint `#10B981`, Amber Pending `#F59E0B`, Danger Red `#EF4444`, Slate Dark `#0F172A`), Typography scale, dan Grid layout.
+
+### 2. User Flow 1: Onboarding, Multi-Role Auth & Legalitas Komunitas
+- **`01_splash_screen.svg`**: Splash screen dengan logo eco-cycle, tagline, & bootstrap loader.
+- **`02_login_screen.svg`**: Login interaktif dengan Role Switcher (Donatur, Komunitas, Admin) & shortcut kredensial demo praktikum.
+- **`03_register_screen.svg`**: Form registrasi profil yayasan/komunitas + upload berkas PDF legalitas (akta notaris) dengan status awal *Pending*.
+- **`10_admin_verification.svg`**: Panel verifikasi admin untuk meninjau keabsahan berkas PDF akta notaris dan memberikan status *Verified*.
+
+### 3. User Flow 2: Donatur — On-Device AI Image Labeling & Offline-First Sync
+- **`04_home_donatur.svg`**: Dashboard donatur lengkap dengan gamifikasi CarePoints, jejak emisi tekstil, menu aksi cepat, dan lonceng notifikasi realtime.
+- **`05_item_upload_ai.svg`**: Form unggah barang donasi dengan ilustrasi pakaian, deteksi kategori otomatis oleh **Google ML Kit** on-device (<150ms), dan banner offline mode.
+- **`06_my_items.svg`**: Halaman manajemen "Barang Saya" dengan pemilahan status (Draft offline menunggu koneksi, Tersedia, dan Sedang Diproses).
+
+### 4. User Flow 3: Komunitas — Katalog Publik & Siklus Serah Terima Realtime
+- **`07_public_catalog.svg`**: Katalog donasi publik 2 kolom responsif dengan filter chips kategori, pencarian, dan indikator cache Hive.
+- **`08_item_detail.svg`**: Halaman detail barang lengkap dengan bottom sheet modal "Ajukan Permintaan Donasi" bagi komunitas terverifikasi.
+- **`09_donor_requests_handover.svg`**: Layar review permintaan masuk bagi donatur, verifikasi profil pemohon, dan modal pemilihan kesepakatan serah terima (Kurir / Antar Langsung / Dijemput Komunitas).
+
+---
+
+## 🎨 Token Warna (Design Tokens)
+- **Primary Emerald**: `#047857`
+- **Secondary Mint**: `#10B981`
+- **Dark Forest**: `#065F46`
+- **Background Light**: `#F8FAFC` / `#F1F5F9`
+- **Text Slate**: `#0F172A`
+- **Warning / Pending Amber**: `#F59E0B`
+- **Success Green**: `#10B981`
+- **Danger Red**: `#EF4444`

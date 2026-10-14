@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-// Dart script to generate 100% standard, clean, Figma-compliant SVGs
 import 'dart:io';
 
 void main() {
@@ -9,667 +8,1088 @@ void main() {
   }
 
   final screens = <String, String>{
-    '01_splash_screen.svg': generateSplashScreen(),
-    '02_login_screen.svg': generateLoginScreen(),
-    '03_register_screen.svg': generateRegisterScreen(),
-    '04_home_donatur.svg': generateHomeDonaturScreen(),
-    '05_item_upload_ai.svg': generateItemUploadAiScreen(),
-    '06_my_items.svg': generateMyItemsScreen(),
-    '07_public_catalog.svg': generatePublicCatalogScreen(),
-    '08_item_detail.svg': generateItemDetailScreen(),
-    '09_donor_requests_handover.svg': generateDonorRequestsHandoverScreen(),
-    '10_admin_verification.svg': generateAdminVerificationScreen(),
+    '01_splash_screen.svg': screenSplash(),
+    '02_login_screen.svg': screenLogin(),
+    '03_register_screen.svg': screenRegister(),
+    '04_home_donatur.svg': screenHomeDonatur(),
+    '05_item_upload_ai.svg': screenItemUploadAi(),
+    '06_my_items.svg': screenMyItems(),
+    '07_public_catalog.svg': screenPublicCatalog(),
+    '08_item_detail.svg': screenItemDetail(),
+    '09_donor_requests_handover.svg': screenDonorRequestsHandover(),
+    '10_admin_verification.svg': screenAdminVerification(),
   };
 
+  // Write individual screen SVGs with realistic mobile phone frame
   for (final entry in screens.entries) {
     final file = File('figma/${entry.key}');
-    file.writeAsStringSync(wrapSvg(entry.value, 390, 844));
+    file.writeAsStringSync(wrapSingleScreenSvg(entry.value));
     print('Generated figma/${entry.key}');
   }
 
-  // Generate Master Canvas with all 10 screens
-  final masterCanvas = generateMasterCanvas(screens);
+  // Generate Master Canvas with Project Presentation Header, Style Tokens & Thematic User Flows
+  final masterCanvas = generateMasterBoard(screens);
   File('figma/carecycle_all_screens_figma_canvas.svg').writeAsStringSync(masterCanvas);
   print('Generated figma/carecycle_all_screens_figma_canvas.svg');
 }
 
-String wrapSvg(String inner, int width, int height) {
+// ==========================================
+// SVG WRAPPERS & PHONE FRAME
+// ==========================================
+
+String wrapSingleScreenSvg(String innerScreen) {
   return '''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 $width $height" width="$width" height="$height">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 880" width="420" height="880">
   <defs>
-    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.06"/>
-    </filter>
-    <filter id="bottomNavShadow" x="-10%" y="-20%" width="120%" height="140%">
-      <feDropShadow dx="0" dy="-4" stdDeviation="8" flood-color="#000000" flood-opacity="0.05"/>
+    <filter id="phoneShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0F172A" flood-opacity="0.12"/>
     </filter>
   </defs>
-$inner
+  <!-- Background Artboard Canvas -->
+  <rect width="420" height="880" fill="#F8FAFC" />
+  
+  <!-- Realistic Smartphone Outer Shell -->
+  <g transform="translate(15, 18)" filter="url(#phoneShadow)">
+    <!-- Outer Bezel -->
+    <rect width="390" height="844" rx="44" fill="#0F172A" stroke="#334155" stroke-width="3" />
+    <!-- Screen Viewport with Clip -->
+    <rect x="0" y="0" width="390" height="844" rx="42" fill="#FFFFFF" />
+    <g>
+      $innerScreen
+    </g>
+    <!-- Screen Glass Rim Border -->
+    <rect x="0" y="0" width="390" height="844" rx="42" fill="none" stroke="#0F172A" stroke-width="4" />
+    <!-- iPhone-style Dynamic Island / Notch -->
+    <rect x="140" y="11" width="110" height="26" rx="13" fill="#000000" />
+    <circle cx="230" cy="24" r="5" fill="#1E293B" />
+    <circle cx="160" cy="24" r="3.5" fill="#0F172A" />
+    <!-- Bottom Home Indicator Bar -->
+    <rect x="125" y="830" width="140" height="4.5" rx="2.5" fill="#0F172A" opacity="0.6" />
+  </g>
 </svg>''';
 }
 
-String statusBar() {
+String phoneShellContent(String innerScreen) {
   return '''
-  <!-- Status Bar -->
-  <g id="StatusBar">
-    <text x="32" y="32" font-family="'Plus Jakarta Sans', Inter, Roboto, sans-serif" font-size="14" font-weight="600" fill="#0F172A">09:41</text>
-    <circle cx="340" cy="28" r="3.5" fill="#0F172A" />
-    <circle cx="350" cy="28" r="3.5" fill="#0F172A" />
-    <rect x="360" y="24" width="18" height="9" rx="3" fill="none" stroke="#0F172A" stroke-width="1.5" />
-    <rect x="362" y="26" width="12" height="5" rx="1.5" fill="#0F172A" />
+  <!-- Phone Frame Container -->
+  <g id="DeviceShell">
+    <!-- Outer Bezel -->
+    <rect width="390" height="844" rx="42" fill="#0F172A" stroke="#334155" stroke-width="2.5" />
+    <!-- Screen Area -->
+    <rect width="390" height="844" rx="40" fill="#FFFFFF" />
+    <!-- Inner Screen Content -->
+    <g>
+      $innerScreen
+    </g>
+    <!-- Glass Rim -->
+    <rect width="390" height="844" rx="40" fill="none" stroke="#0F172A" stroke-width="3.5" />
+    <!-- Dynamic Island Notch -->
+    <rect x="140" y="11" width="110" height="26" rx="13" fill="#000000" />
+    <circle cx="230" cy="24" r="5" fill="#1E293B" />
+    <!-- Bottom Home Indicator -->
+    <rect x="125" y="830" width="140" height="4.5" rx="2.5" fill="#0F172A" opacity="0.6" />
+  </g>''';
+}
+
+// ==========================================
+// REUSABLE MOBILE UI COMPONENTS
+// ==========================================
+
+String statusBar({bool isDark = false}) {
+  final color = isDark ? '#FFFFFF' : '#0F172A';
+  return '''
+  <!-- iOS Status Bar -->
+  <g id="StatusBar" transform="translate(0, 0)">
+    <text x="36" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="$color">09:41</text>
+    <!-- Signal, Wifi, Battery -->
+    <circle cx="330" cy="25" r="3" fill="$color" />
+    <circle cx="340" cy="25" r="3" fill="$color" />
+    <!-- Battery -->
+    <rect x="350" y="20" width="20" height="10" rx="3" fill="none" stroke="$color" stroke-width="1.5" />
+    <rect x="352" y="22" width="13" height="6" rx="1.5" fill="$color" />
   </g>''';
 }
 
 String bottomNav({int activeIndex = 0}) {
   return '''
   <!-- Bottom Navigation Bar -->
-  <g id="BottomNavBar" transform="translate(0, 764)">
-    <rect width="390" height="80" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <!-- Nav Items -->
-    <g transform="translate(48, 20)">
-      <circle cx="0" cy="10" r="16" fill="${activeIndex == 0 ? '#ECFDF5' : 'none'}" />
-      <path d="M-8 12 L0 5 L8 12 L8 22 L3 22 L3 15 L-3 15 L-3 22 L-8 22 Z" fill="${activeIndex == 0 ? '#047857' : '#94A3B8'}" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 0 ? '700' : '500'}" fill="${activeIndex == 0 ? '#047857' : '#94A3B8'}" text-anchor="middle">Beranda</text>
+  <g id="BottomNavBar" transform="translate(0, 755)">
+    <rect width="390" height="89" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    
+    <!-- Tab 1: Beranda -->
+    <g transform="translate(48, 14)">
+      <circle cx="0" cy="12" r="16" fill="${activeIndex == 0 ? '#ECFDF5' : 'none'}" />
+      <path d="M-8 14 L0 7 L8 14 L8 24 L3 24 L3 17 L-3 17 L-3 24 L-8 24 Z" fill="${activeIndex == 0 ? '#047857' : '#94A3B8'}" />
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 0 ? '700' : '600'}" fill="${activeIndex == 0 ? '#047857' : '#94A3B8'}" text-anchor="middle">Beranda</text>
     </g>
-    <g transform="translate(148, 20)">
-      <circle cx="0" cy="10" r="16" fill="${activeIndex == 1 ? '#ECFDF5' : 'none'}" />
-      <rect x="-8" y="4" width="16" height="16" rx="3" fill="none" stroke="${activeIndex == 1 ? '#047857' : '#94A3B8'}" stroke-width="2" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 1 ? '700' : '500'}" fill="${activeIndex == 1 ? '#047857' : '#94A3B8'}" text-anchor="middle">Katalog</text>
+
+    <!-- Tab 2: Katalog -->
+    <g transform="translate(148, 14)">
+      <circle cx="0" cy="12" r="16" fill="${activeIndex == 1 ? '#ECFDF5' : 'none'}" />
+      <rect x="-8" y="6" width="16" height="16" rx="3" fill="none" stroke="${activeIndex == 1 ? '#047857' : '#94A3B8'}" stroke-width="2" />
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 1 ? '700' : '600'}" fill="${activeIndex == 1 ? '#047857' : '#94A3B8'}" text-anchor="middle">Katalog</text>
     </g>
-    <g transform="translate(248, 20)">
-      <circle cx="0" cy="10" r="16" fill="${activeIndex == 2 ? '#ECFDF5' : 'none'}" />
-      <path d="M-7 6 L7 6 L7 20 L-7 20 Z" fill="none" stroke="${activeIndex == 2 ? '#047857' : '#94A3B8'}" stroke-width="2" />
-      <path d="M-4 6 L-4 3 C-4 1.5 -2.5 0 0 0 C2.5 0 4 1.5 4 3 L4 6" fill="none" stroke="${activeIndex == 2 ? '#047857' : '#94A3B8'}" stroke-width="2" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 2 ? '700' : '500'}" fill="${activeIndex == 2 ? '#047857' : '#94A3B8'}" text-anchor="middle">Aktivitas</text>
+
+    <!-- Tab 3: Aktivitas -->
+    <g transform="translate(248, 14)">
+      <circle cx="0" cy="12" r="16" fill="${activeIndex == 2 ? '#ECFDF5' : 'none'}" />
+      <rect x="-7" y="7" width="14" height="14" rx="2" fill="none" stroke="${activeIndex == 2 ? '#047857' : '#94A3B8'}" stroke-width="2" />
+      <line x1="-3" y1="12" x2="3" y2="12" stroke="${activeIndex == 2 ? '#047857' : '#94A3B8'}" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 2 ? '700' : '600'}" fill="${activeIndex == 2 ? '#047857' : '#94A3B8'}" text-anchor="middle">Aktivitas</text>
     </g>
-    <g transform="translate(342, 20)">
-      <circle cx="0" cy="10" r="16" fill="${activeIndex == 3 ? '#ECFDF5' : 'none'}" />
-      <circle cx="0" cy="7" r="5" fill="none" stroke="${activeIndex == 3 ? '#047857' : '#94A3B8'}" stroke-width="2" />
-      <path d="M-8 22 C-8 17 -4 16 0 16 C4 16 8 17 8 22" fill="none" stroke="${activeIndex == 3 ? '#047857' : '#94A3B8'}" stroke-width="2" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 3 ? '700' : '500'}" fill="${activeIndex == 3 ? '#047857' : '#94A3B8'}" text-anchor="middle">Profil</text>
+
+    <!-- Tab 4: Profil -->
+    <g transform="translate(342, 14)">
+      <circle cx="0" cy="12" r="16" fill="${activeIndex == 3 ? '#ECFDF5' : 'none'}" />
+      <circle cx="0" cy="9" r="4.5" fill="none" stroke="${activeIndex == 3 ? '#047857' : '#94A3B8'}" stroke-width="1.8" />
+      <path d="M-7 23 C-7 18.5 -3.5 17 0 17 C3.5 17 7 18.5 7 23" fill="none" stroke="${activeIndex == 3 ? '#047857' : '#94A3B8'}" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="${activeIndex == 3 ? '700' : '600'}" fill="${activeIndex == 3 ? '#047857' : '#94A3B8'}" text-anchor="middle">Profil</text>
     </g>
   </g>''';
 }
 
-String appBar(String title, {bool showBack = true, bool showAction = false}) {
+String mobileAppBar(String title, {bool showBack = true, String? actionIcon}) {
   return '''
-  <!-- AppBar -->
-  <g id="AppBar">
+  <!-- Mobile App Bar -->
+  <g id="AppBar" transform="translate(0, 48)">
     ${showBack ? '''
-    <g id="BackButton">
-      <circle cx="36" cy="74" r="18" fill="#F1F5F9" />
-      <path d="M40 68 L32 74 L40 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <g id="BtnBack">
+      <circle cx="38" cy="24" r="18" fill="#F1F5F9" />
+      <path d="M41 18 L34 24 L41 30" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </g>''' : ''}
-    <text x="${showBack ? 70 : 24}" y="80" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="20" font-weight="700" fill="#0F172A">$title</text>
-    ${showAction ? '''
-      <g id="ActionBell">
-        <circle cx="354" cy="74" r="18" fill="#F1F5F9" />
-        <path d="M354 66 C350 66 348 69 348 73 L346 76 L362 76 L360 73 C360 69 358 66 354 66 Z" fill="#0F172A" />
-        <circle cx="362" cy="66" r="4" fill="#EF4444" />
-      </g>''' : ''}
+    <text x="${showBack ? 70 : 24}" y="31" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="19" font-weight="800" fill="#0F172A">$title</text>
+    ${actionIcon == 'bell' ? '''
+    <g id="ActionBell">
+      <circle cx="352" cy="24" r="18" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <path d="M352 16 C348 16 346 19 346 23 L344 26 L360 26 L358 23 C358 19 356 16 352 16 Z" fill="#0F172A" />
+      <circle cx="360" cy="16" r="4.5" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.5" />
+    </g>''' : ''}
   </g>''';
 }
 
-String generateSplashScreen() {
+// ==========================================
+// SCREEN 1: SPLASH SCREEN
+// ==========================================
+String screenSplash() {
   return '''
   <rect width="390" height="844" fill="#047857" />
-  <g id="CenterContent" transform="translate(0, 300)">
-    <circle cx="195" cy="50" r="50" fill="#065F46" />
-    <!-- Leaf / Recycle icon -->
-    <path d="M175 52 C175 38 188 28 202 32 C210 35 215 45 212 55 C208 65 195 72 182 66 L175 72 L175 52 Z" fill="#FFFFFF" />
-    <path d="M192 46 C196 40 204 40 208 44 C210 48 208 54 204 56 C198 58 190 54 192 46 Z" fill="#10B981" />
-    <text x="195" y="140" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="32" font-weight="800" fill="#FFFFFF" text-anchor="middle">CareCycle</text>
-    <text x="195" y="170" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" fill="#A7F3D0" text-anchor="middle">Platform Berbagi &amp; Donasi Komunitas</text>
-    
-    <!-- Spinner indicator -->
-    <circle cx="195" cy="240" r="12" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="25 10" />
-  </g>''';
-}
+  
+  <!-- Subtle background pattern / curves -->
+  <circle cx="380" cy="120" r="160" fill="#065F46" opacity="0.4" />
+  <circle cx="20" cy="740" r="200" fill="#065F46" opacity="0.4" />
 
-String generateLoginScreen() {
-  return '''
-  <rect width="390" height="844" fill="#F8FAFC" />
-  ${statusBar()}
-  <g id="Header" transform="translate(24, 90)">
-    <circle cx="36" cy="36" r="36" fill="#ECFDF5" />
-    <path d="M26 36 C26 28 32 24 38 24 C44 24 50 28 50 36 C50 44 42 48 38 48 C32 48 26 44 26 36 Z" fill="#047857" />
-    <text x="0" y="105" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="24" font-weight="700" fill="#0F172A">Selamat Datang</text>
-    <text x="0" y="130" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#64748B">Masuk untuk mulai berbagi &amp; mendonasikan barang</text>
+  ${statusBar(isDark: true)}
+
+  <!-- Brand Center Logo -->
+  <g id="BrandCenter" transform="translate(195, 340)">
+    <!-- Outer Glow -->
+    <circle cx="0" cy="0" r="54" fill="#065F46" />
+    <circle cx="0" cy="0" r="44" fill="#10B981" opacity="0.2" />
+    
+    <!-- Vector Recycle Leaf Icon -->
+    <path d="M-18 8 C-18 -10 0 -22 18 -16 C26 -12 30 0 24 12 C18 24 2 30 -14 22 L-22 30 L-18 8 Z" fill="#FFFFFF" />
+    <path d="M-4 -2 C2 -8 12 -8 16 -2 C18 4 14 12 8 14 C0 16 -8 10 -4 -2 Z" fill="#047857" />
+    
+    <text x="0" y="90" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="34" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">CareCycle</text>
+    <text x="0" y="118" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13.5" font-weight="500" fill="#A7F3D0" text-anchor="middle">Siklus Berbagi &amp; Donasi Komunitas</text>
+    
+    <!-- University / Project Metadata pill -->
+    <rect x="-85" y="145" width="170" height="26" rx="13" fill="#065F46" />
+    <text x="0" y="162" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#ECFDF5" text-anchor="middle">PEMROGRAMAN MOBILE • SMT 3</text>
   </g>
 
-  <!-- Form Inputs -->
-  <g id="Form" transform="translate(24, 260)">
-    <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Email</text>
-    <rect x="0" y="10" width="342" height="48" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
-    <text x="16" y="40" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#64748B">donatur@carecycle.id</text>
-
-    <text x="0" y="85" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="600" fill="#0F172A">Kata Sandi</text>
-    <rect x="0" y="95" width="342" height="48" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
-    <text x="16" y="125" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" fill="#64748B">••••••••••••</text>
-    <text x="290" y="125" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#047857" font-weight="600">Lihat</text>
-
-    <!-- Submit Button -->
-    <rect x="0" y="175" width="342" height="50" rx="10" fill="#047857" />
-    <text x="171" y="206" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Masuk ke Akun</text>
-
-    <!-- Demo Role Badges -->
-    <text x="0" y="255" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B">Pilih Login Cepat:</text>
-    <g transform="translate(0, 270)">
-      <rect x="0" y="0" width="105" height="34" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1" />
-      <text x="52" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#047857" text-anchor="middle">Donatur</text>
-      
-      <rect x="115" y="0" width="112" height="34" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1" />
-      <text x="171" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#1D4ED8" text-anchor="middle">Komunitas</text>
-
-      <rect x="237" y="0" width="105" height="34" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" />
-      <text x="289" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#B45309" text-anchor="middle">Admin</text>
-    </g>
-
-    <text x="171" y="340" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B" text-anchor="middle">Belum punya akun? <tspan fill="#047857" font-weight="700">Daftar Sekarang</tspan></text>
+  <!-- Bottom Loading & Version -->
+  <g transform="translate(195, 760)">
+    <circle cx="0" cy="0" r="13" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="24 10" opacity="0.8" />
+    <text x="0" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="500" fill="#A7F3D0" text-anchor="middle">Memuat sistem offline &amp; cloud...</text>
   </g>''';
 }
 
-String generateRegisterScreen() {
+// ==========================================
+// SCREEN 2: LOGIN SCREEN
+// ==========================================
+String screenLogin() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('Pendaftaran Akun')}
+
+  <!-- Header Section -->
+  <g id="LoginHeader" transform="translate(24, 85)">
+    <rect width="44" height="44" rx="12" fill="#ECFDF5" />
+    <path d="M14 22 C14 16 18 12 24 12 C30 12 34 16 34 22 C34 28 28 32 22 32 Z" fill="#047857" />
+    
+    <text x="0" y="78" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="24" font-weight="800" fill="#0F172A">Masuk ke Akun</text>
+    <text x="0" y="102" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#64748B">Pilih role dan masuk untuk mulai mendonasikan barang</text>
+  </g>
 
   <!-- Role Selector Switcher -->
-  <g id="RoleSwitcher" transform="translate(24, 115)">
-    <rect width="342" height="44" rx="10" fill="#E2E8F0" />
-    <rect x="173" width="165" height="36" y="4" rx="8" fill="#047857" />
-    <text x="85" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="600" fill="#64748B" text-anchor="middle">Donatur</text>
-    <text x="255" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">Komunitas</text>
+  <g id="RoleSwitch" transform="translate(24, 215)">
+    <rect width="342" height="46" rx="12" fill="#E2E8F0" />
+    <!-- Active Donatur tab -->
+    <rect x="4" y="4" width="108" height="38" rx="9" fill="#047857" />
+    <text x="58" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Donatur</text>
+    
+    <text x="171" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#64748B" text-anchor="middle">Komunitas</text>
+    <text x="285" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#64748B" text-anchor="middle">Admin</text>
   </g>
 
   <!-- Form Fields -->
-  <g id="RegisterForm" transform="translate(24, 175)">
-    <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Nama Komunitas / Yayasan</text>
-    <rect x="0" y="8" width="342" height="44" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
-    <text x="14" y="35" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#64748B">Yayasan Kasih Bangsa</text>
+  <g id="FormFields" transform="translate(24, 285)">
+    <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#0F172A">Alamat Email</text>
+    <rect x="0" y="10" width="342" height="48" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+    <text x="16" y="39" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#0F172A">reivan.rasyid@student.ac.id</text>
 
-    <text x="0" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Email Organisasi</text>
-    <rect x="0" y="80" width="342" height="44" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
-    <text x="14" y="107" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#64748B">info@kasihbangsa.org</text>
+    <text x="0" y="85" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#0F172A">Kata Sandi</text>
+    <rect x="0" y="95" width="342" height="48" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+    <text x="16" y="125" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" fill="#0F172A">••••••••••••••</text>
+    <text x="296" y="124" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857">LIHAT</text>
 
-    <!-- Legal Document Upload Field (Special Feature) -->
-    <text x="0" y="145" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Dokumen Legalitas (Akta / Kemenkumham)</text>
-    <g transform="translate(0, 155)">
-      <rect width="342" height="90" rx="10" fill="#F0FDF4" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6 4" />
-      <!-- File icon -->
-      <circle cx="171" cy="30" r="14" fill="#DCFCE7" />
-      <path d="M166 25 L176 25 L176 35 L166 35 Z" fill="none" stroke="#047857" stroke-width="1.5" />
-      <text x="171" y="58" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#047857" text-anchor="middle">legalitas_yayasan.pdf</text>
-      <text x="171" y="74" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">1.4 MB • Klik untuk ganti file</text>
-    </g>
-
-    <!-- Status Info Note -->
-    <g transform="translate(0, 260)">
-      <rect width="342" height="50" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1" />
-      <circle cx="20" cy="25" r="7" fill="#F59E0B" />
-      <text x="20" y="28" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">i</text>
-      <text x="35" y="23" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="600" fill="#B45309">Status awal: Menunggu Verifikasi Admin</text>
-      <text x="35" y="37" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" fill="#92400E">Fitur pengajuan donasi aktif setelah diverifikasi.</text>
+    <!-- Quick Remember & Forgot Password -->
+    <g transform="translate(0, 160)">
+      <rect x="0" y="0" width="16" height="16" rx="4" fill="#047857" />
+      <path d="M4 8 L7 11 L12 5" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
+      <text x="24" y="13" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B">Ingat saya</text>
+      <text x="342" y="13" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#047857" text-anchor="end">Lupa sandi?</text>
     </g>
 
     <!-- Submit Button -->
-    <rect x="0" y="330" width="342" height="48" rx="10" fill="#047857" />
-    <text x="171" y="360" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Daftar Komunitas</text>
+    <rect x="0" y="195" width="342" height="50" rx="12" fill="#047857" />
+    <text x="171" y="226" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Masuk Sekarang</text>
+
+    <!-- Quick Test Credentials Box -->
+    <g transform="translate(0, 270)">
+      <rect width="342" height="65" rx="10" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1" />
+      <text x="14" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#1D4ED8">⚡ Demo Praktikum IT:</text>
+      <text x="14" y="38" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#1E40AF">Tersedia login cepat Donatur, Komunitas, &amp; Admin</text>
+      <text x="14" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#3B82F6">Supabase Auth • Realtime Session Sync</text>
+    </g>
+
+    <text x="171" y="365" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B" text-anchor="middle">Belum punya akun? <tspan fill="#047857" font-weight="700">Daftar Komunitas</tspan></text>
   </g>''';
 }
 
-String generateHomeDonaturScreen() {
+// ==========================================
+// SCREEN 3: REGISTER SCREEN (KOMUNITAS + DOKUMEN)
+// ==========================================
+String screenRegister() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('CareCycle', showBack: false, showAction: true)}
+  ${mobileAppBar('Registrasi Komunitas')}
 
-  <!-- User Card -->
-  <g id="UserCard" transform="translate(24, 110)">
-    <rect width="342" height="74" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <circle cx="38" cy="37" r="22" fill="#ECFDF5" />
-    <text x="38" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="18" font-weight="700" fill="#047857" text-anchor="middle">R</text>
-    <text x="70" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="700" fill="#0F172A">Halo, Reivan Rasyid</text>
+  <g id="RegisterBody" transform="translate(24, 105)">
+    <!-- Step Badge -->
+    <rect width="180" height="24" rx="12" fill="#ECFDF5" />
+    <text x="12" y="16" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#047857">LANGKAH 2: DOKUMEN LEGALITAS</text>
+
+    <!-- Form Inputs -->
+    <text x="0" y="50" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Nama Komunitas / Yayasan</text>
+    <rect x="0" y="58" width="342" height="44" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+    <text x="14" y="85" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">Yayasan Kasih Harapan Bangsa</text>
+
+    <text x="0" y="122" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Nomor Izin Kemenkumham / Akta</text>
+    <rect x="0" y="130" width="342" height="44" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+    <text x="14" y="157" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">AHU-0019284.AH.01.04.2021</text>
+
+    <text x="0" y="194" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Alamat Sekretariat</text>
+    <rect x="0" y="202" width="342" height="44" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+    <text x="14" y="229" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">Jl. Dipati Ukur No. 42, Coblong, Bandung</text>
+
+    <!-- Upload Legalitas Component -->
+    <text x="0" y="268" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Unggah Berkas Legalitas (PDF / Foto)</text>
     
-    <rect x="70" y="40" width="60" height="20" rx="4" fill="#047857" />
-    <text x="100" y="54" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Donatur</text>
+    <g transform="translate(0, 278)">
+      <rect width="342" height="96" rx="10" fill="#F0FDF4" stroke="#047857" stroke-width="1.5" stroke-dasharray="6 4" />
+      <!-- PDF Document Icon -->
+      <rect x="20" y="24" width="36" height="46" rx="5" fill="#DCFCE7" />
+      <text x="38" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#047857" text-anchor="middle">PDF</text>
+      
+      <text x="68" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#0F172A">akta_pendirian_notaris.pdf</text>
+      <text x="68" y="60" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">2.1 MB • Terverifikasi siap upload</text>
+      
+      <rect x="250" y="32" width="76" height="30" rx="6" fill="#047857" />
+      <text x="288" y="51" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Ganti File</text>
+    </g>
+
+    <!-- Verification Info Notice -->
+    <g transform="translate(0, 390)">
+      <rect width="342" height="54" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1" />
+      <text x="14" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#B45309">⚠️ Status Awal: Menunggu Verifikasi Admin</text>
+      <text x="14" y="38" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#92400E">Komunitas belum terverifikasi belum dapat mengajukan donasi.</text>
+    </g>
+
+    <!-- Submit Button -->
+    <rect x="0" y="460" width="342" height="48" rx="12" fill="#047857" />
+    <text x="171" y="490" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Kirim Berkas Pendaftaran</text>
+  </g>''';
+}
+
+// ==========================================
+// SCREEN 4: HOME DONATUR
+// ==========================================
+String screenHomeDonatur() {
+  return '''
+  <rect width="390" height="844" fill="#F8FAFC" />
+  ${statusBar()}
+  ${mobileAppBar('CareCycle', showBack: false, actionIcon: 'bell')}
+
+  <!-- User Greeting Card -->
+  <g id="GreetingCard" transform="translate(24, 105)">
+    <rect width="342" height="76" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <circle cx="42" cy="38" r="24" fill="#ECFDF5" />
+    <text x="42" y="45" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="17" font-weight="800" fill="#047857" text-anchor="middle">RR</text>
+    
+    <text x="76" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14.5" font-weight="800" fill="#0F172A">Halo, Reivan Rasyid 👋</text>
+    <text x="76" y="49" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Donatur Aktif • Coblong, Bandung</text>
+    
+    <rect x="250" y="24" width="76" height="24" rx="12" fill="#ECFDF5" />
+    <text x="288" y="40" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#047857" text-anchor="middle">TERVERIFIKASI</text>
   </g>
 
-  <!-- CarePoints Gamification Card -->
-  <g id="PointsCard" transform="translate(24, 200)">
-    <rect width="342" height="85" rx="14" fill="#065F46" />
-    <text x="20" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#A7F3D0">Total CarePoints Donasi</text>
-    <text x="20" y="65" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="26" font-weight="800" fill="#FFFFFF">120 Poin</text>
-    <circle cx="295" cy="42" r="24" fill="#047857" />
-    <!-- Leaf badge icon -->
-    <path d="M290 40 C290 32 300 28 305 35 C308 39 304 46 298 48 Z" fill="#A7F3D0" />
+  <!-- CarePoints Gamification Banner -->
+  <g id="GamificationCard" transform="translate(24, 195)">
+    <rect width="342" height="96" rx="16" fill="#047857" />
+    <circle cx="310" cy="48" r="40" fill="#065F46" opacity="0.6" />
+    
+    <text x="20" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="600" fill="#A7F3D0">Total CarePoints &amp; Kontribusi</text>
+    <text x="20" y="66" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">340 Pts</text>
+    
+    <!-- Impact Stats -->
+    <text x="20" y="84" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#ECFDF5">🌱 5 Barang Tersalurkan • 18 kg Emisi Tercegah</text>
+
+    <!-- Level badge -->
+    <rect x="235" y="20" width="90" height="24" rx="6" fill="#065F46" />
+    <text x="280" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Level 2: Peduli</text>
   </g>
 
   <!-- Section Title -->
-  <text x="24" y="315" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="700" fill="#0F172A">Aktivitas Donatur</text>
+  <text x="24" y="318" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14.5" font-weight="800" fill="#0F172A">Menu Utama Donatur</text>
 
-  <!-- 2x2 Grid Activity Cards -->
-  <g id="GridActivities" transform="translate(24, 330)">
-    <!-- Card 1: Unggah Donasi -->
-    <rect x="0" y="0" width="164" height="95" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <circle cx="30" cy="30" r="16" fill="#ECFDF5" />
-    <circle cx="30" cy="30" r="8" fill="#047857" />
-    <text x="16" y="64" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Unggah Donasi</text>
-    <text x="16" y="80" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Donasikan barang layak</text>
+  <!-- 2x2 Feature Grid -->
+  <g id="FeatureGrid" transform="translate(24, 332)">
+    <!-- Card 1: Upload Donasi -->
+    <rect x="0" y="0" width="164" height="100" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+    <circle cx="32" cy="32" r="16" fill="#ECFDF5" />
+    <!-- Camera icon -->
+    <circle cx="32" cy="32" r="6" fill="#047857" />
+    <text x="14" y="68" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Unggah Barang</text>
+    <text x="14" y="85" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Deteksi AI ML Kit</text>
 
     <!-- Card 2: Barang Saya -->
-    <rect x="178" y="0" width="164" height="95" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <circle cx="208" cy="30" r="16" fill="#FFFBEB" />
-    <rect x="201" y="23" width="14" height="14" rx="2" fill="#F59E0B" />
-    <text x="194" y="64" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Barang Saya</text>
-    <text x="194" y="80" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#F59E0B" font-weight="600">1 draft offline</text>
+    <rect x="178" y="0" width="164" height="100" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+    <circle cx="210" cy="32" r="16" fill="#FFFBEB" />
+    <rect x="204" y="26" width="12" height="12" rx="2" fill="#F59E0B" />
+    <text x="192" y="68" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Barang Saya</text>
+    <text x="192" y="85" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#B45309">1 Draft Offline ⚡</text>
 
     <!-- Card 3: Katalog Publik -->
-    <rect x="0" y="110" width="164" height="95" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <circle cx="30" cy="140" r="16" fill="#ECFDF5" />
-    <circle cx="30" cy="140" r="6" fill="none" stroke="#047857" stroke-width="2" />
-    <text x="16" y="174" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Katalog Publik</text>
-    <text x="16" y="190" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Jelajahi donasi publik</text>
+    <rect x="0" y="112" width="164" height="100" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+    <circle cx="32" cy="144" r="16" fill="#ECFDF5" />
+    <path d="M28 140 L36 140 L36 148 L28 148 Z" fill="none" stroke="#047857" stroke-width="2" />
+    <text x="14" y="180" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Katalog Publik</text>
+    <text x="14" y="197" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Kebutuhan Komunitas</text>
 
     <!-- Card 4: Permintaan Masuk -->
-    <rect x="178" y="110" width="164" height="95" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <circle cx="208" cy="140" r="16" fill="#EFF6FF" />
-    <circle cx="208" cy="140" r="7" fill="#3B82F6" />
-    <circle cx="218" cy="132" r="4" fill="#EF4444" />
-    <text x="194" y="174" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Permintaan Masuk</text>
-    <text x="194" y="190" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#047857" font-weight="600">2 permohonan baru</text>
+    <rect x="178" y="112" width="164" height="100" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+    <circle cx="210" cy="144" r="16" fill="#EFF6FF" />
+    <circle cx="210" cy="144" r="6" fill="#2563EB" />
+    <circle cx="220" cy="136" r="4.5" fill="#EF4444" />
+    <text x="192" y="180" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Permintaan</text>
+    <text x="192" y="197" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#2563EB">2 Baru Masuk</text>
   </g>
+
+  <!-- Live Activity Ticker -->
+  <g transform="translate(24, 565)">
+    <rect width="342" height="52" rx="10" fill="#F1F5F9" />
+    <circle cx="24" cy="26" r="8" fill="#10B981" />
+    <text x="42" y="24" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#0F172A">Yayasan Kasih Bangsa</text>
+    <text x="42" y="38" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Mengajukan permohonan "Tas Ransel Eiger" • 5m lalu</text>
+  </g>
+
   ${bottomNav(activeIndex: 0)}''';
 }
 
-String generateItemUploadAiScreen() {
+// ==========================================
+// SCREEN 5: UPLOAD BARANG & AI ML KIT
+// ==========================================
+String screenItemUploadAi() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('Donasikan Barang')}
+  ${mobileAppBar('Donasikan Barang')}
 
-  <!-- Image Selector Frame -->
-  <g id="ImagePicker" transform="translate(24, 110)">
-    <rect width="342" height="150" rx="12" fill="#FFFFFF" stroke="#047857" stroke-width="1.5" stroke-dasharray="6 4" />
-    <circle cx="171" cy="60" r="24" fill="#ECFDF5" />
-    <!-- Camera vector -->
-    <rect x="161" y="53" width="20" height="14" rx="2" fill="#047857" />
-    <circle cx="171" cy="60" r="4" fill="#FFFFFF" />
-    <polygon points="166,51 170,48 172,48 176,51" fill="#047857" />
-    <text x="171" y="105" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="600" fill="#047857" text-anchor="middle">Ambil Foto / Pilih Gambar</text>
-    <text x="171" y="122" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Didukung deteksi otomatis AI on-device</text>
-  </g>
+  <g id="UploadForm" transform="translate(24, 105)">
+    <!-- Photo Picker & Visual Illustration -->
+    <g id="PhotoPicker">
+      <rect width="342" height="145" rx="14" fill="#FFFFFF" stroke="#047857" stroke-width="1.5" stroke-dasharray="6 4" />
+      
+      <!-- Uploaded Picture Preview Frame -->
+      <rect x="15" y="15" width="115" height="115" rx="10" fill="#E2E8F0" />
+      <!-- Stylized Jacket Drawing -->
+      <path d="M45 40 L72 35 L100 40 L110 65 L95 70 L95 110 L50 110 L50 70 L35 65 Z" fill="#047857" />
+      <line x1="72" y1="35" x2="72" y2="110" stroke="#FFFFFF" stroke-width="1.5" />
+      
+      <text x="145" y="45" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Foto Berhasil Dipilih</text>
+      <text x="145" y="62" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">camera_capture_821.jpg</text>
+      
+      <rect x="145" y="78" width="120" height="28" rx="6" fill="#F1F5F9" />
+      <text x="205" y="96" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#047857" text-anchor="middle">Ambil Ulang Foto</text>
+    </g>
 
-  <!-- AI Suggestion Box (Google ML Kit) -->
-  <g id="AISuggestion" transform="translate(24, 275)">
-    <rect width="342" height="60" rx="10" fill="#ECFDF5" stroke="#10B981" stroke-width="1" />
-    <circle cx="25" cy="30" r="10" fill="#10B981" />
-    <path d="M22 30 L24 33 L29 27" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
-    <text x="45" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857">AI Labeling: Disarankan "Pakaian"</text>
-    <text x="45" y="42" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#065F46">Keyakinan 94% (ML Kit Image Labeling)</text>
-  </g>
+    <!-- Google ML Kit Image Labeling Banner (Core Feature) -->
+    <g id="MLKitBanner" transform="translate(0, 160)">
+      <rect width="342" height="64" rx="10" fill="#ECFDF5" stroke="#10B981" stroke-width="1.2" />
+      <circle cx="24" cy="32" r="12" fill="#10B981" />
+      <!-- Chip / Brain icon -->
+      <path d="M20 32 L23 35 L28 29" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+      
+      <text x="46" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="800" fill="#047857">Google ML Kit On-Device Labeling</text>
+      <text x="46" y="42" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#065F46">Terdeteksi: "Outerwear, Jacket" (Akurasi 94%)</text>
+      <text x="46" y="55" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" fill="#047857">Kategori otomatis disetel ke: [ Pakaian ]</text>
+    </g>
 
-  <!-- Input Fields -->
-  <g id="FormInputs" transform="translate(24, 350)">
-    <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Kategori Barang</text>
-    <rect x="0" y="8" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="14" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#0F172A">Pakaian</text>
+    <!-- Form Inputs -->
+    <g transform="translate(0, 238)">
+      <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Kategori Barang</text>
+      <rect x="0" y="8" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <text x="14" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">Pakaian (Saran AI - Dapat Diubah)</text>
 
-    <text x="0" y="70" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Judul Barang</text>
-    <rect x="0" y="78" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="14" y="104" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#0F172A">Jaket Musim Dingin Tebal (Size L)</text>
+      <text x="0" y="68" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Judul Barang</text>
+      <rect x="0" y="76" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <text x="14" y="102" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">Jaket Parka Outdoor Eiger (Size L)</text>
 
-    <text x="0" y="140" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Deskripsi</text>
-    <rect x="0" y="148" width="342" height="70" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="14" y="174" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Kondisi masih sangat bagus 90%, resleting lancar.</text>
+      <text x="0" y="136" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Deskripsi &amp; Kondisi Barang</text>
+      <rect x="0" y="144" width="342" height="60" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <text x="14" y="168" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#475569">Kondisi 90% layak pakai, resleting lancar,</text>
+      <text x="14" y="184" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#475569">bahan tebal anti angin. Cocok untuk cuaca dingin.</text>
 
-    <!-- Offline Sync Banner Indicator -->
-    <rect x="0" y="235" width="342" height="42" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" />
-    <circle cx="20" cy="256" r="6" fill="#F59E0B" />
-    <text x="35" y="260" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#92400E">Tersimpan di Hive. Auto-sync saat online aktif.</text>
+      <!-- Offline Sync Notification Banner -->
+      <g transform="translate(0, 218)">
+        <rect width="342" height="44" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" />
+        <circle cx="20" cy="22" r="6" fill="#F59E0B" />
+        <text x="36" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#92400E">Mode Offline (Hive Local Storage)</text>
+        <text x="36" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" fill="#B45309">Akan otomatis di-upload ke Supabase saat sinyal pulih.</text>
+      </g>
 
-    <!-- Action Buttons -->
-    <rect x="0" y="295" width="342" height="46" rx="10" fill="#047857" />
-    <text x="171" y="324" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Simpan &amp; Publikasikan</text>
+      <!-- Action Button -->
+      <rect x="0" y="275" width="342" height="48" rx="12" fill="#047857" />
+      <text x="171" y="304" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Terbitkan Donasi</text>
+    </g>
   </g>''';
 }
 
-String generateMyItemsScreen() {
+// ==========================================
+// SCREEN 6: BARANG SAYA
+// ==========================================
+String screenMyItems() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('Barang Saya')}
+  ${mobileAppBar('Barang Saya')}
 
-  <!-- Status Filter Pills -->
-  <g id="StatusFilter" transform="translate(24, 115)">
-    <rect x="0" y="0" width="75" height="32" rx="16" fill="#047857" />
-    <text x="37" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Semua (4)</text>
+  <!-- Status Filter Chips -->
+  <g id="StatusFilter" transform="translate(24, 105)">
+    <rect x="0" y="0" width="80" height="32" rx="16" fill="#047857" />
+    <text x="40" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Semua (4)</text>
 
-    <rect x="85" y="0" width="90" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="130" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Tersedia (2)</text>
+    <rect x="90" y="0" width="90" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="135" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Tersedia (2)</text>
 
-    <rect x="185" y="0" width="85" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="227" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Diproses (1)</text>
+    <rect x="190" y="0" width="85" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="232" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Diproses (1)</text>
 
-    <rect x="280" y="0" width="62" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="311" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Draft (1)</text>
+    <rect x="285" y="0" width="57" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="313" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Draft (1)</text>
   </g>
 
-  <!-- Item List -->
-  <g id="ItemList" transform="translate(24, 165)">
-    <!-- Item 1: Draft Offline -->
-    <rect width="342" height="90" rx="12" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.2" />
-    <rect x="10" y="10" width="70" height="70" rx="8" fill="#FEF3C7" />
-    <text x="45" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#B45309" text-anchor="middle">DRAFT</text>
-    <text x="92" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Sepatu Olahraga Sneaker</text>
-    <text x="92" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Pakaian • Ukuran 42</text>
-    
-    <rect x="92" y="58" width="125" height="20" rx="4" fill="#FFFBEB" />
-    <text x="154" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="600" fill="#B45309" text-anchor="middle">Menunggu Koneksi</text>
+  <!-- Items Feed List -->
+  <g id="ItemsFeed" transform="translate(24, 155)">
+    <!-- Item 1: Draft Offline Sync (Hive) -->
+    <g transform="translate(0, 0)">
+      <rect width="342" height="96" rx="14" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" />
+      <rect x="10" y="10" width="76" height="76" rx="10" fill="#FEF3C7" />
+      <text x="48" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#B45309" text-anchor="middle">OFFLINE</text>
+      
+      <text x="96" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Sepatu Ventela Sneaker</text>
+      <text x="96" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Pakaian • Ukuran 41</text>
+      
+      <rect x="96" y="60" width="140" height="22" rx="5" fill="#FFFBEB" />
+      <text x="166" y="75" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="700" fill="#B45309" text-anchor="middle">⚡ Menunggu Koneksi Pulih</text>
+      
+      <!-- Sync Retry Icon -->
+      <circle cx="316" cy="48" r="14" fill="#FEF3C7" />
+      <path d="M312 45 L316 42 L320 45" fill="none" stroke="#B45309" stroke-width="1.8" />
+    </g>
 
     <!-- Item 2: Tersedia Online -->
-    <g transform="translate(0, 105)">
-      <rect width="342" height="90" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <rect x="10" y="10" width="70" height="70" rx="8" fill="#ECFDF5" />
-      <text x="45" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">ONLINE</text>
-      <text x="92" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Buku Ensiklopedia Sains</text>
-      <text x="92" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Buku • 5 Jilid Lengkap</text>
+    <g transform="translate(0, 110)">
+      <rect width="342" height="96" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <rect x="10" y="10" width="76" height="76" rx="10" fill="#ECFDF5" />
+      <text x="48" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#047857" text-anchor="middle">ONLINE</text>
       
-      <rect x="92" y="58" width="75" height="20" rx="4" fill="#ECFDF5" />
-      <text x="129" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="600" fill="#047857" text-anchor="middle">Tersedia</text>
+      <text x="96" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Buku Paket Tematik SD (1-6)</text>
+      <text x="96" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Buku • 6 Jilid Lengkap</text>
+      
+      <rect x="96" y="60" width="80" height="22" rx="5" fill="#ECFDF5" />
+      <text x="136" y="75" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="700" fill="#047857" text-anchor="middle">Tersedia</text>
     </g>
 
-    <!-- Item 3: Sedang Diproses -->
-    <g transform="translate(0, 210)">
-      <rect width="342" height="90" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <rect x="10" y="10" width="70" height="70" rx="8" fill="#EFF6FF" />
-      <text x="45" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#2563EB" text-anchor="middle">PROSES</text>
-      <text x="92" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Tas Ransel Sekolah</text>
-      <text x="92" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Alat Sekolah • Biru Navy</text>
+    <!-- Item 3: Sedang Diproses (In-Process) -->
+    <g transform="translate(0, 220)">
+      <rect width="342" height="96" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <rect x="10" y="10" width="76" height="76" rx="10" fill="#EFF6FF" />
+      <text x="48" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#2563EB" text-anchor="middle">PROSES</text>
       
-      <rect x="92" y="58" width="105" height="20" rx="4" fill="#EFF6FF" />
-      <text x="144" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="600" fill="#1D4ED8" text-anchor="middle">Sedang Diproses</text>
+      <text x="96" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Tas Ransel Laptop Eiger</text>
+      <text x="96" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Alat Sekolah • Biru Navy</text>
+      
+      <rect x="96" y="60" width="130" height="22" rx="5" fill="#EFF6FF" />
+      <text x="161" y="75" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="700" fill="#2563EB" text-anchor="middle">Sedang Diproses (Kurir)</text>
     </g>
   </g>
+
   ${bottomNav(activeIndex: 2)}''';
 }
 
-String generatePublicCatalogScreen() {
+// ==========================================
+// SCREEN 7: KATALOG PUBLIK
+// ==========================================
+String screenPublicCatalog() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('Katalog Donasi', showBack: false)}
+  ${mobileAppBar('Katalog Kebaikan', showBack: false)}
 
-  <!-- Search Bar -->
-  <g id="SearchBar" transform="translate(24, 110)">
-    <rect width="342" height="44" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
-    <circle cx="26" cy="22" r="6" fill="none" stroke="#64748B" stroke-width="1.5" />
-    <line x1="31" y1="27" x2="36" y2="32" stroke="#64748B" stroke-width="1.5" stroke-linecap="round" />
-    <text x="46" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#94A3B8">Cari baju, buku, alat sekolah...</text>
+  <!-- Search Input Bar -->
+  <g id="SearchBar" transform="translate(24, 105)">
+    <rect width="342" height="46" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+    <circle cx="26" cy="23" r="6" fill="none" stroke="#64748B" stroke-width="1.8" />
+    <line x1="31" y1="28" x2="36" y2="33" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" />
+    <text x="48" y="28" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#94A3B8">Cari buku, pakaian, perlengkapan...</text>
   </g>
 
-  <!-- Category Filter Chips -->
-  <g id="CategoryChips" transform="translate(24, 165)">
-    <rect x="0" y="0" width="70" height="30" rx="15" fill="#047857" />
-    <text x="35" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Semua</text>
+  <!-- Category Pills Horizontal Scroll -->
+  <g id="CategoryPills" transform="translate(24, 163)">
+    <rect x="0" y="0" width="68" height="30" rx="15" fill="#047857" />
+    <text x="34" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Semua</text>
 
-    <rect x="78" y="0" width="75" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="115" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Pakaian</text>
+    <rect x="76" y="0" width="76" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="114" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Pakaian</text>
 
-    <rect x="161" y="0" width="65" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="193" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Buku</text>
+    <rect x="160" y="0" width="64" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="192" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Buku</text>
 
-    <rect x="234" y="0" width="90" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="279" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Elektronik</text>
+    <rect x="232" y="0" width="86" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="275" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Elektronik</text>
   </g>
 
-  <!-- 2-Column Responsive Grid -->
-  <g id="CatalogGrid" transform="translate(24, 210)">
+  <!-- 2-Column Responsive Card Grid -->
+  <g id="CatalogCards" transform="translate(24, 208)">
     <!-- Card 1 -->
-    <rect x="0" y="0" width="164" height="240" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <rect x="0" y="0" width="164" height="125" rx="12" fill="#E2E8F0" />
-    <text x="82" y="70" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#64748B" text-anchor="middle">Foto Barang</text>
-    <rect x="8" y="8" width="60" height="20" rx="4" fill="#047857" />
-    <text x="38" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">Pakaian</text>
-    
-    <text x="12" y="148" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Kemeja Flanel Kotak</text>
-    <text x="12" y="166" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Donatur: Ahmad D.</text>
-    <text x="12" y="184" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#047857" font-weight="600">Bandung • Tersedia</text>
-
-    <rect x="12" y="200" width="140" height="28" rx="6" fill="#ECFDF5" />
-    <text x="82" y="218" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#047857" text-anchor="middle">Lihat Detail</text>
+    <g transform="translate(0, 0)">
+      <rect width="164" height="248" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <rect width="164" height="120" rx="14" fill="#ECFDF5" />
+      <rect x="10" y="10" width="55" height="20" rx="5" fill="#047857" />
+      <text x="37" y="24" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="800" fill="#FFFFFF" text-anchor="middle">PAKAIAN</text>
+      
+      <text x="12" y="146" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#0F172A">Jaket Parka Eiger</text>
+      <text x="12" y="164" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Donatur: Reivan R.</text>
+      <text x="12" y="180" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#047857">Bandung • Siap Kirim</text>
+      
+      <rect x="12" y="200" width="140" height="34" rx="8" fill="#ECFDF5" />
+      <text x="82" y="222" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">Lihat Detail</text>
+    </g>
 
     <!-- Card 2 -->
     <g transform="translate(178, 0)">
-      <rect x="0" y="0" width="164" height="240" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <rect x="0" y="0" width="164" height="125" rx="12" fill="#E2E8F0" />
-      <text x="82" y="70" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#64748B" text-anchor="middle">Foto Barang</text>
-      <rect x="8" y="8" width="50" height="20" rx="4" fill="#047857" />
-      <text x="33" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">Buku</text>
+      <rect width="164" height="248" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <rect width="164" height="120" rx="14" fill="#EFF6FF" />
+      <rect x="10" y="10" width="46" height="20" rx="5" fill="#2563EB" />
+      <text x="33" y="24" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="800" fill="#FFFFFF" text-anchor="middle">BUKU</text>
       
-      <text x="12" y="148" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Buku Cerita Edukasi</text>
-      <text x="12" y="166" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Donatur: Siti Sarah</text>
-      <text x="12" y="184" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#047857" font-weight="600">Jakarta • Tersedia</text>
-
-      <rect x="12" y="200" width="140" height="28" rx="6" fill="#ECFDF5" />
-      <text x="82" y="218" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#047857" text-anchor="middle">Lihat Detail</text>
+      <text x="12" y="146" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#0F172A">Ensiklopedia Sains</text>
+      <text x="12" y="164" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Donatur: Siti Rahma</text>
+      <text x="12" y="180" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#047857">Jakarta • Siap Kirim</text>
+      
+      <rect x="12" y="200" width="140" height="34" rx="8" fill="#ECFDF5" />
+      <text x="82" y="222" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">Lihat Detail</text>
     </g>
   </g>
+
+  <!-- Hive Cache Indicator -->
+  <g transform="translate(24, 475)">
+    <rect width="342" height="38" rx="8" fill="#F1F5F9" />
+    <circle cx="20" cy="19" r="5" fill="#10B981" />
+    <text x="32" y="23" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">Tersinkronisasi dengan Hive Box lokal (Bisa dibuka offline)</text>
+  </g>
+
   ${bottomNav(activeIndex: 1)}''';
 }
 
-String generateItemDetailScreen() {
+// ==========================================
+// SCREEN 8: DETAIL BARANG & MODAL PERMINTAAN
+// ==========================================
+String screenItemDetail() {
   return '''
   <rect width="390" height="844" fill="#FFFFFF" />
   ${statusBar()}
-  
-  <!-- Image Banner -->
-  <g id="DetailImage">
-    <rect width="390" height="320" fill="#E2E8F0" />
-    <text x="195" y="160" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="600" fill="#64748B" text-anchor="middle">Foto Resolusi Tinggi Barang</text>
+
+  <!-- Hero Image Banner -->
+  <g id="HeroImage">
+    <rect width="390" height="300" fill="#ECFDF5" />
+    <!-- Stylized Item Graphic -->
+    <path d="M140 100 L195 85 L250 100 L265 140 L240 150 L240 220 L150 220 L150 150 L125 140 Z" fill="#047857" />
     
-    <!-- Floating Back & Share -->
+    <!-- Floating Back & Action -->
     <circle cx="40" cy="55" r="18" fill="rgba(255,255,255,0.9)" />
-    <path d="M44 49 L36 55 L44 61" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M43 49 L36 55 L43 61" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/>
 
     <circle cx="350" cy="55" r="18" fill="rgba(255,255,255,0.9)" />
-    <circle cx="346" cy="55" r="3" fill="#0F172A" />
-    <circle cx="354" cy="50" r="3" fill="#0F172A" />
-    <circle cx="354" cy="60" r="3" fill="#0F172A" />
-    <line x1="347" y1="54" x2="353" y2="51" stroke="#0F172A" stroke-width="1.5" />
-    <line x1="347" y1="56" x2="353" y2="59" stroke="#0F172A" stroke-width="1.5" />
+    <circle cx="347" cy="55" r="2" fill="#0F172A" />
+    <circle cx="353" cy="55" r="2" fill="#0F172A" />
   </g>
 
-  <!-- Content Sheet -->
-  <g id="DetailContent" transform="translate(24, 340)">
-    <rect x="0" y="0" width="70" height="22" rx="4" fill="#ECFDF5" />
-    <text x="35" y="15" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#047857" text-anchor="middle">PAKAIAN</text>
+  <!-- Item Details Section -->
+  <g id="DetailContent" transform="translate(24, 320)">
+    <rect width="65" height="22" rx="5" fill="#ECFDF5" />
+    <text x="32" y="15" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="800" fill="#047857" text-anchor="middle">PAKAIAN</text>
 
-    <text x="0" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="20" font-weight="700" fill="#0F172A">Jaket Musim Dingin Tebal</text>
+    <text x="0" y="46" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="20" font-weight="800" fill="#0F172A">Jaket Parka Outdoor Eiger</text>
     
     <!-- Donor Profile Row -->
-    <circle cx="16" cy="80" r="16" fill="#ECFDF5" />
-    <text x="16" y="85" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#047857" text-anchor="middle">R</text>
-    <text x="40" y="77" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Reivan Rasyid (Donatur)</text>
-    <text x="40" y="92" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Diposting 2 jam yang lalu</text>
+    <g transform="translate(0, 60)">
+      <circle cx="18" cy="18" r="18" fill="#F1F5F9" />
+      <text x="18" y="23" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#047857" text-anchor="middle">R</text>
+      <text x="44" y="16" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#0F172A">Reivan Rasyid (Donatur)</text>
+      <text x="44" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">Coblong, Bandung • Aktif 10m lalu</text>
+    </g>
 
     <line x1="0" y1="110" x2="342" y2="110" stroke="#F1F5F9" stroke-width="1.5" />
 
-    <text x="0" y="135" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Deskripsi Barang</text>
-    <text x="0" y="158" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#475569">Jaket masih sangat hangat dan bersih. Cocok untuk pakaian musim dingin atau daerah dataran tinggi. Semua resleting berfungsi normal tanpa ada bagian robek.</text>
+    <text x="0" y="135" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Deskripsi Kondisi</text>
+    <text x="0" y="155" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" fill="#475569">Jaket masih sangat layak pakai 92%, resleting lancar, bahan</text>
+    <text x="0" y="172" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" fill="#475569">waterproof tebal. Sangat cocok untuk adik-adik di panti asuhan.</text>
   </g>
 
-  <!-- Bottom CTA Action Bar -->
-  <g id="BottomAction" transform="translate(0, 750)">
-    <rect width="390" height="94" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <rect x="24" y="16" width="342" height="48" rx="12" fill="#047857" />
-    <text x="195" y="46" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Ajukan Permintaan Donasi</text>
+  <!-- Bottom Sheet: Permintaan Donasi (Modal) -->
+  <g id="BottomSheetModal" transform="translate(0, 520)">
+    <rect width="390" height="324" rx="24" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
+    <line x1="175" y1="12" x2="215" y2="12" stroke="#CBD5E1" stroke-width="4" stroke-linecap="round" />
+
+    <text x="24" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="16" font-weight="800" fill="#0F172A">Ajukan Permintaan Donasi</text>
+    
+    <!-- Community Verified Badge -->
+    <rect x="24" y="56" width="220" height="24" rx="6" fill="#ECFDF5" />
+    <text x="34" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#047857">Yayasan Kasih Bangsa (Terverifikasi)</text>
+
+    <text x="24" y="105" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="700" fill="#0F172A">Tulis Alasan Kebutuhan Barang:</text>
+    <rect x="24" y="115" width="342" height="65" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" />
+    <text x="36" y="138" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#475569">Dibutuhkan untuk anak asuh kami yang sedang</text>
+    <text x="36" y="154" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#475569">mengikuti kegiatan sekolah alam di Lembang.</text>
+
+    <!-- Send Request Button -->
+    <rect x="24" y="195" width="342" height="48" rx="12" fill="#047857" />
+    <text x="195" y="225" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Kirim Permintaan ke Donatur</text>
   </g>''';
 }
 
-String generateDonorRequestsHandoverScreen() {
+// ==========================================
+// SCREEN 9: PERMINTAAN & SERAH TERIMA REALTIME
+// ==========================================
+String screenDonorRequestsHandover() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('Permintaan Masuk')}
+  ${mobileAppBar('Permintaan Masuk')}
 
-  <!-- Request Card -->
-  <g id="RequestCard" transform="translate(24, 115)">
-    <rect width="342" height="235" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+  <!-- Incoming Request Card -->
+  <g id="RequestCard" transform="translate(24, 105)">
+    <rect width="342" height="235" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
     
-    <!-- Item Info -->
-    <rect x="14" y="14" width="45" height="45" rx="8" fill="#F1F5F9" />
-    <!-- Box icon -->
-    <rect x="26" y="26" width="20" height="20" rx="3" fill="#047857" />
-    <text x="70" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Tas Sekolah Ransel</text>
-    <text x="70" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Alat Sekolah</text>
+    <!-- Item Mini Bar -->
+    <rect x="14" y="14" width="46" height="46" rx="8" fill="#ECFDF5" />
+    <rect x="24" y="24" width="26" height="26" rx="4" fill="#047857" />
+    <text x="70" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Jaket Parka Outdoor Eiger</text>
+    <text x="70" y="50" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Kategori: Pakaian</text>
 
-    <line x1="14" y1="70" x2="328" y2="70" stroke="#E2E8F0" stroke-width="1" />
+    <line x1="14" y1="72" x2="328" y2="72" stroke="#F1F5F9" stroke-width="1.5" />
 
-    <!-- Community Info -->
-    <rect x="14" y="80" width="314" height="45" rx="8" fill="#ECFDF5" />
-    <text x="26" y="100" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#047857">Yayasan Kasih Bangsa</text>
-    <rect x="230" y="88" width="85" height="18" rx="4" fill="#047857" />
-    <text x="272" y="101" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#FFFFFF" text-anchor="middle">TERVERIFIKASI</text>
-    <text x="26" y="116" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Panti Asuhan Anak Yatim &amp; Dhuafa</text>
+    <!-- Community Profile Info -->
+    <g transform="translate(14, 84)">
+      <rect width="314" height="46" rx="8" fill="#ECFDF5" />
+      <text x="14" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#047857">Yayasan Kasih Bangsa</text>
+      <rect x="220" y="10" width="84" height="18" rx="4" fill="#047857" />
+      <text x="262" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="8.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">VERIFIED ADMIN</text>
+      <text x="14" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B">Panti Asuhan Anak Yatim &amp; Dhuafa Bandung</text>
+    </g>
 
-    <!-- Reason -->
-    <text x="14" y="145" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#0F172A">Alasan Pengajuan:</text>
-    <text x="14" y="162" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Dibutuhkan untuk adik asuh yang baru masuk SD tahun ajaran baru ini.</text>
+    <!-- Reason Text -->
+    <text x="14" y="150" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#0F172A">Alasan Pengajuan:</text>
+    <text x="14" y="166" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">Dibutuhkan untuk anak asuh kegiatan sekolah alam Lembang.</text>
 
-    <!-- Actions -->
-    <rect x="14" y="185" width="100" height="36" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.5" />
-    <text x="64" y="208" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#EF4444" text-anchor="middle">Tolak</text>
+    <!-- Quick Actions -->
+    <rect x="14" y="185" width="95" height="36" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.2" />
+    <text x="61" y="208" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="700" fill="#EF4444" text-anchor="middle">Tolak</text>
 
-    <rect x="124" y="185" width="204" height="36" rx="8" fill="#047857" />
-    <text x="226" y="208" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Setujui Permintaan</text>
+    <rect x="118" y="185" width="210" height="36" rx="8" fill="#047857" />
+    <text x="223" y="208" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Setujui Permintaan</text>
   </g>
 
-  <!-- Handover Modal Bottom Sheet Preview -->
-  <g id="HandoverModal" transform="translate(0, 390)">
-    <rect width="390" height="454" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+  <!-- Handover Modal (Bottom Agreement Sheet) -->
+  <g id="HandoverModal" transform="translate(0, 360)">
+    <rect width="390" height="484" rx="24" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
     <line x1="175" y1="12" x2="215" y2="12" stroke="#CBD5E1" stroke-width="4" stroke-linecap="round" />
 
-    <text x="24" y="45" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="17" font-weight="700" fill="#0F172A">Pilih Metode Serah Terima</text>
-    <text x="24" y="65" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B">Kesepakatan pengantaran barang dengan penerima</text>
+    <text x="24" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="16.5" font-weight="800" fill="#0F172A">Metode Serah Terima Barang</text>
+    <text x="24" y="64" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" fill="#64748B">Status barang akan otomatis berubah jadi "Sedang Diproses"</text>
 
-    <!-- Option 1: Kurir -->
-    <g transform="translate(24, 85)">
-      <rect width="342" height="60" rx="10" fill="#ECFDF5" stroke="#047857" stroke-width="1.5" />
-      <circle cx="28" cy="30" r="16" fill="#047857" />
-      <circle cx="28" cy="30" r="6" fill="#FFFFFF" />
-      <text x="56" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Kirim via Kurir / Ekspedisi</text>
-      <text x="56" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#047857">Input nomor resi pengiriman</text>
+    <!-- Option 1: Kurir (Selected) -->
+    <g transform="translate(24, 82)">
+      <rect width="342" height="64" rx="12" fill="#ECFDF5" stroke="#047857" stroke-width="1.5" />
+      <circle cx="28" cy="32" r="14" fill="#047857" />
+      <circle cx="28" cy="32" r="5" fill="#FFFFFF" />
+      <text x="54" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="800" fill="#0F172A">Kirim via Kurir Ekspedisi</text>
+      <text x="54" y="45" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="600" fill="#047857">Resi: JNE JP9821448102ID</text>
     </g>
 
     <!-- Option 2: Antar Langsung -->
-    <g transform="translate(24, 155)">
-      <rect width="342" height="60" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <circle cx="28" cy="30" r="16" fill="#F1F5F9" />
-      <text x="56" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Antar Langsung ke Lokasi</text>
-      <text x="56" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Donatur mengantar langsung ke alamat yayasan</text>
+    <g transform="translate(24, 154)">
+      <rect width="342" height="60" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <circle cx="28" cy="30" r="14" fill="#F1F5F9" />
+      <text x="54" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#0F172A">Antar Langsung ke Yayasan</text>
+      <text x="54" y="43" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">Donatur menyerahkan ke alamat sekretariat</text>
     </g>
 
     <!-- Option 3: Dijemput Komunitas -->
-    <g transform="translate(24, 225)">
-      <rect width="342" height="60" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <circle cx="28" cy="30" r="16" fill="#F1F5F9" />
-      <text x="56" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Dijemput Komunitas</text>
-      <text x="56" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Pihak yayasan mengambil ke alamat donatur</text>
+    <g transform="translate(24, 222)">
+      <rect width="342" height="60" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <circle cx="28" cy="30" r="14" fill="#F1F5F9" />
+      <text x="54" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#0F172A">Dijemput oleh Yayasan</text>
+      <text x="54" y="43" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">Relawan mengambil ke alamat donatur</text>
     </g>
 
     <!-- Confirm Button -->
-    <rect x="24" y="315" width="342" height="48" rx="10" fill="#047857" />
-    <text x="195" y="345" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Konfirmasi Metode Pengiriman</text>
+    <rect x="24" y="305" width="342" height="48" rx="12" fill="#047857" />
+    <text x="195" y="335" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Konfirmasi Serah Terima</text>
   </g>''';
 }
 
-String generateAdminVerificationScreen() {
+// ==========================================
+// SCREEN 10: ADMIN PANEL VERIFIKASI
+// ==========================================
+String screenAdminVerification() {
   return '''
   <rect width="390" height="844" fill="#F8FAFC" />
   ${statusBar()}
-  ${appBar('Panel Admin Verifikasi', showBack: false)}
+  ${mobileAppBar('Panel Verifikasi Admin', showBack: false)}
 
-  <!-- Status Tabs -->
-  <g id="Tabs" transform="translate(24, 110)">
-    <rect x="0" y="0" width="85" height="30" rx="15" fill="#047857" />
-    <text x="42" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Menunggu</text>
+  <!-- Filter Status Tabs -->
+  <g id="AdminTabs" transform="translate(24, 105)">
+    <rect x="0" y="0" width="90" height="30" rx="15" fill="#047857" />
+    <text x="45" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Menunggu (2)</text>
 
-    <rect x="95" y="0" width="95" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="142" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Terverifikasi</text>
+    <rect x="98" y="0" width="100" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="148" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Terverifikasi (8)</text>
 
-    <rect x="200" y="0" width="70" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="235" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Ditolak</text>
+    <rect x="206" y="0" width="75" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="243" y="19" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Ditolak (1)</text>
   </g>
 
-  <!-- Admin Queue Card -->
-  <g id="QueueCard" transform="translate(24, 160)">
-    <rect width="342" height="190" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+  <!-- Verification Card 1 -->
+  <g id="VerifyCard" transform="translate(24, 155)">
+    <rect width="342" height="215" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
     
-    <text x="16" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#0F172A">Komunitas Peduli Sesama</text>
-    <rect x="235" y="18" width="90" height="20" rx="4" fill="#FFFBEB" />
-    <text x="280" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">Menunggu</text>
+    <text x="16" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#0F172A">Yayasan Kasih Bangsa</text>
+    <rect x="235" y="16" width="90" height="20" rx="4" fill="#FFFBEB" />
+    <text x="280" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#B45309" text-anchor="middle">PENDING REVIEW</text>
 
-    <text x="16" y="55" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Organisasi sosial penyalur bantuan anak jalanan.</text>
+    <text x="16" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Izin: AHU-0019284.AH.01.04 • Bandung</text>
 
-    <!-- Doc Link Button -->
-    <rect x="16" y="75" width="180" height="32" rx="6" fill="#FFFFFF" stroke="#047857" stroke-width="1" />
-    <text x="106" y="96" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#047857" text-anchor="middle">Buka Akta Notaris (PDF)</text>
+    <!-- Document Preview Link -->
+    <g transform="translate(16, 68)">
+      <rect width="310" height="38" rx="8" fill="#F0FDF4" stroke="#047857" stroke-width="1" />
+      <rect x="10" y="8" width="22" height="22" rx="4" fill="#047857" />
+      <text x="21" y="23" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="800" fill="#FFFFFF" text-anchor="middle">PDF</text>
+      <text x="40" y="23" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857">Buka Akta Notaris Yayasan.pdf</text>
+      <text x="290" y="23" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#047857" text-anchor="end">Lihat ↗</text>
+    </g>
 
-    <line x1="16" y1="125" x2="326" y2="125" stroke="#E2E8F0" stroke-width="1" />
+    <!-- Checklist Audit -->
+    <g transform="translate(16, 120)">
+      <circle cx="8" cy="8" r="7" fill="#ECFDF5" />
+      <path d="M5 8 L7 10 L11 6" fill="none" stroke="#047857" stroke-width="1.5" />
+      <text x="22" y="11" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#475569">Nomor legalitas Kemenkumham terdata</text>
+    </g>
+
+    <line x1="16" y1="145" x2="326" y2="145" stroke="#F1F5F9" stroke-width="1.5" />
 
     <!-- Actions -->
-    <rect x="16" y="140" width="90" height="34" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="1" />
-    <text x="61" y="162" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#EF4444" text-anchor="middle">Tolak</text>
+    <rect x="16" y="160" width="90" height="38" rx="8" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.2" />
+    <text x="61" y="184" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#EF4444" text-anchor="middle">Tolak</text>
 
-    <rect x="116" y="140" width="210" height="34" rx="8" fill="#047857" />
-    <text x="221" y="162" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Setujui Komunitas</text>
+    <rect x="116" y="160" width="210" height="38" rx="8" fill="#047857" />
+    <text x="221" y="184" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Setujui Komunitas</text>
   </g>''';
 }
 
-String generateMasterCanvas(Map<String, String> screens) {
-  final keys = screens.keys.toList();
-  final titles = [
-    '1. Splash Screen',
-    '2. Login Screen',
-    '3. Register Screen',
-    '4. Beranda Donatur',
-    '5. Upload Donasi AI ML Kit',
-    '6. Barang Saya',
-    '7. Katalog Publik',
-    '8. Detail Barang',
-    '9. Permintaan Masuk Serah Terima',
-    '10. Panel Admin Verifikasi',
-  ];
-
+// ==========================================
+// MASTER CANVAS GENERATOR
+// ==========================================
+String generateMasterBoard(Map<String, String> screens) {
   final buffer = StringBuffer();
   buffer.writeln('<?xml version="1.0" encoding="UTF-8"?>');
-  buffer.writeln('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2300 1950" width="2300" height="1950">');
+  buffer.writeln('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2800 3600" width="2800" height="3600">');
   buffer.writeln('  <defs>');
-  buffer.writeln('    <filter id="frameCardShadow" x="-10%" y="-10%" width="120%" height="120%">');
-  buffer.writeln('      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.08"/>');
+  buffer.writeln('    <filter id="masterCardShadow" x="-10%" y="-10%" width="120%" height="120%">');
+  buffer.writeln('      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0F172A" flood-opacity="0.12"/>');
   buffer.writeln('    </filter>');
   buffer.writeln('  </defs>');
-  buffer.writeln('  <rect width="2300" height="1950" fill="#F1F5F9" />');
-  buffer.writeln('  <text x="40" y="50" font-family="\'Plus Jakarta Sans\', Inter, sans-serif" font-size="28" font-weight="800" fill="#0F172A">CareCycle UI/UX Mobile App - Master Canvas Figma</text>');
 
-  for (int i = 0; i < keys.length; i++) {
-    final row = i ~/ 5;
-    final col = i % 5;
-    final x = 40 + col * 440;
-    final y = 90 + row * 920;
-    final screenId = 'Screen_${i + 1}_${keys[i].replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_')}';
+  // Background
+  buffer.writeln('  <rect width="2800" height="3600" fill="#F1F5F9" />');
 
-    buffer.writeln('''
-  <g id="$screenId" transform="translate($x, $y)">
-    <text x="0" y="-14" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="16" font-weight="700" fill="#0F172A">${titles[i]}</text>
-    <rect width="390" height="844" rx="24" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" />
-    <g transform="translate(0, 0)">
-      ${screens[keys[i]]}
+  // ==========================================
+  // 1. PROJECT HEADER & PRESENTATION COVER (IT College Style)
+  // ==========================================
+  buffer.writeln('''
+  <!-- Project Cover Banner -->
+  <g id="ProjectCover" transform="translate(80, 60)">
+    <rect width="2640" height="280" rx="24" fill="#047857" />
+    <circle cx="2500" cy="140" r="160" fill="#065F46" opacity="0.6" />
+    
+    <!-- Badges -->
+    <rect x="48" y="40" width="220" height="30" rx="15" fill="#065F46" />
+    <text x="158" y="60" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="800" fill="#A7F3D0" text-anchor="middle">TUGAS BESAR PEMROGRAMAN MOBILE</text>
+
+    <text x="48" y="125" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="38" font-weight="800" fill="#FFFFFF">CareCycle — Mobile UI/UX Design System</text>
+    <text x="48" y="160" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="16" fill="#ECFDF5">Platform Donasi &amp; Redistribusi Barang Komunitas Berbasis On-Device AI (ML Kit) &amp; Offline-First Sync</text>
+
+    <!-- Student Metadata -->
+    <g transform="translate(48, 195)">
+      <rect width="180" height="50" rx="10" fill="#065F46" />
+      <text x="16" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#A7F3D0">NAMA PENGEMBANG</text>
+      <text x="16" y="40" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Reivan Rasyid Mulyadi</text>
+    </g>
+
+    <g transform="translate(245, 195)">
+      <rect width="170" height="50" rx="10" fill="#065F46" />
+      <text x="16" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#A7F3D0">PROGRAM STUDI</text>
+      <text x="16" y="40" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Teknik Informatika (S1)</text>
+    </g>
+
+    <g transform="translate(430, 195)">
+      <rect width="210" height="50" rx="10" fill="#065F46" />
+      <text x="16" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#A7F3D0">TECH STACK UTAMA</text>
+      <text x="16" y="40" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Flutter • Supabase • ML Kit</text>
+    </g>
+
+    <!-- Design Tokens Quick Palette -->
+    <g transform="translate(1980, 45)">
+      <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#A7F3D0">DESIGN TOKENS PALETTE</text>
+      
+      <g transform="translate(0, 15)">
+        <rect x="0" y="0" width="55" height="40" rx="8" fill="#047857" stroke="#FFFFFF" stroke-width="1.5" />
+        <rect x="65" y="0" width="55" height="40" rx="8" fill="#10B981" />
+        <rect x="130" y="0" width="55" height="40" rx="8" fill="#065F46" />
+        <rect x="195" y="0" width="55" height="40" rx="8" fill="#F59E0B" />
+        <rect x="260" y="0" width="55" height="40" rx="8" fill="#EF4444" />
+        <rect x="325" y="0" width="55" height="40" rx="8" fill="#F8FAFC" />
+        <rect x="390" y="0" width="55" height="40" rx="8" fill="#0F172A" />
+      </g>
+      <text x="0" y="80" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#ECFDF5">Emerald 700 (#047857) • Secondary (#10B981) • Amber Pending • Red Reject • Slate Dark</text>
     </g>
   </g>''');
+
+  // ==========================================
+  // SECTION 1: AUTH & COMMUNITY LEGALITY FLOW
+  // ==========================================
+  buffer.writeln('''
+  <!-- Section 1 Header -->
+  <g transform="translate(80, 390)">
+    <rect width="2640" height="48" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <circle cx="24" cy="24" r="10" fill="#047857" />
+    <text x="24" y="28" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text>
+    <text x="46" y="29" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="800" fill="#0F172A">USER FLOW 1: ONBOARDING, MULTI-ROLE AUTH &amp; VERIFIKASI DOKUMEN KOMUNITAS</text>
+    <text x="2620" y="29" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B" text-anchor="end">Supabase Auth • PDF Storage • Status Guard</text>
+  </g>''');
+
+  final row1 = [
+    {'key': '01_splash_screen.svg', 'title': '1. Splash Screen', 'desc': 'Logo &amp; Indikator Bootstrap', 'tag': 'BOOTSTRAP'},
+    {'key': '02_login_screen.svg', 'title': '2. Login Screen', 'desc': 'Role Switcher: Donatur/Komunitas/Admin', 'tag': 'AUTH'},
+    {'key': '03_register_screen.svg', 'title': '3. Register Komunitas', 'desc': 'Upload Akta Notaris (PDF/Foto)', 'tag': 'LEGALITAS'},
+    {'key': '10_admin_verification.svg', 'title': '4. Panel Admin Verifikasi', 'desc': 'Review Berkas Legalitas &amp; Approval', 'tag': 'ADMIN PANEL'},
+  ];
+
+  for (int i = 0; i < row1.length; i++) {
+    final item = row1[i];
+    final x = 80 + i * 680;
+    final y = 460;
+    final svgContent = screens[item['key']!]!;
+
+    buffer.writeln('''
+    <g id="Frame_Flow1_$i" transform="translate($x, $y)">
+      <!-- Artboard Label Card -->
+      <rect width="390" height="50" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <text x="14" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">${item['title']}</text>
+      <text x="14" y="38" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">${item['desc']}</text>
+      <rect x="290" y="12" width="85" height="22" rx="4" fill="#ECFDF5" />
+      <text x="332" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#047857" text-anchor="middle">${item['tag']}</text>
+
+      <!-- Smartphone Device Mockup -->
+      <g transform="translate(0, 65)">
+        ${phoneShellContent(svgContent)}
+      </g>
+    </g>''');
   }
+
+  // ==========================================
+  // SECTION 2: DONATUR AI & OFFLINE-FIRST FLOW
+  // ==========================================
+  buffer.writeln('''
+  <!-- Section 2 Header -->
+  <g transform="translate(80, 1440)">
+    <rect width="2640" height="48" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <circle cx="24" cy="24" r="10" fill="#047857" />
+    <text x="24" y="28" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text>
+    <text x="46" y="29" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="800" fill="#0F172A">USER FLOW 2: DONATUR — ON-DEVICE AI IMAGE LABELING &amp; OFFLINE-FIRST SYNC</text>
+    <text x="2620" y="29" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B" text-anchor="end">Google ML Kit • Hive Storage • Connectivity Plus</text>
+  </g>''');
+
+  final row2 = [
+    {'key': '04_home_donatur.svg', 'title': '5. Beranda Donatur', 'desc': 'Dashboard CarePoints, Impact &amp; Notifikasi', 'tag': 'DASHBOARD'},
+    {'key': '05_item_upload_ai.svg', 'title': '6. Unggah Donasi + ML Kit', 'desc': 'Labeling AI Otomatis &amp; Draft Simpan Offline', 'tag': 'ON-DEVICE ML'},
+    {'key': '06_my_items.svg', 'title': '7. Kelola "Barang Saya"', 'desc': 'Tab Draft Menunggu Koneksi &amp; Auto Sync', 'tag': 'HIVE SYNC'},
+  ];
+
+  for (int i = 0; i < row2.length; i++) {
+    final item = row2[i];
+    final x = 80 + i * 680;
+    final y = 1510;
+    final svgContent = screens[item['key']!]!;
+
+    buffer.writeln('''
+    <g id="Frame_Flow2_$i" transform="translate($x, $y)">
+      <rect width="390" height="50" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <text x="14" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">${item['title']}</text>
+      <text x="14" y="38" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">${item['desc']}</text>
+      <rect x="290" y="12" width="85" height="22" rx="4" fill="#ECFDF5" />
+      <text x="332" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#047857" text-anchor="middle">${item['tag']}</text>
+
+      <g transform="translate(0, 65)">
+        ${phoneShellContent(svgContent)}
+      </g>
+    </g>''');
+  }
+
+  // Feature Explanation Card on Row 2
+  buffer.writeln('''
+  <g transform="translate(2120, 1510)">
+    <rect width="600" height="910" rx="20" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" />
+    
+    <rect x="30" y="30" width="160" height="28" rx="14" fill="#ECFDF5" />
+    <text x="110" y="49" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#047857" text-anchor="middle">ARSITEKTUR FITUR IT</text>
+    
+    <text x="30" y="95" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="22" font-weight="800" fill="#0F172A">Fitur Unggulan Praktikum</text>
+    
+    <!-- ML Kit Explanation -->
+    <g transform="translate(30, 125)">
+      <rect width="540" height="150" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <circle cx="28" cy="28" r="14" fill="#ECFDF5" />
+      <text x="28" y="33" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#047857" text-anchor="middle">AI</text>
+      <text x="54" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#0F172A">Google ML Kit Image Labeling (On-Device)</text>
+      <text x="54" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B">Model machine learning berjalan 100% lokal di smartphone tanpa latency cloud. Otomatis mengenali label pakaian, buku, elektronik, dan memetakan ke kategori sistem.</text>
+    </g>
+
+    <!-- Offline Sync Explanation -->
+    <g transform="translate(30, 295)">
+      <rect width="540" height="150" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <circle cx="28" cy="28" r="14" fill="#FFFBEB" />
+      <text x="28" y="33" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#B45309" text-anchor="middle">⚡</text>
+      <text x="54" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#0F172A">Offline-First dengan Hive NoSQL Box</text>
+      <text x="54" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B">Saat internet terputus, form donasi tetap dapat diisi dan disimpan sebagai draft lokal di Hive. ConnectivityPlus memonitor sinyal untuk auto-upload otomatis saat online.</text>
+    </g>
+
+    <!-- Realtime Real-Life Flow -->
+    <g transform="translate(30, 465)">
+      <rect width="540" height="150" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+      <circle cx="28" cy="28" r="14" fill="#EFF6FF" />
+      <text x="28" y="33" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="800" fill="#2563EB" text-anchor="middle">🔄</text>
+      <text x="54" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#0F172A">Supabase Realtime WebSockets</text>
+      <text x="54" y="44" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B">Ketika komunitas mengajukan permintaan, donatur menerima notifikasi in-app realtime secara instan tanpa perlu merefresh halaman aplikasi.</text>
+    </g>
+  </g>''');
+
+  // ==========================================
+  // SECTION 3: PUBLIC CATALOG & REALTIME HANDOVER FLOW
+  // ==========================================
+  buffer.writeln('''
+  <!-- Section 3 Header -->
+  <g transform="translate(80, 2490)">
+    <rect width="2640" height="48" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <circle cx="24" cy="24" r="10" fill="#047857" />
+    <text x="24" y="28" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#FFFFFF" text-anchor="middle">3</text>
+    <text x="46" y="29" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="15" font-weight="800" fill="#0F172A">USER FLOW 3: KOMUNITAS — KATALOG PUBLIK &amp; SIKLUS SERAH TERIMA REALTIME</text>
+    <text x="2620" y="29" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#64748B" text-anchor="end">Filter Chips • Modal Ajukan Permintaan • Handover Method</text>
+  </g>''');
+
+  final row3 = [
+    {'key': '07_public_catalog.svg', 'title': '8. Katalog Donasi Publik', 'desc': 'Pencarian, Filter Kategori &amp; Grid Offline', 'tag': 'PUBLIC GRID'},
+    {'key': '08_item_detail.svg', 'title': '9. Detail &amp; Modal Permintaan', 'desc': 'Kirim Alasan Donasi Komunitas Verified', 'tag': 'REQUEST MODAL'},
+    {'key': '09_donor_requests_handover.svg', 'title': '10. Review &amp; Serah Terima', 'desc': 'Setujui &amp; Pilih Metode (Kurir/Antar/Jemput)', 'tag': 'HANDOVER FLOW'},
+  ];
+
+  for (int i = 0; i < row3.length; i++) {
+    final item = row3[i];
+    final x = 80 + i * 680;
+    final y = 2560;
+    final svgContent = screens[item['key']!]!;
+
+    buffer.writeln('''
+    <g id="Frame_Flow3_$i" transform="translate($x, $y)">
+      <rect width="390" height="50" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+      <text x="14" y="22" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">${item['title']}</text>
+      <text x="14" y="38" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">${item['desc']}</text>
+      <rect x="290" y="12" width="85" height="22" rx="4" fill="#ECFDF5" />
+      <text x="332" y="27" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9" font-weight="700" fill="#047857" text-anchor="middle">${item['tag']}</text>
+
+      <g transform="translate(0, 65)">
+        ${phoneShellContent(svgContent)}
+      </g>
+    </g>''');
+  }
+
+  // Summary Note on bottom right
+  buffer.writeln('''
+  <g transform="translate(2120, 2560)">
+    <rect width="600" height="910" rx="20" fill="#047857" />
+    <circle cx="2600" cy="3000" r="180" fill="#065F46" opacity="0.5" />
+    
+    <g transform="translate(40, 50)">
+      <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="24" font-weight="800" fill="#FFFFFF">CareCycle Delivery Agreement</text>
+      <text x="0" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" fill="#ECFDF5">Tiga Metode Serah Terima yang Didukung Sistem:</text>
+
+      <!-- Courier -->
+      <g transform="translate(0, 60)">
+        <rect width="520" height="90" rx="12" fill="#065F46" />
+        <text x="20" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">1. Kurir Ekspedisi (JNE, J&amp;T, SiCepat)</text>
+        <text x="20" y="55" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#A7F3D0">Donatur mengirim via kurir dan menginput nomor resi pelacakan ke dalam aplikasi agar dapat dipantau bersama.</text>
+      </g>
+
+      <!-- Self Deliver -->
+      <g transform="translate(0, 170)">
+        <rect width="520" height="90" rx="12" fill="#065F46" />
+        <text x="20" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">2. Antar Langsung (Self Deliver)</text>
+        <text x="20" y="55" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#A7F3D0">Donatur mengantar langsung ke alamat yayasan/komunitas penerima yang telah terverifikasi keabsahannya oleh admin.</text>
+      </g>
+
+      <!-- Pickup -->
+      <g transform="translate(0, 280)">
+        <rect width="520" height="90" rx="12" fill="#065F46" />
+        <text x="20" y="32" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">3. Dijemput Komunitas (Pickup)</text>
+        <text x="20" y="55" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#A7F3D0">Relawan yayasan mendatangi titik penjemputan donatur sesuai perjanjian waktu yang disepakati.</text>
+      </g>
+    </g>
+  </g>''');
 
   buffer.writeln('</svg>');
   return buffer.toString();

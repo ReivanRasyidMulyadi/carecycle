@@ -1,74 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 880" width="420" height="880">
   <defs>
-    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.06"/>
-    </filter>
-    <filter id="bottomNavShadow" x="-10%" y="-20%" width="120%" height="140%">
-      <feDropShadow dx="0" dy="-4" stdDeviation="8" flood-color="#000000" flood-opacity="0.05"/>
+    <filter id="phoneShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0F172A" flood-opacity="0.12"/>
     </filter>
   </defs>
-  <rect width="390" height="844" fill="#F8FAFC" />
-    <!-- Status Bar -->
-  <g id="StatusBar">
-    <text x="32" y="32" font-family="'Plus Jakarta Sans', Inter, Roboto, sans-serif" font-size="14" font-weight="600" fill="#0F172A">09:41</text>
-    <circle cx="340" cy="28" r="3.5" fill="#0F172A" />
-    <circle cx="350" cy="28" r="3.5" fill="#0F172A" />
-    <rect x="360" y="24" width="18" height="9" rx="3" fill="none" stroke="#0F172A" stroke-width="1.5" />
-    <rect x="362" y="26" width="12" height="5" rx="1.5" fill="#0F172A" />
+  <!-- Background Artboard Canvas -->
+  <rect width="420" height="880" fill="#F8FAFC" />
+  
+  <!-- Realistic Smartphone Outer Shell -->
+  <g transform="translate(15, 18)" filter="url(#phoneShadow)">
+    <!-- Outer Bezel -->
+    <rect width="390" height="844" rx="44" fill="#0F172A" stroke="#334155" stroke-width="3" />
+    <!-- Screen Viewport with Clip -->
+    <rect x="0" y="0" width="390" height="844" rx="42" fill="#FFFFFF" />
+    <g>
+        <rect width="390" height="844" fill="#F8FAFC" />
+    <!-- iOS Status Bar -->
+  <g id="StatusBar" transform="translate(0, 0)">
+    <text x="36" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">09:41</text>
+    <!-- Signal, Wifi, Battery -->
+    <circle cx="330" cy="25" r="3" fill="#0F172A" />
+    <circle cx="340" cy="25" r="3" fill="#0F172A" />
+    <!-- Battery -->
+    <rect x="350" y="20" width="20" height="10" rx="3" fill="none" stroke="#0F172A" stroke-width="1.5" />
+    <rect x="352" y="22" width="13" height="6" rx="1.5" fill="#0F172A" />
   </g>
-    <!-- AppBar -->
-  <g id="AppBar">
-        <g id="BackButton">
-      <circle cx="36" cy="74" r="18" fill="#F1F5F9" />
-      <path d="M40 68 L32 74 L40 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- Mobile App Bar -->
+  <g id="AppBar" transform="translate(0, 48)">
+        <g id="BtnBack">
+      <circle cx="38" cy="24" r="18" fill="#F1F5F9" />
+      <path d="M41 18 L34 24 L41 30" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </g>
-    <text x="70" y="80" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="20" font-weight="700" fill="#0F172A">Donasikan Barang</text>
+    <text x="70" y="31" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="19" font-weight="800" fill="#0F172A">Donasikan Barang</text>
     
   </g>
 
-  <!-- Image Selector Frame -->
-  <g id="ImagePicker" transform="translate(24, 110)">
-    <rect width="342" height="150" rx="12" fill="#FFFFFF" stroke="#047857" stroke-width="1.5" stroke-dasharray="6 4" />
-    <circle cx="171" cy="60" r="24" fill="#ECFDF5" />
-    <!-- Camera vector -->
-    <rect x="161" y="53" width="20" height="14" rx="2" fill="#047857" />
-    <circle cx="171" cy="60" r="4" fill="#FFFFFF" />
-    <polygon points="166,51 170,48 172,48 176,51" fill="#047857" />
-    <text x="171" y="105" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="600" fill="#047857" text-anchor="middle">Ambil Foto / Pilih Gambar</text>
-    <text x="171" y="122" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#64748B" text-anchor="middle">Didukung deteksi otomatis AI on-device</text>
+  <g id="UploadForm" transform="translate(24, 105)">
+    <!-- Photo Picker & Visual Illustration -->
+    <g id="PhotoPicker">
+      <rect width="342" height="145" rx="14" fill="#FFFFFF" stroke="#047857" stroke-width="1.5" stroke-dasharray="6 4" />
+      
+      <!-- Uploaded Picture Preview Frame -->
+      <rect x="15" y="15" width="115" height="115" rx="10" fill="#E2E8F0" />
+      <!-- Stylized Jacket Drawing -->
+      <path d="M45 40 L72 35 L100 40 L110 65 L95 70 L95 110 L50 110 L50 70 L35 65 Z" fill="#047857" />
+      <line x1="72" y1="35" x2="72" y2="110" stroke="#FFFFFF" stroke-width="1.5" />
+      
+      <text x="145" y="45" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Foto Berhasil Dipilih</text>
+      <text x="145" y="62" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#64748B">camera_capture_821.jpg</text>
+      
+      <rect x="145" y="78" width="120" height="28" rx="6" fill="#F1F5F9" />
+      <text x="205" y="96" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#047857" text-anchor="middle">Ambil Ulang Foto</text>
+    </g>
+
+    <!-- Google ML Kit Image Labeling Banner (Core Feature) -->
+    <g id="MLKitBanner" transform="translate(0, 160)">
+      <rect width="342" height="64" rx="10" fill="#ECFDF5" stroke="#10B981" stroke-width="1.2" />
+      <circle cx="24" cy="32" r="12" fill="#10B981" />
+      <!-- Chip / Brain icon -->
+      <path d="M20 32 L23 35 L28 29" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+      
+      <text x="46" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11.5" font-weight="800" fill="#047857">Google ML Kit On-Device Labeling</text>
+      <text x="46" y="42" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" fill="#065F46">Terdeteksi: "Outerwear, Jacket" (Akurasi 94%)</text>
+      <text x="46" y="55" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" fill="#047857">Kategori otomatis disetel ke: [ Pakaian ]</text>
+    </g>
+
+    <!-- Form Inputs -->
+    <g transform="translate(0, 238)">
+      <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Kategori Barang</text>
+      <rect x="0" y="8" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <text x="14" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">Pakaian (Saran AI - Dapat Diubah)</text>
+
+      <text x="0" y="68" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Judul Barang</text>
+      <rect x="0" y="76" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <text x="14" y="102" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12.5" fill="#0F172A">Jaket Parka Outdoor Eiger (Size L)</text>
+
+      <text x="0" y="136" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Deskripsi &amp; Kondisi Barang</text>
+      <rect x="0" y="144" width="342" height="60" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
+      <text x="14" y="168" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#475569">Kondisi 90% layak pakai, resleting lancar,</text>
+      <text x="14" y="184" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#475569">bahan tebal anti angin. Cocok untuk cuaca dingin.</text>
+
+      <!-- Offline Sync Notification Banner -->
+      <g transform="translate(0, 218)">
+        <rect width="342" height="44" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" />
+        <circle cx="20" cy="22" r="6" fill="#F59E0B" />
+        <text x="36" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#92400E">Mode Offline (Hive Local Storage)</text>
+        <text x="36" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" fill="#B45309">Akan otomatis di-upload ke Supabase saat sinyal pulih.</text>
+      </g>
+
+      <!-- Action Button -->
+      <rect x="0" y="275" width="342" height="48" rx="12" fill="#047857" />
+      <text x="171" y="304" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Terbitkan Donasi</text>
+    </g>
   </g>
-
-  <!-- AI Suggestion Box (Google ML Kit) -->
-  <g id="AISuggestion" transform="translate(24, 275)">
-    <rect width="342" height="60" rx="10" fill="#ECFDF5" stroke="#10B981" stroke-width="1" />
-    <circle cx="25" cy="30" r="10" fill="#10B981" />
-    <path d="M22 30 L24 33 L29 27" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
-    <text x="45" y="26" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857">AI Labeling: Disarankan "Pakaian"</text>
-    <text x="45" y="42" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" fill="#065F46">Keyakinan 94% (ML Kit Image Labeling)</text>
-  </g>
-
-  <!-- Input Fields -->
-  <g id="FormInputs" transform="translate(24, 350)">
-    <text x="0" y="0" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Kategori Barang</text>
-    <rect x="0" y="8" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="14" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#0F172A">Pakaian</text>
-
-    <text x="0" y="70" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Judul Barang</text>
-    <rect x="0" y="78" width="342" height="42" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="14" y="104" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" fill="#0F172A">Jaket Musim Dingin Tebal (Size L)</text>
-
-    <text x="0" y="140" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="12" font-weight="600" fill="#0F172A">Deskripsi</text>
-    <rect x="0" y="148" width="342" height="70" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="14" y="174" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Kondisi masih sangat bagus 90%, resleting lancar.</text>
-
-    <!-- Offline Sync Banner Indicator -->
-    <rect x="0" y="235" width="342" height="42" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" />
-    <circle cx="20" cy="256" r="6" fill="#F59E0B" />
-    <text x="35" y="260" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#92400E">Tersimpan di Hive. Auto-sync saat online aktif.</text>
-
-    <!-- Action Buttons -->
-    <rect x="0" y="295" width="342" height="46" rx="10" fill="#047857" />
-    <text x="171" y="324" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Simpan &amp; Publikasikan</text>
+    </g>
+    <!-- Screen Glass Rim Border -->
+    <rect x="0" y="0" width="390" height="844" rx="42" fill="none" stroke="#0F172A" stroke-width="4" />
+    <!-- iPhone-style Dynamic Island / Notch -->
+    <rect x="140" y="11" width="110" height="26" rx="13" fill="#000000" />
+    <circle cx="230" cy="24" r="5" fill="#1E293B" />
+    <circle cx="160" cy="24" r="3.5" fill="#0F172A" />
+    <!-- Bottom Home Indicator Bar -->
+    <rect x="125" y="830" width="140" height="4.5" rx="2.5" fill="#0F172A" opacity="0.6" />
   </g>
 </svg>

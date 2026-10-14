@@ -1,108 +1,144 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 880" width="420" height="880">
   <defs>
-    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.06"/>
-    </filter>
-    <filter id="bottomNavShadow" x="-10%" y="-20%" width="120%" height="140%">
-      <feDropShadow dx="0" dy="-4" stdDeviation="8" flood-color="#000000" flood-opacity="0.05"/>
+    <filter id="phoneShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0F172A" flood-opacity="0.12"/>
     </filter>
   </defs>
-  <rect width="390" height="844" fill="#F8FAFC" />
-    <!-- Status Bar -->
-  <g id="StatusBar">
-    <text x="32" y="32" font-family="'Plus Jakarta Sans', Inter, Roboto, sans-serif" font-size="14" font-weight="600" fill="#0F172A">09:41</text>
-    <circle cx="340" cy="28" r="3.5" fill="#0F172A" />
-    <circle cx="350" cy="28" r="3.5" fill="#0F172A" />
-    <rect x="360" y="24" width="18" height="9" rx="3" fill="none" stroke="#0F172A" stroke-width="1.5" />
-    <rect x="362" y="26" width="12" height="5" rx="1.5" fill="#0F172A" />
+  <!-- Background Artboard Canvas -->
+  <rect width="420" height="880" fill="#F8FAFC" />
+  
+  <!-- Realistic Smartphone Outer Shell -->
+  <g transform="translate(15, 18)" filter="url(#phoneShadow)">
+    <!-- Outer Bezel -->
+    <rect width="390" height="844" rx="44" fill="#0F172A" stroke="#334155" stroke-width="3" />
+    <!-- Screen Viewport with Clip -->
+    <rect x="0" y="0" width="390" height="844" rx="42" fill="#FFFFFF" />
+    <g>
+        <rect width="390" height="844" fill="#F8FAFC" />
+    <!-- iOS Status Bar -->
+  <g id="StatusBar" transform="translate(0, 0)">
+    <text x="36" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">09:41</text>
+    <!-- Signal, Wifi, Battery -->
+    <circle cx="330" cy="25" r="3" fill="#0F172A" />
+    <circle cx="340" cy="25" r="3" fill="#0F172A" />
+    <!-- Battery -->
+    <rect x="350" y="20" width="20" height="10" rx="3" fill="none" stroke="#0F172A" stroke-width="1.5" />
+    <rect x="352" y="22" width="13" height="6" rx="1.5" fill="#0F172A" />
   </g>
-    <!-- AppBar -->
-  <g id="AppBar">
-        <g id="BackButton">
-      <circle cx="36" cy="74" r="18" fill="#F1F5F9" />
-      <path d="M40 68 L32 74 L40 80" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- Mobile App Bar -->
+  <g id="AppBar" transform="translate(0, 48)">
+        <g id="BtnBack">
+      <circle cx="38" cy="24" r="18" fill="#F1F5F9" />
+      <path d="M41 18 L34 24 L41 30" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </g>
-    <text x="70" y="80" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="20" font-weight="700" fill="#0F172A">Barang Saya</text>
+    <text x="70" y="31" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="19" font-weight="800" fill="#0F172A">Barang Saya</text>
     
   </g>
 
-  <!-- Status Filter Pills -->
-  <g id="StatusFilter" transform="translate(24, 115)">
-    <rect x="0" y="0" width="75" height="32" rx="16" fill="#047857" />
-    <text x="37" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Semua (4)</text>
+  <!-- Status Filter Chips -->
+  <g id="StatusFilter" transform="translate(24, 105)">
+    <rect x="0" y="0" width="80" height="32" rx="16" fill="#047857" />
+    <text x="40" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Semua (4)</text>
 
-    <rect x="85" y="0" width="90" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="130" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Tersedia (2)</text>
+    <rect x="90" y="0" width="90" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="135" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Tersedia (2)</text>
 
-    <rect x="185" y="0" width="85" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="227" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Diproses (1)</text>
+    <rect x="190" y="0" width="85" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="232" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Diproses (1)</text>
 
-    <rect x="280" y="0" width="62" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <text x="311" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B" text-anchor="middle">Draft (1)</text>
+    <rect x="285" y="0" width="57" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    <text x="313" y="20" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="600" fill="#64748B" text-anchor="middle">Draft (1)</text>
   </g>
 
-  <!-- Item List -->
-  <g id="ItemList" transform="translate(24, 165)">
-    <!-- Item 1: Draft Offline -->
-    <rect width="342" height="90" rx="12" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.2" />
-    <rect x="10" y="10" width="70" height="70" rx="8" fill="#FEF3C7" />
-    <text x="45" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#B45309" text-anchor="middle">DRAFT</text>
-    <text x="92" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Sepatu Olahraga Sneaker</text>
-    <text x="92" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Pakaian • Ukuran 42</text>
-    
-    <rect x="92" y="58" width="125" height="20" rx="4" fill="#FFFBEB" />
-    <text x="154" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="600" fill="#B45309" text-anchor="middle">Menunggu Koneksi</text>
+  <!-- Items Feed List -->
+  <g id="ItemsFeed" transform="translate(24, 155)">
+    <!-- Item 1: Draft Offline Sync (Hive) -->
+    <g transform="translate(0, 0)">
+      <rect width="342" height="96" rx="14" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" />
+      <rect x="10" y="10" width="76" height="76" rx="10" fill="#FEF3C7" />
+      <text x="48" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#B45309" text-anchor="middle">OFFLINE</text>
+      
+      <text x="96" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Sepatu Ventela Sneaker</text>
+      <text x="96" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Pakaian • Ukuran 41</text>
+      
+      <rect x="96" y="60" width="140" height="22" rx="5" fill="#FFFBEB" />
+      <text x="166" y="75" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="700" fill="#B45309" text-anchor="middle">⚡ Menunggu Koneksi Pulih</text>
+      
+      <!-- Sync Retry Icon -->
+      <circle cx="316" cy="48" r="14" fill="#FEF3C7" />
+      <path d="M312 45 L316 42 L320 45" fill="none" stroke="#B45309" stroke-width="1.8" />
+    </g>
 
     <!-- Item 2: Tersedia Online -->
-    <g transform="translate(0, 105)">
-      <rect width="342" height="90" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <rect x="10" y="10" width="70" height="70" rx="8" fill="#ECFDF5" />
-      <text x="45" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#047857" text-anchor="middle">ONLINE</text>
-      <text x="92" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Buku Ensiklopedia Sains</text>
-      <text x="92" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Buku • 5 Jilid Lengkap</text>
+    <g transform="translate(0, 110)">
+      <rect width="342" height="96" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <rect x="10" y="10" width="76" height="76" rx="10" fill="#ECFDF5" />
+      <text x="48" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#047857" text-anchor="middle">ONLINE</text>
       
-      <rect x="92" y="58" width="75" height="20" rx="4" fill="#ECFDF5" />
-      <text x="129" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="600" fill="#047857" text-anchor="middle">Tersedia</text>
+      <text x="96" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Buku Paket Tematik SD (1-6)</text>
+      <text x="96" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Buku • 6 Jilid Lengkap</text>
+      
+      <rect x="96" y="60" width="80" height="22" rx="5" fill="#ECFDF5" />
+      <text x="136" y="75" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="700" fill="#047857" text-anchor="middle">Tersedia</text>
     </g>
 
-    <!-- Item 3: Sedang Diproses -->
-    <g transform="translate(0, 210)">
-      <rect width="342" height="90" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-      <rect x="10" y="10" width="70" height="70" rx="8" fill="#EFF6FF" />
-      <text x="45" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="700" fill="#2563EB" text-anchor="middle">PROSES</text>
-      <text x="92" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="700" fill="#0F172A">Tas Ransel Sekolah</text>
-      <text x="92" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Alat Sekolah • Biru Navy</text>
+    <!-- Item 3: Sedang Diproses (In-Process) -->
+    <g transform="translate(0, 220)">
+      <rect width="342" height="96" rx="14" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" />
+      <rect x="10" y="10" width="76" height="76" rx="10" fill="#EFF6FF" />
+      <text x="48" y="52" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" font-weight="800" fill="#2563EB" text-anchor="middle">PROSES</text>
       
-      <rect x="92" y="58" width="105" height="20" rx="4" fill="#EFF6FF" />
-      <text x="144" y="72" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="600" fill="#1D4ED8" text-anchor="middle">Sedang Diproses</text>
+      <text x="96" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="13" font-weight="800" fill="#0F172A">Tas Ransel Laptop Eiger</text>
+      <text x="96" y="48" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="11" fill="#64748B">Alat Sekolah • Biru Navy</text>
+      
+      <rect x="96" y="60" width="130" height="22" rx="5" fill="#EFF6FF" />
+      <text x="161" y="75" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="9.5" font-weight="700" fill="#2563EB" text-anchor="middle">Sedang Diproses (Kurir)</text>
     </g>
   </g>
+
     <!-- Bottom Navigation Bar -->
-  <g id="BottomNavBar" transform="translate(0, 764)">
-    <rect width="390" height="80" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
-    <!-- Nav Items -->
-    <g transform="translate(48, 20)">
-      <circle cx="0" cy="10" r="16" fill="none" />
-      <path d="M-8 12 L0 5 L8 12 L8 22 L3 22 L3 15 L-3 15 L-3 22 L-8 22 Z" fill="#94A3B8" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="500" fill="#94A3B8" text-anchor="middle">Beranda</text>
+  <g id="BottomNavBar" transform="translate(0, 755)">
+    <rect width="390" height="89" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" />
+    
+    <!-- Tab 1: Beranda -->
+    <g transform="translate(48, 14)">
+      <circle cx="0" cy="12" r="16" fill="none" />
+      <path d="M-8 14 L0 7 L8 14 L8 24 L3 24 L3 17 L-3 17 L-3 24 L-8 24 Z" fill="#94A3B8" />
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Beranda</text>
     </g>
-    <g transform="translate(148, 20)">
-      <circle cx="0" cy="10" r="16" fill="none" />
-      <rect x="-8" y="4" width="16" height="16" rx="3" fill="none" stroke="#94A3B8" stroke-width="2" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="500" fill="#94A3B8" text-anchor="middle">Katalog</text>
+
+    <!-- Tab 2: Katalog -->
+    <g transform="translate(148, 14)">
+      <circle cx="0" cy="12" r="16" fill="none" />
+      <rect x="-8" y="6" width="16" height="16" rx="3" fill="none" stroke="#94A3B8" stroke-width="2" />
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Katalog</text>
     </g>
-    <g transform="translate(248, 20)">
-      <circle cx="0" cy="10" r="16" fill="#ECFDF5" />
-      <path d="M-7 6 L7 6 L7 20 L-7 20 Z" fill="none" stroke="#047857" stroke-width="2" />
-      <path d="M-4 6 L-4 3 C-4 1.5 -2.5 0 0 0 C2.5 0 4 1.5 4 3 L4 6" fill="none" stroke="#047857" stroke-width="2" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#047857" text-anchor="middle">Aktivitas</text>
+
+    <!-- Tab 3: Aktivitas -->
+    <g transform="translate(248, 14)">
+      <circle cx="0" cy="12" r="16" fill="#ECFDF5" />
+      <rect x="-7" y="7" width="14" height="14" rx="2" fill="none" stroke="#047857" stroke-width="2" />
+      <line x1="-3" y1="12" x2="3" y2="12" stroke="#047857" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="700" fill="#047857" text-anchor="middle">Aktivitas</text>
     </g>
-    <g transform="translate(342, 20)">
-      <circle cx="0" cy="10" r="16" fill="none" />
-      <circle cx="0" cy="7" r="5" fill="none" stroke="#94A3B8" stroke-width="2" />
-      <path d="M-8 22 C-8 17 -4 16 0 16 C4 16 8 17 8 22" fill="none" stroke="#94A3B8" stroke-width="2" />
-      <text x="0" y="34" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="500" fill="#94A3B8" text-anchor="middle">Profil</text>
+
+    <!-- Tab 4: Profil -->
+    <g transform="translate(342, 14)">
+      <circle cx="0" cy="12" r="16" fill="none" />
+      <circle cx="0" cy="9" r="4.5" fill="none" stroke="#94A3B8" stroke-width="1.8" />
+      <path d="M-7 23 C-7 18.5 -3.5 17 0 17 C3.5 17 7 18.5 7 23" fill="none" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="0" y="36" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="10" font-weight="600" fill="#94A3B8" text-anchor="middle">Profil</text>
     </g>
+  </g>
+    </g>
+    <!-- Screen Glass Rim Border -->
+    <rect x="0" y="0" width="390" height="844" rx="42" fill="none" stroke="#0F172A" stroke-width="4" />
+    <!-- iPhone-style Dynamic Island / Notch -->
+    <rect x="140" y="11" width="110" height="26" rx="13" fill="#000000" />
+    <circle cx="230" cy="24" r="5" fill="#1E293B" />
+    <circle cx="160" cy="24" r="3.5" fill="#0F172A" />
+    <!-- Bottom Home Indicator Bar -->
+    <rect x="125" y="830" width="140" height="4.5" rx="2.5" fill="#0F172A" opacity="0.6" />
   </g>
 </svg>
