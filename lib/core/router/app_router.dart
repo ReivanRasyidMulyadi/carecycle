@@ -7,8 +7,11 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/profile_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/items/presentation/screens/catalog_screen.dart';
+import '../../features/items/presentation/screens/item_detail_screen.dart';
 import '../../features/items/presentation/screens/item_upload_screen.dart';
 import '../../features/items/presentation/screens/my_items_screen.dart';
+import '../../features/requests/presentation/screens/donor_requests_screen.dart';
 import '../services/hive_service.dart';
 
 /// Konfigurasi rute aplikasi CareCycle
@@ -21,9 +24,11 @@ class AppRouter {
   static const String register = 'register';
   static const String home = 'home';
   static const String catalog = 'catalog';
+  static const String itemDetail = 'itemDetail';
   static const String upload = 'upload';
   static const String myItems = 'myItems';
   static const String request = 'request';
+  static const String donorRequests = 'donorRequests';
   static const String campaign = 'campaign';
   static const String profile = 'profile';
   static const String settings = 'settings';
@@ -36,9 +41,11 @@ class AppRouter {
   static const String registerPath = '/register';
   static const String homePath = '/home';
   static const String catalogPath = '/catalog';
+  static const String itemDetailPath = '/items/:id';
   static const String uploadPath = '/upload';
   static const String myItemsPath = '/my-items';
   static const String requestPath = '/request';
+  static const String donorRequestsPath = '/requests/donor';
   static const String campaignPath = '/campaign';
   static const String profilePath = '/profile';
   static const String settingsPath = '/settings';
@@ -73,7 +80,14 @@ class AppRouter {
       GoRoute(
         path: catalogPath,
         name: catalog,
-        builder: (context, state) => const _PlaceholderScreen(title: 'Katalog Barang'),
+        builder: (context, state) => const CatalogScreen(),
+      ),
+      GoRoute(
+        path: itemDetailPath,
+        name: itemDetail,
+        builder: (context, state) => ItemDetailScreen(
+          itemId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: uploadPath,
@@ -88,7 +102,12 @@ class AppRouter {
       GoRoute(
         path: requestPath,
         name: request,
-        builder: (context, state) => const _PlaceholderScreen(title: 'Ajukan Permintaan Barang'),
+        builder: (context, state) => const CatalogScreen(),
+      ),
+      GoRoute(
+        path: donorRequestsPath,
+        name: donorRequests,
+        builder: (context, state) => const DonorRequestsScreen(),
       ),
       GoRoute(
         path: campaignPath,

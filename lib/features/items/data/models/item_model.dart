@@ -38,6 +38,9 @@ class ItemModel {
 
   bool get isPendingSync => isDraft || status == 'pending_sync';
   bool get isAvailable => status == 'available';
+  bool get isRequested => status == 'requested';
+  bool get isInProcess => status == 'processing' || status == 'in_process';
+  bool get isCompleted => status == 'completed';
 
   String get statusDisplay {
     if (isPendingSync) return 'Menunggu koneksi';
@@ -47,7 +50,8 @@ class ItemModel {
       case 'requested':
         return 'Diajukan';
       case 'processing':
-        return 'Diproses';
+      case 'in_process':
+        return 'Sedang Diproses';
       case 'completed':
         return 'Selesai';
       default:

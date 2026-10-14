@@ -453,3 +453,12 @@ CREATE POLICY "Komunitas dapat upload legal-docs miliknya"
         bucket_id = 'legal-docs'
         AND (storage.foldername(name))[1] = auth.uid()::text
     );
+
+-- ==============================================================================
+-- 7. SUPABASE REALTIME REPLICATION
+-- ==============================================================================
+
+-- Aktifkan Realtime Replication untuk tabel items dan requests
+ALTER PUBLICATION supabase_realtime ADD TABLE public.items;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.requests;
+

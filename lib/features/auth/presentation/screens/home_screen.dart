@@ -6,6 +6,7 @@ import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../requests/presentation/providers/request_provider.dart';
 import '../providers/auth_provider.dart';
 
 /// Halaman Beranda (Home) utama setelah pengguna berhasil login
@@ -18,9 +19,72 @@ class HomeScreen extends ConsumerWidget {
     final user = authState.user;
     final community = authState.community;
 
+    // Realtime notification snackbar untuk Donatur saat ada permohonan baru
+    ref.listen<DonorRequestsState>(donorRequestsNotifierProvider, (prev, next) {
+      if (next.newNotificationMessage != null &&
+          next.newNotificationMessage != prev?.newNotificationMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.notifications_active, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Expanded(child: Text(next.newNotificationMessage!)),
+              ],
+            ),
+            backgroundColor: AppColors.primaryDark,
+            action: SnackBarAction(
+              label: 'Lihat',
+              textColor: AppColors.primaryLight,
+              onPressed: () => context.pushNamed(AppRouter.donorRequests),
+            ),
+            duration: const Duration(seconds: 6),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    });
+
     return AppScaffold(
       title: AppStrings.appName,
       actions: [
+        if (user?.isDonatur == true)
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                tooltip: 'Permintaan Masuk',
+                onPressed: () {
+                  context.pushNamed(AppRouter.donorRequests);
+                },
+              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final reqState = ref.watch(donorRequestsNotifierProvider);
+                  if (reqState.pendingRequestsCount == 0) return const SizedBox.shrink();
+                  return Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.error,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${reqState.pendingRequestsCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         IconButton(
           icon: const Icon(Icons.person_outline),
           tooltip: 'Profil Saya',
@@ -591,11 +655,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.campaign_outlined,
-                title: 'Open Campaign',
-                subtitle: 'Dukung program donasi',
+                icon: Icons.inbox_outlined,
+                title: 'Permintaan Masuk',
+                subtitle: 'Tinjau permohonan donasi',
                 onTap: () {
-                  context.pushNamed(AppRouter.campaign);
+                  context.pushNamed(AppRouter.donorRequests);
                 },
               ),
             ),
@@ -604,6 +668,17 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: AppSizes.sm),
         Row(
           children: [
+            Expanded(
+              child: _ActivityCard(
+                icon: Icons.campaign_outlined,
+                title: 'Open Campaign',
+                subtitle: 'Dukung program donasi',
+                onTap: () {
+                  context.pushNamed(AppRouter.campaign);
+                },
+              ),
+            ),
+            const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
                 icon: Icons.workspace_premium_outlined,

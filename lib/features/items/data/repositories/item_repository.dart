@@ -203,4 +203,114 @@ class ItemRepository {
       await _client.from('items').delete().eq('id', itemId);
     }
   }
+
+  /// Ambil katalog barang publik dengan filter kategori dan pencarian,
+  /// didukung cache lokal Hive saat offline.
+  Future<List<ItemModel>> getPublicCatalog({
+    String? category,
+    String? searchQuery,
+  }) async {
+    final isOnline = await ConnectivityService.isConnected();
+
+    if (isOnline) {
+      try {
+        var query = _client
+            .from('items')
+            .select()
+            .inFilter('status', ['available', 'requested']);
+
+        if (category != null && category.isNotEmpty && category != 'Semua') {
+          query = query.eq('category', category);
+        }
+
+        if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+          final q = searchQuery.trim();
+          query = query.or('name.ilike.%$q%,location.ilike.%$q%,description.ilike.%$q%');
+        }
+
+        final data = await query.order('created_at', ascending: false);
+        final items = (data as List).map((e) => ItemModel.fromJson(e)).toList();
+
+        // Simpan cache ke Hive
+        await HiveService.setCache(
+          'cached_public_catalog',
+          items.map((e) => e.toJson()).toList(),
+        );
+
+        return items;
+      } catch (_) {
+        // Fallback ke cache lokal jika terjadi kegagalan jaringan
+        return _getCachedCatalog(category: category, searchQuery: searchQuery);
+      }
+    } else {
+      // Ambil langsung dari cache lokal saat offline
+      return _getCachedCatalog(category: category, searchQuery: searchQuery);
+    }
+  }
+
+  /// Membaca dan memfilter katalog dari cache Hive saat offline
+  List<ItemModel> _getCachedCatalog({
+    String? category,
+    String? searchQuery,
+  }) {
+    final cached = HiveService.getCache('cached_public_catalog');
+    if (cached is! List) return [];
+
+    var list = cached
+        .map((e) => ItemModel.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
+
+    if (category != null && category.isNotEmpty && category != 'Semua') {
+      list = list.where((item) => item.category == category).toList();
+    }
+
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      final q = searchQuery.trim().toLowerCase();
+      list = list.where((item) {
+        return item.name.toLowerCase().contains(q) ||
+            item.location.toLowerCase().contains(q) ||
+            item.description.toLowerCase().contains(q);
+      }).toList();
+    }
+
+    return list;
+  }
+
+  /// Ambil detail barang berdasarkan ID
+  Future<ItemModel?> getItemById(String itemId) async {
+    final isOnline = await ConnectivityService.isConnected();
+    if (isOnline) {
+      try {
+        final data = await _client
+            .from('items')
+            .select()
+            .eq('id', itemId)
+            .maybeSingle();
+        if (data != null) return ItemModel.fromJson(data);
+      } catch (_) {}
+    }
+
+    // Coba cari di cache lokal
+    final cached = HiveService.getCache('cached_public_catalog');
+    if (cached is List) {
+      for (final e in cached) {
+        if (e['id'] == itemId) {
+          return ItemModel.fromJson(Map<String, dynamic>.from(e as Map));
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Stream perubahan status item secara realtime dari Supabase
+  Stream<ItemModel?> streamItem(String itemId) {
+    return _client
+        .from('items')
+        .stream(primaryKey: ['id'])
+        .eq('id', itemId)
+        .map((list) {
+          if (list.isEmpty) return null;
+          return ItemModel.fromJson(list.first);
+        });
+  }
 }
