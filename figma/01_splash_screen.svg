@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
+      
+      <rect width="390" height="844" fill="#047857" />
+      <g id="CenterContent" transform="translate(0, 300)">
+        <circle cx="195" cy="50" r="50" fill="#065F46" />
+        <path d="M180 50 C180 38 190 30 202 34 L196 40 C190 38 186 42 186 50 C186 58 194 62 200 58 L206 64 C196 70 180 66 180 50 Z" fill="#FFFFFF" />
+        <path d="M205 38 L212 36 L210 44 Z" fill="#10B981" />
+        <text x="195" y="140" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="32" font-weight="800" fill="#FFFFFF" text-anchor="middle">CareCycle</text>
+        <text x="195" y="170" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" fill="#A7F3D0" text-anchor="middle">Platform Berbagi &amp; Donasi Komunitas</text>
+        
+        <circle cx="195" cy="240" r="12" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="25 10" />
+      </g>
+    
+    </svg>
