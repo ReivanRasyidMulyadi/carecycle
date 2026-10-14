@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 // Dart script to generate 100% standard, clean, Figma-compliant SVGs
 import 'dart:io';
 
