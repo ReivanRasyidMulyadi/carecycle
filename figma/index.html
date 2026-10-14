@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareCycle - UI/UX Design System & Figma Canvas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-light: #ECFDF5;
+      --secondary: #10B981;
+      --dark: #065F46;
+      --bg: #F8FAFC;
+      --text: #0F172A;
+      --muted: #64748B;
+      --card-border: #E2E8F0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 32px 24px;
+      line-height: 1.5;
+    }
+    .header {
+      max-width: 1400px;
+      margin: 0 auto 32px auto;
+      background: white;
+      padding: 28px 32px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--dark);
+    }
+    .btn-outline {
+      background: white;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+    .btn-outline:hover {
+      background: var(--primary-light);
+    }
+    .grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 28px;
+    }
+    .screen-card {
+      background: white;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+    }
+    .screen-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .screen-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .screen-preview {
+      padding: 20px;
+      background: #F1F5F9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+    }
+    .screen-preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 1px solid #E2E8F0;
+    }
+    .screen-actions {
+      padding: 14px 20px;
+      background: white;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      gap: 10px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0F172A;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">✨ Figma Ready • 100% Vector Tested</div>
+    <h1>CareCycle UI/UX Mobile Screens</h1>
+    <p class="subtitle">Semua layar sudah divalidasi dan siap di-import atau langsung di-paste ke Figma (Ctrl + V).</p>
+    <div class="action-row">
+      <a href="carecycle_all_screens_figma_canvas.svg" download class="btn btn-primary">
+        📥 Unduh Master Canvas (10 Layar)
+      </a>
+      <button class="btn btn-outline" onclick="copyFileToClipboard('carecycle_all_screens_figma_canvas.svg', 'Master Canvas (10 Layar)')">
+        📋 Salin Master Canvas ke Clipboard (Tinggal Ctrl+V di Figma)
+      </button>
+    </div>
+  </div>
+
+  <div class="grid" id="screensGrid"></div>
+
+  <div class="toast" id="toast">Berhasil disalin ke clipboard! Tinggal tekan Ctrl+V di Figma.</div>
+
+  <script>
+    const screens = [
+      { id: '01_splash_screen.svg', title: '1. Splash Screen', desc: 'Identitas logo, tagline, & loading state' },
+      { id: '02_login_screen.svg', title: '2. Login Screen', desc: 'Login multi-role (Donatur, Komunitas, Admin)' },
+      { id: '03_register_screen.svg', title: '3. Register Screen', desc: 'Form registrasi & upload dokumen legalitas' },
+      { id: '04_home_donatur.svg', title: '4. Beranda Donatur', desc: 'Statistik CarePoints, menu donasi, lonceng notifikasi' },
+      { id: '05_item_upload_ai.svg', title: '5. Upload Donasi AI ML Kit', desc: 'Foto barang, deteksi kategori ML Kit, offline auto-sync' },
+      { id: '06_my_items.svg', title: '6. Barang Saya', desc: 'Tab status (Draft offline, Tersedia, Diproses)' },
+      { id: '07_public_catalog.svg', title: '7. Katalog Publik', desc: 'Pencarian, filter chip kategori, grid donasi publik' },
+      { id: '08_item_detail.svg', title: '8. Detail Barang', desc: 'Galeri foto, profil donatur, ajukan permohonan' },
+      { id: '09_donor_requests_handover.svg', title: '9. Permintaan & Serah Terima', desc: 'Review legalitas pemohon & modal metode serah terima' },
+      { id: '10_admin_verification.svg', title: '10. Panel Admin Verifikasi', desc: 'Review dokumen komunitas & aksi setujui/tolak' },
+    ];
+
+    const container = document.getElementById('screensGrid');
+    screens.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'screen-card';
+      card.innerHTML = `
+        <div class="screen-header">
+          <div>
+            <div class="screen-title">\${s.title}</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">\${s.desc}</div>
+          </div>
+        </div>
+        <div class="screen-preview">
+          <img src="\${s.id}" alt="\${s.title}" style="max-height: 480px;">
+        </div>
+        <div class="screen-actions">
+          <button class="btn btn-primary" style="flex: 1;" onclick="copyFileToClipboard('\${s.id}', '\${s.title}')">
+            📋 Salin SVG (Ctrl+V)
+          </button>
+          <a href="\${s.id}" download class="btn btn-outline">
+            📥 Unduh
+          </a>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    async function copyFileToClipboard(file, name) {
+      try {
+        const res = await fetch(file);
+        const text = await res.text();
+        await navigator.clipboard.writeText(text);
+        showToast('✅ Berhasil menyalin ' + name + '! Buka Figma dan tekan Ctrl+V');
+      } catch (e) {
+        showToast('Gagal menyalin otomatis. Silakan unduh berkas SVG langsung.');
+      }
+    }
+  </script>
+</body>
+</html>

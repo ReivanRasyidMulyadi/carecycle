@@ -1,14 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" width="390" height="844">
-      
-      <rect width="390" height="844" fill="#047857" />
-      <g id="CenterContent" transform="translate(0, 300)">
-        <circle cx="195" cy="50" r="50" fill="#065F46" />
-        <path d="M180 50 C180 38 190 30 202 34 L196 40 C190 38 186 42 186 50 C186 58 194 62 200 58 L206 64 C196 70 180 66 180 50 Z" fill="#FFFFFF" />
-        <path d="M205 38 L212 36 L210 44 Z" fill="#10B981" />
-        <text x="195" y="140" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="32" font-weight="800" fill="#FFFFFF" text-anchor="middle">CareCycle</text>
-        <text x="195" y="170" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" fill="#A7F3D0" text-anchor="middle">Platform Berbagi &amp; Donasi Komunitas</text>
-        
-        <circle cx="195" cy="240" r="12" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="25 10" />
-      </g>
+  <defs>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.06"/>
+    </filter>
+    <filter id="bottomNavShadow" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="-4" stdDeviation="8" flood-color="#000000" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+  <rect width="390" height="844" fill="#047857" />
+  <g id="CenterContent" transform="translate(0, 300)">
+    <circle cx="195" cy="50" r="50" fill="#065F46" />
+    <!-- Leaf / Recycle icon -->
+    <path d="M175 52 C175 38 188 28 202 32 C210 35 215 45 212 55 C208 65 195 72 182 66 L175 72 L175 52 Z" fill="#FFFFFF" />
+    <path d="M192 46 C196 40 204 40 208 44 C210 48 208 54 204 56 C198 58 190 54 192 46 Z" fill="#10B981" />
+    <text x="195" y="140" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="32" font-weight="800" fill="#FFFFFF" text-anchor="middle">CareCycle</text>
+    <text x="195" y="170" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="14" fill="#A7F3D0" text-anchor="middle">Platform Berbagi &amp; Donasi Komunitas</text>
     
-    </svg>
+    <!-- Spinner indicator -->
+    <circle cx="195" cy="240" r="12" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="25 10" />
+  </g>
+</svg>
