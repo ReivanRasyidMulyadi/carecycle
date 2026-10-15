@@ -53,17 +53,26 @@ final donorRequestsNotifierProvider = StateNotifierProvider<
     DonorRequestsNotifier, DonorRequestsState>((ref) {
   final repository = ref.watch(requestRepositoryProvider);
   final user = ref.watch(authNotifierProvider).user;
-  return DonorRequestsNotifier(repository, user?.id);
+  return DonorRequestsNotifier(
+    repository,
+    user?.id,
+    isAdmin: user?.isAdmin ?? false,
+  );
 });
 
 class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
   final RequestRepository _repository;
   final String? _donorId;
+  final bool _isAdmin;
   StreamSubscription? _realtimeSubscription;
 
-  DonorRequestsNotifier(this._repository, this._donorId)
-      : super(const DonorRequestsState()) {
-    if (_donorId != null) {
+  DonorRequestsNotifier(
+    this._repository,
+    this._donorId, {
+    bool isAdmin = false,
+  })  : _isAdmin = isAdmin,
+        super(const DonorRequestsState()) {
+    if (_isAdmin || _donorId != null) {
       loadIncomingRequests();
       _initRealtimeStream();
     }
@@ -72,10 +81,31 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
   /// Langganan Supabase Realtime Stream untuk menerima notifikasi in-app instan
   void _initRealtimeStream() {
     _realtimeSubscription = _repository.streamRequestsTable().listen((data) async {
-      if (_donorId != null) {
+      if (_isAdmin) {
+        final previousCount = state.pendingRequestsCount;
+        final latest = await _repository.getAllIncomingRequests();
+        if (!mounted) return;
+
+        final newPendingCount = latest.where((r) => r.isSubmitted).length;
+
+        String? alertMsg;
+        if (newPendingCount > previousCount) {
+          final newest = latest.firstWhere((r) => r.isSubmitted);
+          alertMsg = '🔔 Permintaan donasi baru dari "${newest.communityName ?? "Komunitas"}" untuk "${newest.itemName ?? "barang"}"!';
+        }
+
+        state = state.copyWith(
+          requests: latest,
+          newNotificationMessage: alertMsg,
+        );
+      } else if (_donorId != null) {
         // Ambil data terbaru dan periksa apakah ada permintaan baru
         final previousCount = state.pendingRequestsCount;
         final latest = await _repository.getIncomingRequestsForDonor(_donorId);
+
+        // Notifier mungkin sudah di-dispose saat await selesai
+        if (!mounted) return;
+
         final newPendingCount = latest.where((r) => r.isSubmitted).length;
 
         String? alertMsg;
@@ -89,21 +119,31 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
           newNotificationMessage: alertMsg,
         );
       }
+    }, onError: (_) {
+      // Tangani jika realtime replication belum diaktifkan di Supabase untuk tabel requests
     });
   }
 
   /// Memuat daftar permintaan masuk dari komunitas
   Future<void> loadIncomingRequests() async {
-    if (_donorId == null) return;
+    if (!_isAdmin && _donorId == null) return;
+    if (!mounted) return;
     state = state.copyWith(isLoading: true, clearMessages: true);
 
     try {
-      final list = await _repository.getIncomingRequestsForDonor(_donorId);
+      final List<RequestModel> list;
+      if (_isAdmin) {
+        list = await _repository.getAllIncomingRequests();
+      } else {
+        list = await _repository.getIncomingRequestsForDonor(_donorId!);
+      }
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         requests: list,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Gagal memuat permintaan donasi: ${e.toString()}',
@@ -111,7 +151,7 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
     }
   }
 
-  /// Setujui permintaan donasi & tentukan metode serah terima
+  /// Setujui (Acc) permintaan donasi & tentukan metode serah terima (Khusus Admin)
   Future<bool> approveRequest({
     required String requestId,
     required String itemId,
@@ -119,6 +159,13 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
     String? trackingNumber,
     String? notes,
   }) async {
+    if (!_isAdmin) {
+      state = state.copyWith(
+        errorMessage: 'Akses ditolak: Hanya admin yang dapat menyetujui permintaan donasi.',
+      );
+      return false;
+    }
+
     state = state.copyWith(isLoading: true, clearMessages: true);
 
     try {
@@ -138,7 +185,7 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
         isLoading: false,
         requests: updatedList,
         successMessage:
-            'Permintaan disetujui! Status barang berubah menjadi Sedang Diproses (In-Process).',
+            'Permintaan berhasil di-acc! Status barang berubah menjadi Sedang Diproses (In-Process).',
       );
       return true;
     } catch (e) {
@@ -150,12 +197,19 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
     }
   }
 
-  /// Tolak permintaan donasi
+  /// Tolak permintaan donasi (Khusus Admin)
   Future<bool> rejectRequest({
     required String requestId,
     required String itemId,
     String? notes,
   }) async {
+    if (!_isAdmin) {
+      state = state.copyWith(
+        errorMessage: 'Akses ditolak: Hanya admin yang dapat menolak permintaan donasi.',
+      );
+      return false;
+    }
+
     state = state.copyWith(isLoading: true, clearMessages: true);
 
     try {

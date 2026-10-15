@@ -57,6 +57,18 @@ class RequestRepository {
     return (data as List).map((e) => RequestModel.fromJson(e)).toList();
   }
 
+  /// Ambil semua permintaan masuk untuk admin (seluruh platform)
+  Future<List<RequestModel>> getAllIncomingRequests() async {
+    final data = await _client
+        .from('requests')
+        .select(
+          '*, communities:community_id(community_name, verification_status, description), items:item_id(name, category, photo_urls, donor_id)',
+        )
+        .order('created_at', ascending: false);
+
+    return (data as List).map((e) => RequestModel.fromJson(e)).toList();
+  }
+
   /// Ambil daftar permintaan yang diajukan oleh komunitas tertentu
   Future<List<RequestModel>> getMyCommunityRequests(String communityId) async {
     final data = await _client

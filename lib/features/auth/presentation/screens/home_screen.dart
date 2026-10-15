@@ -714,11 +714,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.inventory_2_outlined,
-                title: 'Katalog Barang',
-                subtitle: 'Pantau barang donasi',
+                icon: Icons.fact_check_outlined,
+                title: 'Acc Permintaan',
+                subtitle: 'Persetujuan donasi',
                 onTap: () {
-                  context.pushNamed(AppRouter.catalog);
+                  context.pushNamed(AppRouter.donorRequests);
                 },
               ),
             ),
@@ -729,6 +729,17 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
+                icon: Icons.inventory_2_outlined,
+                title: 'Katalog Barang',
+                subtitle: 'Pantau barang donasi',
+                onTap: () {
+                  context.pushNamed(AppRouter.catalog);
+                },
+              ),
+            ),
+            const SizedBox(width: AppSizes.sm),
+            Expanded(
+              child: _ActivityCard(
                 icon: Icons.campaign_outlined,
                 title: 'Semua Kampanye',
                 subtitle: 'Kelola program komunitas',
@@ -737,7 +748,11 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
             ),
-            const SizedBox(width: AppSizes.sm),
+          ],
+        ),
+        const SizedBox(height: AppSizes.sm),
+        Row(
+          children: [
             Expanded(
               child: _ActivityCard(
                 icon: Icons.person_outline,

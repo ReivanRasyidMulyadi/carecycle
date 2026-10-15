@@ -28,6 +28,13 @@ class AuthRepository {
     required String role, // 'donatur' atau 'komunitas'
     String? communityName,
   }) async {
+    // Keamanan: admin tidak bisa dibuat melalui alur pendaftaran aplikasi
+    if (role == 'admin') {
+      throw const AuthException(
+        'Peran admin tidak dapat didaftarkan melalui aplikasi.',
+      );
+    }
+
     final response = await _client.auth.signUp(
       email: email.trim(),
       password: password,

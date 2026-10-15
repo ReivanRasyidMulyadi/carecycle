@@ -74,9 +74,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            user?.isKomunitas == true
-                                ? Icons.groups
-                                : Icons.volunteer_activism,
+                            user?.isAdmin == true
+                                ? Icons.admin_panel_settings
+                                : user?.isKomunitas == true
+                                    ? Icons.groups
+                                    : Icons.volunteer_activism,
                             color: Colors.white,
                             size: 16,
                           ),
@@ -106,9 +108,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         Chip(
                           avatar: Icon(
-                            user?.isKomunitas == true
-                                ? Icons.business
-                                : Icons.person,
+                            user?.isAdmin == true
+                                ? Icons.admin_panel_settings
+                                : user?.isKomunitas == true
+                                    ? Icons.business
+                                    : Icons.person,
                             size: 16,
                             color: Colors.white,
                           ),

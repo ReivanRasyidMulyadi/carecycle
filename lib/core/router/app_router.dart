@@ -132,7 +132,7 @@ class AppRouter {
     ],
   );
 
-  /// Auth guard - pengalihan otomatis berdasarkan status login
+  /// Auth guard - pengalihan otomatis berdasarkan status login dan peran
   static String? _guard(BuildContext context, GoRouterState state) {
     final isLoggedIn = HiveService.isLoggedIn();
     final isSplash = state.matchedLocation == splashPath;
@@ -147,6 +147,12 @@ class AppRouter {
 
     // Jika sudah login namun masih berada di halaman login/register
     if (isLoggedIn && isAuthRoute) return homePath;
+
+    // Guard khusus admin: hanya role 'admin' yang boleh akses halaman verifikasi admin
+    if (state.matchedLocation == adminVerificationPath) {
+      final userRole = HiveService.getUserRole();
+      if (userRole != 'admin') return homePath;
+    }
 
     return null;
   }

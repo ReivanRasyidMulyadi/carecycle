@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/request_model.dart';
 import '../providers/request_provider.dart';
 
@@ -15,6 +16,8 @@ class DonorRequestsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(donorRequestsNotifierProvider);
+    final user = ref.watch(authNotifierProvider).user;
+    final isAdmin = user?.isAdmin == true;
 
     // Notifikasi Realtime Banner / Snackbar saat ada permohonan baru
     ref.listen<DonorRequestsState>(donorRequestsNotifierProvider, (prev, next) {
@@ -48,7 +51,7 @@ class DonorRequestsScreen extends ConsumerWidget {
     });
 
     return AppScaffold(
-      title: 'Permintaan Donasi Masuk',
+      title: isAdmin ? 'Persetujuan Permintaan Donasi' : 'Permintaan Donasi Masuk',
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
@@ -64,7 +67,7 @@ class DonorRequestsScreen extends ConsumerWidget {
         child: state.isLoading
             ? const Center(child: CircularProgressIndicator())
             : state.requests.isEmpty
-                ? _buildEmptyState(context)
+                ? _buildEmptyState(context, isAdmin)
                 : ListView.separated(
                     padding: const EdgeInsets.all(AppSizes.md),
                     itemCount: state.requests.length,
@@ -72,7 +75,7 @@ class DonorRequestsScreen extends ConsumerWidget {
                         const SizedBox(height: AppSizes.md),
                     itemBuilder: (context, index) {
                       final req = state.requests[index];
-                      return _buildRequestCard(context, ref, req);
+                      return _buildRequestCard(context, ref, req, isAdmin);
                     },
                   ),
       ),
@@ -80,7 +83,7 @@ class DonorRequestsScreen extends ConsumerWidget {
   }
 
   /// Tampilan jika belum ada permohonan masuk
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, bool isAdmin) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.2),
@@ -90,17 +93,21 @@ class DonorRequestsScreen extends ConsumerWidget {
             children: [
               Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade400),
               const SizedBox(height: AppSizes.md),
-              const Text(
-                'Belum Ada Permintaan Masuk',
-                style: TextStyle(
+              Text(
+                isAdmin
+                    ? 'Belum Ada Permintaan Masuk'
+                    : 'Belum Ada Permintaan Masuk',
+                style: const TextStyle(
                   fontSize: AppSizes.fontLg,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Permintaan dari komunitas terverifikasi akan muncul di sini secara realtime.',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+              Text(
+                isAdmin
+                    ? 'Permintaan donasi dari komunitas yang memerlukan persetujuan admin akan muncul di sini.'
+                    : 'Permintaan dari komunitas terverifikasi akan muncul di sini secara realtime.',
+                style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -115,6 +122,7 @@ class DonorRequestsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     RequestModel req,
+    bool isAdmin,
   ) {
     Color statusColor;
     if (req.isApproved) {
@@ -322,34 +330,61 @@ class DonorRequestsScreen extends ConsumerWidget {
               const SizedBox(height: 8),
             ],
 
-            // Tombol Aksi Donatur (Setujui / Tolak)
+            // Tombol Aksi (Hanya Admin yang berwenang Meng-acc / Menolak)
             if (req.isSubmitted) ...[
               const Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.close, size: 16, color: AppColors.error),
-                    label: const Text('Tolak', style: TextStyle(color: AppColors.error, fontSize: 12)),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.error),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+              if (isAdmin) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.close, size: 16, color: AppColors.error),
+                      label: const Text('Tolak', style: TextStyle(color: AppColors.error, fontSize: 12)),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.error),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                      onPressed: () => _confirmReject(context, ref, req),
                     ),
-                    onPressed: () => _confirmReject(context, ref, req),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.check, size: 16),
-                    label: const Text('Setujui Permintaan', style: TextStyle(fontSize: 12)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.check, size: 16),
+                      label: const Text('Acc Permintaan', style: TextStyle(fontSize: 12)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                      ),
+                      onPressed: () => _showApprovalHandoverDialog(context, ref, req),
                     ),
-                    onPressed: () => _showApprovalHandoverDialog(context, ref, req),
+                  ],
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade50,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    border: Border.all(color: Colors.amber.shade300),
                   ),
-                ],
-              ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.hourglass_top, size: 16, color: Colors.amber.shade800),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Menunggu persetujuan Admin CareCycle. Hanya admin yang berwenang menyetujui (meng-acc) permintaan donasi.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.amber.shade900,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ] else if (req.isApproved) ...[
               Align(
                 alignment: Alignment.centerRight,
@@ -382,14 +417,14 @@ class DonorRequestsScreen extends ConsumerWidget {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Setujui & Tentukan Serah Terima'),
+              title: const Text('Acc Permintaan Donasi'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Pilih metode serah terima untuk komunitas "${req.communityName}":',
+                      'Pilih metode serah terima untuk menyetujui (acc) permintaan dari komunitas "${req.communityName}":',
                       style: const TextStyle(fontSize: 13),
                     ),
                     const SizedBox(height: 12),
@@ -458,7 +493,7 @@ class DonorRequestsScreen extends ConsumerWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: const Text('Setujui & Proses', style: TextStyle(color: Colors.white)),
+                  child: const Text('Acc & Proses', style: TextStyle(color: Colors.white)),
                 ),
               ],
             );
