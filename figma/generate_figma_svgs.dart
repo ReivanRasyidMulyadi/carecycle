@@ -923,7 +923,7 @@ String generateMasterBoard(Map<String, String> screens) {
   for (int i = 0; i < row1.length; i++) {
     final item = row1[i];
     final x = 80 + i * 680;
-    final y = 460;
+    const y = 460;
     final svgContent = screens[item['key']!]!;
 
     buffer.writeln('''
@@ -964,7 +964,7 @@ String generateMasterBoard(Map<String, String> screens) {
   for (int i = 0; i < row2.length; i++) {
     final item = row2[i];
     final x = 80 + i * 680;
-    final y = 1510;
+    const y = 1510;
     final svgContent = screens[item['key']!]!;
 
     buffer.writeln('''
@@ -1041,7 +1041,7 @@ String generateMasterBoard(Map<String, String> screens) {
   for (int i = 0; i < row3.length; i++) {
     final item = row3[i];
     final x = 80 + i * 680;
-    final y = 2560;
+    const y = 2560;
     final svgContent = screens[item['key']!]!;
 
     buffer.writeln('''

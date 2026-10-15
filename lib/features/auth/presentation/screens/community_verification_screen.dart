@@ -57,7 +57,7 @@ class _CommunityVerificationScreenState
   /// Memilih dokumen via file picker (mendukung PDF, PNG, JPG)
   Future<void> _pickFile() async {
     try {
-      final result = await FilePicker.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
       );
