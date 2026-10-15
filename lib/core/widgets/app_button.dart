@@ -44,7 +44,7 @@ class AppButton extends StatelessWidget {
 
     if (isOutlined) {
       return SizedBox(
-        width: width,
+        width: width ?? double.infinity,
         child: OutlinedButton(
           onPressed: isLoading ? null : onPressed,
           child: child,
@@ -53,7 +53,7 @@ class AppButton extends StatelessWidget {
     }
 
     return SizedBox(
-      width: width,
+      width: width ?? double.infinity,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         child: child,
