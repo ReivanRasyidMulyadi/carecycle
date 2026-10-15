@@ -59,6 +59,38 @@ class ItemModel {
     }
   }
 
+  String get categoryDisplay {
+    switch (category.toLowerCase()) {
+      case 'clothing':
+        return 'Pakaian';
+      case 'electronics':
+        return 'Elektronik';
+      case 'books':
+        return 'Buku';
+      case 'furniture':
+        return 'Perabotan';
+      case 'toys':
+        return 'Mainan';
+      default:
+        return category;
+    }
+  }
+
+  String get conditionDisplay {
+    switch (condition.toLowerCase()) {
+      case 'new':
+        return 'Baru';
+      case 'like_new':
+        return 'Seperti Baru';
+      case 'good':
+        return 'Baik';
+      case 'fair':
+        return 'Cukup Layak';
+      default:
+        return condition;
+    }
+  }
+
   factory ItemModel.fromJson(Map<String, dynamic> json) {
     List<String> photos = [];
     if (json['photo_urls'] != null) {

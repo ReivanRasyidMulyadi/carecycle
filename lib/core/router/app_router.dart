@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/admin/presentation/screens/admin_analytics_screen.dart';
+import '../../features/admin/presentation/screens/admin_items_screen.dart';
+import '../../features/admin/presentation/screens/admin_users_screen.dart';
 import '../../features/admin/presentation/screens/admin_verification_screen.dart';
 import '../../features/auth/presentation/screens/community_verification_screen.dart';
 import '../../features/auth/presentation/screens/home_screen.dart';
@@ -34,6 +37,9 @@ class AppRouter {
   static const String settings = 'settings';
   static const String communityVerification = 'communityVerification';
   static const String adminVerification = 'adminVerification';
+  static const String adminUsers = 'adminUsers';
+  static const String adminAnalytics = 'adminAnalytics';
+  static const String adminItems = 'adminItems';
 
   // Path Route
   static const String splashPath = '/';
@@ -51,6 +57,9 @@ class AppRouter {
   static const String settingsPath = '/settings';
   static const String communityVerificationPath = '/community/verification';
   static const String adminVerificationPath = '/admin/verification';
+  static const String adminUsersPath = '/admin/users';
+  static const String adminAnalyticsPath = '/admin/analytics';
+  static const String adminItemsPath = '/admin/items';
 
   static final GoRouter router = GoRouter(
     initialLocation: splashPath,
@@ -129,6 +138,21 @@ class AppRouter {
         name: adminVerification,
         builder: (context, state) => const AdminVerificationScreen(),
       ),
+      GoRoute(
+        path: adminUsersPath,
+        name: adminUsers,
+        builder: (context, state) => const AdminUsersScreen(),
+      ),
+      GoRoute(
+        path: adminAnalyticsPath,
+        name: adminAnalytics,
+        builder: (context, state) => const AdminAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: adminItemsPath,
+        name: adminItems,
+        builder: (context, state) => const AdminItemsScreen(),
+      ),
     ],
   );
 
@@ -148,8 +172,11 @@ class AppRouter {
     // Jika sudah login namun masih berada di halaman login/register
     if (isLoggedIn && isAuthRoute) return homePath;
 
-    // Guard khusus admin: hanya role 'admin' yang boleh akses halaman verifikasi admin
-    if (state.matchedLocation == adminVerificationPath) {
+    // Guard khusus admin: hanya role 'admin' yang boleh akses rute admin dan permintaan donasi masuk
+    final isAdminOnlyRoute = state.matchedLocation.startsWith('/admin') ||
+        state.matchedLocation == donorRequestsPath;
+
+    if (isAdminOnlyRoute) {
       final userRole = HiveService.getUserRole();
       if (userRole != 'admin') return homePath;
     }

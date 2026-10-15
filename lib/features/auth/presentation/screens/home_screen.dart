@@ -655,11 +655,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.inbox_outlined,
-                title: 'Permintaan Masuk',
-                subtitle: 'Tinjau permohonan donasi',
+                icon: Icons.campaign_outlined,
+                title: 'Open Campaign',
+                subtitle: 'Dukung program donasi',
                 onTap: () {
-                  context.pushNamed(AppRouter.donorRequests);
+                  context.pushNamed(AppRouter.campaign);
                 },
               ),
             ),
@@ -670,17 +670,6 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.campaign_outlined,
-                title: 'Open Campaign',
-                subtitle: 'Dukung program donasi',
-                onTap: () {
-                  context.pushNamed(AppRouter.campaign);
-                },
-              ),
-            ),
-            const SizedBox(width: AppSizes.sm),
-            Expanded(
-              child: _ActivityCard(
                 icon: Icons.workspace_premium_outlined,
                 title: 'Dampak & Sertifikat',
                 subtitle: 'Pencapaian donasi Anda',
@@ -689,9 +678,77 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
             ),
+            const SizedBox(width: AppSizes.sm),
+            Expanded(
+              child: _ActivityCard(
+                icon: Icons.menu_book_outlined,
+                title: 'Panduan Donasi',
+                subtitle: 'Tips donasi berkualitas',
+                onTap: () {
+                  _showDonationGuideDialog(context);
+                },
+              ),
+            ),
           ],
         ),
       ],
+    );
+  }
+
+  /// Dialog edukasi panduan donasi bijak
+  void _showDonationGuideDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.menu_book_outlined, color: AppColors.primary),
+            SizedBox(width: 8),
+            Text('Panduan Donasi Bijak', style: TextStyle(fontSize: 16)),
+          ],
+        ),
+        content: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '1. Pastikan Kelayakan Barang',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              Text(
+                'Pakaian wajib bersih & tidak rusak berat. Elektronik harus berfungsi normal demi keamanan penerima.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '2. Foto Jelas & Transparan',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              Text(
+                'Sertakan foto dari berbagai sudut dan tulis deskripsi kondisi barang secara jujur.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '3. Verifikasi & Acc oleh Admin',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              Text(
+                'Permintaan donasi dari komunitas dikurasi dan di-acc secara terpusat oleh Admin CareCycle untuk menjamin penyaluran tepat sasaran.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Mengerti', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -704,8 +761,8 @@ class HomeScreen extends ConsumerWidget {
             Expanded(
               child: _ActivityCard(
                 icon: Icons.admin_panel_settings_outlined,
-                title: 'Verifikasi Legalitas',
-                subtitle: 'Antrean komunitas baru',
+                title: 'Verifikasi Komunitas',
+                subtitle: 'Antrean legalitas berkas',
                 onTap: () {
                   context.pushNamed(AppRouter.adminVerification);
                 },
@@ -716,7 +773,7 @@ class HomeScreen extends ConsumerWidget {
               child: _ActivityCard(
                 icon: Icons.fact_check_outlined,
                 title: 'Acc Permintaan',
-                subtitle: 'Persetujuan donasi',
+                subtitle: 'Persetujuan permohonan donasi',
                 onTap: () {
                   context.pushNamed(AppRouter.donorRequests);
                 },
@@ -729,11 +786,37 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.inventory_2_outlined,
-                title: 'Katalog Barang',
-                subtitle: 'Pantau barang donasi',
+                icon: Icons.manage_accounts_outlined,
+                title: 'Kelola Pengguna',
+                subtitle: 'Donatur & komunitas',
                 onTap: () {
-                  context.pushNamed(AppRouter.catalog);
+                  context.pushNamed(AppRouter.adminUsers);
+                },
+              ),
+            ),
+            const SizedBox(width: AppSizes.sm),
+            Expanded(
+              child: _ActivityCard(
+                icon: Icons.analytics_outlined,
+                title: 'Statistik Platform',
+                subtitle: 'Metrik & dampak sirkular',
+                onTap: () {
+                  context.pushNamed(AppRouter.adminAnalytics);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSizes.sm),
+        Row(
+          children: [
+            Expanded(
+              child: _ActivityCard(
+                icon: Icons.rule_folder_outlined,
+                title: 'Moderasi Barang',
+                subtitle: 'Kontrol katalog donasi',
+                onTap: () {
+                  context.pushNamed(AppRouter.adminItems);
                 },
               ),
             ),
@@ -742,7 +825,7 @@ class HomeScreen extends ConsumerWidget {
               child: _ActivityCard(
                 icon: Icons.campaign_outlined,
                 title: 'Semua Kampanye',
-                subtitle: 'Kelola program komunitas',
+                subtitle: 'Pantau program sosial',
                 onTap: () {
                   context.pushNamed(AppRouter.campaign);
                 },

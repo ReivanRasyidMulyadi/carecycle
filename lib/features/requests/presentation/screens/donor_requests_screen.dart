@@ -9,15 +9,28 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../data/models/request_model.dart';
 import '../providers/request_provider.dart';
 
-/// Layar Permintaan Masuk untuk Donatur (dengan Supabase Realtime, Profil Komunitas, & Pilihan Serah Terima)
-class DonorRequestsScreen extends ConsumerWidget {
+/// Layar Pusat Acc & Verifikasi Permintaan Donasi (Khusus Administrator)
+class DonorRequestsScreen extends ConsumerStatefulWidget {
   const DonorRequestsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DonorRequestsScreen> createState() => _DonorRequestsScreenState();
+}
+
+class _DonorRequestsScreenState extends ConsumerState<DonorRequestsScreen> {
+  String _filter = 'submitted'; // 'submitted', 'approved', 'rejected', 'all'
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(donorRequestsNotifierProvider);
     final user = ref.watch(authNotifierProvider).user;
     final isAdmin = user?.isAdmin == true;
+
+    // Filter requests berdasarkan tab yang dipilih
+    final filteredRequests = state.requests.where((r) {
+      if (_filter == 'all') return true;
+      return r.status == _filter;
+    }).toList();
 
     // Notifikasi Realtime Banner / Snackbar saat ada permohonan baru
     ref.listen<DonorRequestsState>(donorRequestsNotifierProvider, (prev, next) {
@@ -51,7 +64,7 @@ class DonorRequestsScreen extends ConsumerWidget {
     });
 
     return AppScaffold(
-      title: isAdmin ? 'Persetujuan Permintaan Donasi' : 'Permintaan Donasi Masuk',
+      title: 'Acc Permintaan Donasi',
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
@@ -61,23 +74,72 @@ class DonorRequestsScreen extends ConsumerWidget {
           },
         ),
       ],
-      body: RefreshIndicator(
-        onRefresh: () =>
-            ref.read(donorRequestsNotifierProvider.notifier).loadIncomingRequests(),
-        child: state.isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : state.requests.isEmpty
-                ? _buildEmptyState(context, isAdmin)
-                : ListView.separated(
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    itemCount: state.requests.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: AppSizes.md),
-                    itemBuilder: (context, index) {
-                      final req = state.requests[index];
-                      return _buildRequestCard(context, ref, req, isAdmin);
-                    },
-                  ),
+      body: Column(
+        children: [
+          // Filter Tabs
+          _buildFilterTabs(state),
+          const Divider(height: 1),
+
+          // Request List
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () =>
+                  ref.read(donorRequestsNotifierProvider.notifier).loadIncomingRequests(),
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : filteredRequests.isEmpty
+                      ? _buildEmptyState(context, isAdmin)
+                      : ListView.separated(
+                          padding: const EdgeInsets.all(AppSizes.md),
+                          itemCount: filteredRequests.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: AppSizes.md),
+                          itemBuilder: (context, index) {
+                            final req = filteredRequests[index];
+                            return _buildRequestCard(context, ref, req, isAdmin);
+                          },
+                        ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterTabs(DonorRequestsState state) {
+    final pendingCount = state.requests.where((r) => r.isSubmitted).length;
+
+    final filters = [
+      {'key': 'submitted', 'label': 'Menunggu Acc ($pendingCount)'},
+      {'key': 'approved', 'label': 'Disetujui'},
+      {'key': 'rejected', 'label': 'Ditolak'},
+      {'key': 'all', 'label': 'Semua'},
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: 8),
+      child: Row(
+        children: filters.map((f) {
+          final isSelected = _filter == f['key'];
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(f['label']!),
+              selected: isSelected,
+              selectedColor: AppColors.primarySwatch.shade100,
+              labelStyle: TextStyle(
+                color: isSelected ? AppColors.primary : Colors.black87,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              onSelected: (selected) {
+                if (selected) {
+                  setState(() => _filter = f['key']!);
+                }
+              },
+            ),
+          );
+        }).toList(),
       ),
     );
   }
