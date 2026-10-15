@@ -178,4 +178,11 @@ class AuthRepository {
 
     return updatedUser;
   }
+
+  /// Perbarui kata sandi akun pengguna
+  Future<void> updatePassword(String newPassword) async {
+    await _client.auth.updateUser(
+      UserAttributes(password: newPassword.trim()),
+    );
+  }
 }

@@ -223,6 +223,60 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {}
   }
 
+  /// Perbarui informasi profil pengguna
+  Future<bool> updateProfile({
+    String? fullName,
+    String? phoneNumber,
+    String? address,
+    String? avatarUrl,
+  }) async {
+    if (state.user == null) return false;
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      final updated = await _repository.updateProfile(
+        userId: state.user!.id,
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+        address: address,
+        avatarUrl: avatarUrl,
+      );
+
+      state = state.copyWith(
+        isLoading: false,
+        user: updated,
+        clearError: true,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _getReadableErrorMessage(e),
+      );
+      return false;
+    }
+  }
+
+  /// Ganti kata sandi akun
+  Future<bool> changePassword(String newPassword) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    try {
+      await _repository.updatePassword(newPassword);
+      state = state.copyWith(
+        isLoading: false,
+        clearError: true,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: _getReadableErrorMessage(e),
+      );
+      return false;
+    }
+  }
+
   /// Helper untuk menerjemahkan pesan kesalahan ke Bahasa Indonesia
   String _getReadableErrorMessage(dynamic error) {
     final msg = error.toString().toLowerCase();
