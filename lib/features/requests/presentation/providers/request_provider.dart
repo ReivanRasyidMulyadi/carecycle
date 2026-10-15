@@ -276,3 +276,58 @@ class DonorRequestsNotifier extends StateNotifier<DonorRequestsState> {
     super.dispose();
   }
 }
+
+/// Provider StateNotifier untuk Daftar Permintaan yang Diajukan Komunitas/Yayasan
+final communityRequestsNotifierProvider = StateNotifierProvider<
+    CommunityRequestsNotifier, AsyncValue<List<RequestModel>>>((ref) {
+  final repository = ref.watch(requestRepositoryProvider);
+  final community = ref.watch(authNotifierProvider).community;
+  return CommunityRequestsNotifier(repository, community?.id);
+});
+
+class CommunityRequestsNotifier
+    extends StateNotifier<AsyncValue<List<RequestModel>>> {
+  final RequestRepository _repository;
+  final String? _communityId;
+
+  CommunityRequestsNotifier(this._repository, this._communityId)
+      : super(const AsyncValue.loading()) {
+    loadRequests();
+  }
+
+  Future<void> loadRequests() async {
+    if (_communityId == null) {
+      state = const AsyncValue.data([]);
+      return;
+    }
+    state = const AsyncValue.loading();
+    try {
+      final list = await _repository.getMyCommunityRequests(_communityId);
+      if (mounted) {
+        state = AsyncValue.data(list);
+      }
+    } catch (e, st) {
+      if (mounted) {
+        state = AsyncValue.error(e, st);
+      }
+    }
+  }
+
+  /// Konfirmasi bahwa barang donasi telah diterima oleh Yayasan
+  Future<bool> confirmReceived(String requestId, String itemId) async {
+    try {
+      final updated = await _repository.confirmReceived(
+        requestId: requestId,
+        itemId: itemId,
+      );
+      state.whenData((list) {
+        final updatedList = list.map((r) => r.id == updated.id ? updated : r).toList();
+        state = AsyncValue.data(updatedList);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+}
+

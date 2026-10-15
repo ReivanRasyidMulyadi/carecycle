@@ -178,6 +178,30 @@ class RequestRepository {
     return RequestModel.fromJson(data);
   }
 
+  /// Konfirmasi barang telah diterima oleh Komunitas
+  Future<RequestModel> confirmReceived({
+    required String requestId,
+    required String itemId,
+  }) async {
+    final reqData = await _client
+        .from('requests')
+        .update({'status': 'received'})
+        .eq('id', requestId)
+        .select(
+          '*, communities:community_id(community_name, verification_status, description), items:item_id(name, category, photo_urls, donor_id)',
+        )
+        .single();
+
+    try {
+      await _client
+          .from('items')
+          .update({'status': 'completed'})
+          .eq('id', itemId);
+    } catch (_) {}
+
+    return RequestModel.fromJson(reqData);
+  }
+
   /// Stream realtime untuk memantau permintaan masuk donatur
   Stream<List<Map<String, dynamic>>> streamRequestsTable() {
     return _client.from('requests').stream(primaryKey: ['id']);

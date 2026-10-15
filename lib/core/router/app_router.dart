@@ -10,10 +10,12 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/profile_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/campaigns/presentation/screens/campaign_screen.dart';
 import '../../features/items/presentation/screens/catalog_screen.dart';
 import '../../features/items/presentation/screens/item_detail_screen.dart';
 import '../../features/items/presentation/screens/item_upload_screen.dart';
 import '../../features/items/presentation/screens/my_items_screen.dart';
+import '../../features/requests/presentation/screens/community_requests_screen.dart';
 import '../../features/requests/presentation/screens/donor_requests_screen.dart';
 import '../services/hive_service.dart';
 
@@ -32,6 +34,7 @@ class AppRouter {
   static const String myItems = 'myItems';
   static const String request = 'request';
   static const String donorRequests = 'donorRequests';
+  static const String communityRequests = 'communityRequests';
   static const String campaign = 'campaign';
   static const String profile = 'profile';
   static const String settings = 'settings';
@@ -52,6 +55,7 @@ class AppRouter {
   static const String myItemsPath = '/my-items';
   static const String requestPath = '/request';
   static const String donorRequestsPath = '/requests/donor';
+  static const String communityRequestsPath = '/community/requests';
   static const String campaignPath = '/campaign';
   static const String profilePath = '/profile';
   static const String settingsPath = '/settings';
@@ -119,9 +123,14 @@ class AppRouter {
         builder: (context, state) => const DonorRequestsScreen(),
       ),
       GoRoute(
+        path: communityRequestsPath,
+        name: communityRequests,
+        builder: (context, state) => const CommunityRequestsScreen(),
+      ),
+      GoRoute(
         path: campaignPath,
         name: campaign,
-        builder: (context, state) => const _PlaceholderScreen(title: 'Open Campaign'),
+        builder: (context, state) => const CampaignScreen(),
       ),
       GoRoute(
         path: profilePath,
@@ -182,46 +191,5 @@ class AppRouter {
     }
 
     return null;
-  }
-}
-
-/// Widget placeholder untuk fitur di fase berikutnya
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-
-  const _PlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction,
-              size: 64,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Akan diimplementasikan pada fase berikutnya.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.6),
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
