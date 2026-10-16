@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../providers/admin_provider.dart';
 
 /// Layar Statistik & Analitik Platform untuk Administrator CareCycle
@@ -15,6 +16,7 @@ class AdminAnalyticsScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: 'Statistik & Dampak Platform',
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 3),
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),

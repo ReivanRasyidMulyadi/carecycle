@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../../../auth/data/models/user_model.dart';
 import '../providers/admin_provider.dart';
 
@@ -51,6 +52,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
     return AppScaffold(
       title: 'Manajemen Pengguna',
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 2),
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),

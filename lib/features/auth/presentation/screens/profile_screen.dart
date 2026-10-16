@@ -10,6 +10,7 @@ import '../../../../core/utils/extensions.dart';
 import '../../../../core/utils/gamification_calculator.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../providers/auth_provider.dart';
 
 /// Halaman Profil Pengguna lengkap dengan edit data diri, ubah password, info akun, dan legalitas
@@ -34,6 +35,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return AppScaffold(
       title: AppStrings.profile,
+      bottomNavigationBar: CareCycleBottomNav(
+        currentIndex: user?.isKomunitas == true ? 3 : 4,
+      ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(authNotifierProvider.notifier).refreshCurrentUser(),
         child: SingleChildScrollView(

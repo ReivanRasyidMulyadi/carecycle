@@ -8,6 +8,7 @@ import '../providers/app_providers.dart';
 /// Scaffold wrapper dengan indikator status offline
 class AppScaffold extends ConsumerWidget {
   final String? title;
+  final Widget? titleWidget;
   final Widget body;
   final Widget? floatingActionButton;
   final Widget? bottomNavigationBar;
@@ -17,6 +18,7 @@ class AppScaffold extends ConsumerWidget {
   const AppScaffold({
     super.key,
     this.title,
+    this.titleWidget,
     required this.body,
     this.floatingActionButton,
     this.bottomNavigationBar,
@@ -29,9 +31,9 @@ class AppScaffold extends ConsumerWidget {
     final connectivityAsync = ref.watch(connectivityProvider);
 
     return Scaffold(
-      appBar: title != null
+      appBar: (title != null || titleWidget != null)
           ? AppBar(
-              title: Text(title!),
+              title: titleWidget ?? Text(title!),
               actions: actions,
             )
           : null,

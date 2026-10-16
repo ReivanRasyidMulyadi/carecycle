@@ -5,7 +5,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/gamification_calculator.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../providers/auth_provider.dart';
 
 /// Halaman Beranda (Home) utama setelah pengguna berhasil login
@@ -19,7 +21,59 @@ class HomeScreen extends ConsumerWidget {
     final community = authState.community;
 
     return AppScaffold(
-      title: AppStrings.appName,
+      titleWidget: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                AppStrings.appName,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              Text(
+                'Berbagi Berkelanjutan',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white60
+                      : Colors.black54,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 0),
       actions: [
         IconButton(
           icon: const Icon(Icons.person_outline),
@@ -69,28 +123,44 @@ class HomeScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header Sambutan
+              // Header Sambutan Modern
               Card(
-                elevation: 1,
+                elevation: 0,
+                color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  side: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white12
+                        : Colors.grey.shade200,
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(AppSizes.md),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: AppColors.primarySwatch.shade100,
-                        child: Text(
-                          (user?.fullName.isNotEmpty == true
-                                  ? user!.fullName[0]
-                                  : 'U')
-                              .toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySwatch.shade50,
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          border: Border.all(
+                            color: AppColors.primaryLight.withOpacity(0.4),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            (user?.fullName.isNotEmpty == true
+                                    ? user!.fullName[0]
+                                    : 'U')
+                                .toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),
@@ -102,11 +172,23 @@ class HomeScreen extends ConsumerWidget {
                             Text(
                               'Halo, ${user?.fullName ?? "Pengguna"} 👋',
                               style: const TextStyle(
-                                fontSize: AppSizes.fontLg,
+                                fontSize: AppSizes.fontMd,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
+                            Text(
+                              user?.isDonatur == true
+                                  ? 'Siap menyelamatkan barang hari ini?'
+                                  : (user?.isKomunitas == true
+                                      ? 'Kelola permohonan donasi sosial'
+                                      : 'Pusat kendali & moderasi platform'),
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
                             Wrap(
                               spacing: 6,
                               runSpacing: 4,
@@ -118,14 +200,14 @@ class HomeScreen extends ConsumerWidget {
                                   ),
                                   decoration: BoxDecoration(
                                     color: AppColors.primary,
-                                    borderRadius: BorderRadius.circular(4),
+                                    borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
                                     user?.roleDisplay ?? 'Donatur',
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
@@ -142,14 +224,14 @@ class HomeScreen extends ConsumerWidget {
                                           : (community.isRejected
                                               ? AppColors.error
                                               : AppColors.warning),
-                                      borderRadius: BorderRadius.circular(4),
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
                                       community.verificationStatusDisplay,
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                   ),
@@ -164,54 +246,151 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSizes.md),
 
-              // Card Gamifikasi / Care Points (untuk Donatur)
+              // Card Gamifikasi / Care Points (untuk Donatur - Sesuai carecycle-prototype.html)
               if (user?.isDonatur == true) ...[
-                Card(
-                  color: AppColors.primaryDark,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              AppStrings.carePoints,
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: AppSizes.fontSm,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${user?.carePoints ?? 0} Poin',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: AppSizes.fontXxl,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                Builder(
+                  builder: (context) {
+                    final points = user?.carePoints ?? 0;
+                    final completedItems = points ~/ 10;
+                    final level = GamificationCalculator.calculateLevel(completedItems);
+                    final progress = GamificationCalculator.calculateProgress(completedItems);
+                    final nextTarget = GamificationCalculator.getNextLevelTarget(completedItems);
+                    final remainingPoints = (nextTarget - completedItems) * 10;
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF047857), Color(0xFF10B981)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(AppSizes.sm),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF047857).withOpacity(0.3),
+                            blurRadius: 14,
+                            offset: const Offset(0, 6),
                           ),
-                          child: const Icon(
-                            Icons.eco,
-                            color: AppColors.primaryLight,
-                            size: 32,
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(AppSizes.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.eco_rounded,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Care Points',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        '$points Poin',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.25),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.4),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.amberAccent,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Level: ${level.displayName}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          const SizedBox(height: 14),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              backgroundColor: Colors.black.withOpacity(0.2),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                Colors.amberAccent,
+                              ),
+                              minHeight: 7,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '$completedItems Barang Diselamatkan',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11,
+                                ),
+                              ),
+                              Text(
+                                remainingPoints > 0
+                                    ? '$remainingPoints poin menuju level berikutnya 🏆'
+                                    : 'Tingkat Tertinggi 🏆',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSizes.md),
               ],
@@ -229,11 +408,16 @@ class HomeScreen extends ConsumerWidget {
               ],
 
               // Menu Pintas / Aktivitas Sesuai Role
-              const Text(
-                'Aktivitas CareCycle',
-                style: TextStyle(
-                  fontSize: AppSizes.fontMd,
+              Text(
+                user?.isAdmin == true
+                    ? 'Manajemen Platform'
+                    : user?.isKomunitas == true
+                        ? 'Aktivitas Komunitas'
+                        : 'Menu Donatur',
+                style: const TextStyle(
+                  fontSize: AppSizes.fontSm,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                 ),
               ),
               const SizedBox(height: AppSizes.sm),
@@ -483,9 +667,11 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.receipt_long_outlined,
+                icon: Icons.assignment_outlined,
+                iconBgColor: const Color(0xFFEFF6FF),
+                iconColor: const Color(0xFF3B82F6),
                 title: 'Permintaan Saya',
-                subtitle: 'Lacak status acc & resi',
+                subtitle: '2 sedang jalan',
                 onTap: () {
                   context.pushNamed(AppRouter.communityRequests);
                 },
@@ -495,11 +681,11 @@ class HomeScreen extends ConsumerWidget {
             Expanded(
               child: _ActivityCard(
                 icon: Icons.campaign_outlined,
+                iconBgColor: const Color(0xFFFAF5FF),
+                iconColor: const Color(0xFF9333EA),
                 title: 'Open Campaign',
-                subtitle: isVerified
-                    ? 'Program donasi bersama'
-                    : 'Perlu verifikasi admin 🔒',
-                badgeColor: isVerified ? null : AppColors.warning,
+                subtitle: 'Galang donasi',
+                isLocked: !isVerified,
                 onTap: () {
                   if (!isVerified) {
                     _showUnverifiedGuardDialog(context, community);
@@ -516,27 +702,24 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.assignment_outlined,
-                title: 'Ajukan Permintaan',
-                subtitle: isVerified
-                    ? 'Minta barang layak pakai'
-                    : 'Perlu verifikasi admin 🔒',
-                badgeColor: isVerified ? null : AppColors.warning,
+                icon: Icons.add_circle_outline_rounded,
+                iconBgColor: const Color(0xFFECFDF5),
+                iconColor: const Color(0xFF047857),
+                title: 'Ajukan Donasi',
+                subtitle: 'Pilih dari katalog',
                 onTap: () {
-                  if (!isVerified) {
-                    _showUnverifiedGuardDialog(context, community);
-                  } else {
-                    context.pushNamed(AppRouter.request);
-                  }
+                  context.pushNamed(AppRouter.catalog);
                 },
               ),
             ),
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.inventory_2_outlined,
+                icon: Icons.storefront_outlined,
+                iconBgColor: const Color(0xFFFFFBEB),
+                iconColor: const Color(0xFFF59E0B),
                 title: 'Katalog Publik',
-                subtitle: 'Eksplorasi barang donatur',
+                subtitle: 'Semua item donasi',
                 onTap: () {
                   context.pushNamed(AppRouter.catalog);
                 },
@@ -549,17 +732,124 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.verified_user_outlined,
-                title: 'Profil & Legalitas',
-                subtitle: community?.verificationStatusDisplay ?? 'Status Dokumen',
+                icon: Icons.description_outlined,
+                iconBgColor: const Color(0xFFF1F5F9),
+                iconColor: const Color(0xFF334155),
+                title: 'Legalitas Akun',
+                subtitle: 'SK & Surat Izin',
                 onTap: () {
                   context.pushNamed(AppRouter.communityVerification);
                 },
               ),
             ),
+            const SizedBox(width: AppSizes.sm),
+            Expanded(
+              child: _ActivityCard(
+                icon: Icons.lightbulb_outline_rounded,
+                iconBgColor: const Color(0xFFF0FDFA),
+                iconColor: const Color(0xFF0D9488),
+                title: 'Panduan SOP',
+                subtitle: 'Tata cara terima',
+                onTap: () {
+                  _showDonationGuideDialog(context);
+                },
+              ),
+            ),
           ],
         ),
+        const SizedBox(height: AppSizes.md),
+        // Tracking Pengiriman Berjalan (sesuai carecycle-prototype.html)
+        _buildKomunitasDeliveryTracking(context),
       ],
+    );
+  }
+
+  /// Widget pelacakan pengiriman aktif untuk Komunitas
+  Widget _buildKomunitasDeliveryTracking(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Card(
+      elevation: 0,
+      color: isDark ? AppColors.cardDark : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        side: BorderSide(
+          color: isDark ? Colors.white12 : Colors.grey.shade200,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Pengiriman Sedang Berjalan',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withOpacity(0.04) : Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(
+                  color: isDark ? Colors.white12 : Colors.grey.shade200,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECFDF5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: Text('👕', style: TextStyle(fontSize: 18)),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Baju Kaos Pria Size L',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'SiCepat Resi: CC-88192849',
+                          style: TextStyle(fontSize: 10, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  OutlinedButton(
+                    onPressed: () {
+                      context.pushNamed(AppRouter.communityRequests);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.primary),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text('Konfirmasi', style: TextStyle(fontSize: 11)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -571,9 +861,11 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.add_photo_alternate_outlined,
+                icon: Icons.file_upload_outlined,
+                iconBgColor: const Color(0xFFECFDF5),
+                iconColor: const Color(0xFF047857),
                 title: 'Unggah Donasi',
-                subtitle: 'Donasikan barang layak',
+                subtitle: 'Scan AI & upload',
                 onTap: () {
                   context.pushNamed(AppRouter.upload);
                 },
@@ -582,9 +874,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.inventory_outlined,
+                icon: Icons.inventory_2_outlined,
+                iconBgColor: const Color(0xFFEFF6FF),
+                iconColor: const Color(0xFF3B82F6),
                 title: 'Barang Saya',
-                subtitle: 'Daftar donasi & draft',
+                subtitle: '4 barang aktif',
                 onTap: () {
                   context.pushNamed(AppRouter.myItems);
                 },
@@ -597,9 +891,11 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.inventory_2_outlined,
+                icon: Icons.storefront_outlined,
+                iconBgColor: const Color(0xFFFFFBEB),
+                iconColor: const Color(0xFFF59E0B),
                 title: 'Katalog Publik',
-                subtitle: 'Eksplorasi barang donasi',
+                subtitle: 'Jelajahi barang',
                 onTap: () {
                   context.pushNamed(AppRouter.catalog);
                 },
@@ -609,8 +905,10 @@ class HomeScreen extends ConsumerWidget {
             Expanded(
               child: _ActivityCard(
                 icon: Icons.campaign_outlined,
+                iconBgColor: const Color(0xFFFAF5FF),
+                iconColor: const Color(0xFF9333EA),
                 title: 'Open Campaign',
-                subtitle: 'Dukung program donasi',
+                subtitle: 'Bantu komunitas',
                 onTap: () {
                   context.pushNamed(AppRouter.campaign);
                 },
@@ -623,28 +921,159 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.workspace_premium_outlined,
-                title: 'Dampak & Sertifikat',
-                subtitle: 'Pencapaian donasi Anda',
+                icon: Icons.mark_email_read_outlined,
+                iconBgColor: const Color(0xFFFFF1F2),
+                iconColor: const Color(0xFFE11D48),
+                title: 'Acc Permintaan',
+                subtitle: '3 pengajuan',
+                hasDot: true,
                 onTap: () {
-                  context.pushNamed(AppRouter.profile);
+                  context.pushNamed(AppRouter.donorRequests);
                 },
               ),
             ),
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.menu_book_outlined,
-                title: 'Panduan Donasi',
-                subtitle: 'Tips donasi berkualitas',
+                icon: Icons.military_tech_outlined,
+                iconBgColor: const Color(0xFFF0FDFA),
+                iconColor: const Color(0xFF0D9488),
+                title: 'Dampak & Sertifikat',
+                subtitle: 'Lihat jejak hijau',
                 onTap: () {
-                  _showDonationGuideDialog(context);
+                  context.pushNamed(AppRouter.profile);
                 },
               ),
             ),
           ],
         ),
+        const SizedBox(height: AppSizes.md),
+        // Kampanye Mendesak Spotlight (sesuai carecycle-prototype.html)
+        _buildCampaignSpotlight(context),
       ],
+    );
+  }
+
+  /// Spotlight kampanye mendesak
+  Widget _buildCampaignSpotlight(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Card(
+      elevation: 0,
+      color: isDark ? AppColors.cardDark : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        side: BorderSide(
+          color: isDark ? Colors.white12 : Colors.grey.shade200,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.md),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Kampanye Mendesak',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.pushNamed(AppRouter.campaign),
+                  child: const Text(
+                    'Lihat Semua',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.04)
+                    : AppColors.primarySwatch.shade50.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                border: Border.all(
+                  color: AppColors.primaryLight.withOpacity(0.3),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text('📚', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 6),
+                      const Expanded(
+                        child: Text(
+                          'Buku Paket SD Panti Pelita',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Verified',
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryDark,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: const LinearProgressIndicator(
+                      value: 0.7,
+                      backgroundColor: Color(0xFFD1FAE5),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      minHeight: 6,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Terkumpul 35 dari 50 barang',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                      Text(
+                        '70%',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -655,7 +1084,7 @@ class HomeScreen extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.menu_book_outlined, color: AppColors.primary),
+            Icon(Icons.lightbulb_outline_rounded, color: AppColors.primary),
             SizedBox(width: 8),
             Text('Panduan Donasi Bijak', style: TextStyle(fontSize: 16)),
           ],
@@ -688,7 +1117,7 @@ class HomeScreen extends ConsumerWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
               Text(
-                'Permintaan donasi dari komunitas dikurasi dan di-acc secara terpusat oleh Admin CareCycle untuk menjamin penyaluran tepat sasaran.',
+                'Permintaan donasi dari komunitas dikurasi dan di-acc secara terpusat oleh Admin demi kepastian penyaluran tepat sasaran.',
                 style: TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ],
@@ -705,6 +1134,42 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  /// Dialog audit log admin
+  void _showAuditLogDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.assignment_outlined, color: Color(0xFF334155)),
+            SizedBox(width: 8),
+            Text('Audit Log Sistem', style: TextStyle(fontSize: 16)),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Status Enkripsi: AES-256 Aktif', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            SizedBox(height: 6),
+            Text('• Verifikasi Komunitas [Yayasan Harapan] diajukan (Baru)', style: TextStyle(fontSize: 11)),
+            SizedBox(height: 4),
+            Text('• User [Budi Donatur] menyelesaikan donasi #ITM-01', style: TextStyle(fontSize: 11)),
+            SizedBox(height: 4),
+            Text('• Sinkronisasi database cloud realtime normal', style: TextStyle(fontSize: 11)),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Tutup', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Grid aktivitas untuk peran Admin
   Widget _buildAdminActivities(BuildContext context) {
     return Column(
@@ -713,9 +1178,13 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.admin_panel_settings_outlined,
+                icon: Icons.verified_user_outlined,
+                iconBgColor: const Color(0xFFF3E8FF),
+                iconColor: const Color(0xFF7E22CE),
                 title: 'Verifikasi Komunitas',
-                subtitle: 'Antrean legalitas berkas',
+                subtitle: '3 permohonan',
+                hasDot: true,
+                dotColor: Colors.amber,
                 onTap: () {
                   context.pushNamed(AppRouter.adminVerification);
                 },
@@ -724,9 +1193,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.fact_check_outlined,
+                icon: Icons.handshake_outlined,
+                iconBgColor: const Color(0xFFECFDF5),
+                iconColor: const Color(0xFF047857),
                 title: 'Acc Permintaan',
-                subtitle: 'Persetujuan permohonan donasi',
+                subtitle: 'Persetujuan donasi',
                 onTap: () {
                   context.pushNamed(AppRouter.donorRequests);
                 },
@@ -739,9 +1210,11 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.manage_accounts_outlined,
+                icon: Icons.people_outline_rounded,
+                iconBgColor: const Color(0xFFEFF6FF),
+                iconColor: const Color(0xFF3B82F6),
                 title: 'Kelola Pengguna',
-                subtitle: 'Donatur & komunitas',
+                subtitle: '156 akun',
                 onTap: () {
                   context.pushNamed(AppRouter.adminUsers);
                 },
@@ -750,9 +1223,11 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: _ActivityCard(
-                icon: Icons.analytics_outlined,
+                icon: Icons.bar_chart_rounded,
+                iconBgColor: const Color(0xFFCCFBF1),
+                iconColor: const Color(0xFF0F766E),
                 title: 'Statistik Platform',
-                subtitle: 'Metrik & dampak sirkular',
+                subtitle: 'Dampak & Eco-data',
                 onTap: () {
                   context.pushNamed(AppRouter.adminAnalytics);
                 },
@@ -765,9 +1240,11 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.rule_folder_outlined,
+                icon: Icons.security_outlined,
+                iconBgColor: const Color(0xFFFFE4E6),
+                iconColor: const Color(0xFFE11D48),
                 title: 'Moderasi Barang',
-                subtitle: 'Kontrol katalog donasi',
+                subtitle: 'Cek kelayakan',
                 onTap: () {
                   context.pushNamed(AppRouter.adminItems);
                 },
@@ -777,8 +1254,10 @@ class HomeScreen extends ConsumerWidget {
             Expanded(
               child: _ActivityCard(
                 icon: Icons.campaign_outlined,
+                iconBgColor: const Color(0xFFFEF3C7),
+                iconColor: const Color(0xFFD97706),
                 title: 'Semua Kampanye',
-                subtitle: 'Pantau program sosial',
+                subtitle: 'Monitoring dana',
                 onTap: () {
                   context.pushNamed(AppRouter.campaign);
                 },
@@ -791,9 +1270,24 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: _ActivityCard(
-                icon: Icons.person_outline,
+                icon: Icons.assignment_outlined,
+                iconBgColor: const Color(0xFFF1F5F9),
+                iconColor: const Color(0xFF334155),
+                title: 'Audit Log',
+                subtitle: 'Aktivitas real-time',
+                onTap: () {
+                  _showAuditLogDialog(context);
+                },
+              ),
+            ),
+            const SizedBox(width: AppSizes.sm),
+            Expanded(
+              child: _ActivityCard(
+                icon: Icons.settings_outlined,
+                iconBgColor: const Color(0xFFEEF2FF),
+                iconColor: const Color(0xFF4338CA),
                 title: 'Profil Admin',
-                subtitle: 'Pengaturan akun',
+                subtitle: 'Pengaturan sistem',
                 onTap: () {
                   context.pushNamed(AppRouter.profile);
                 },
@@ -810,54 +1304,120 @@ class _ActivityCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Color? badgeColor;
+  final Color iconBgColor;
+  final Color iconColor;
+  final bool hasDot;
+  final Color? dotColor;
+  final bool isLocked;
   final VoidCallback onTap;
 
   const _ActivityCard({
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.badgeColor,
+    this.iconBgColor = const Color(0xFFECFDF5),
+    this.iconColor = AppColors.primary,
+    this.hasDot = false,
+    this.dotColor,
+    this.isLocked = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Card(
-      elevation: 1,
+      elevation: 0,
+      color: isDark ? AppColors.cardDark : Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        side: BorderSide(
+          color: isDark ? Colors.white12 : Colors.grey.shade200,
+          width: 1,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSizes.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: badgeColor ?? AppColors.primary, size: 28),
-              const SizedBox(height: AppSizes.sm),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: AppSizes.fontSm,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: iconBgColor,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
+                    child: Center(
+                      child: Icon(icon, color: iconColor, size: 22),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            color: isDark
+                                ? Colors.white60
+                                : AppColors.textSecondaryLight,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (hasDot)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: dotColor ?? const Color(0xFFF43F5E),
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: badgeColor ?? AppColors.textSecondaryLight,
-                  fontWeight: badgeColor != null ? FontWeight.w600 : FontWeight.normal,
+            if (isLocked)
+              Positioned(
+                top: 6,
+                right: 8,
+                child: Icon(
+                  Icons.lock_rounded,
+                  size: 13,
+                  color: Colors.grey.shade400,
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
 }
+

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../../data/models/request_model.dart';
 import '../providers/request_provider.dart';
 
@@ -61,6 +62,7 @@ class _CommunityRequestsScreenState
     final requestsAsync = ref.watch(communityRequestsNotifierProvider);
 
     return Scaffold(
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 2),
       appBar: AppBar(
         title: const Text(
           'Permintaan Donasi Saya',

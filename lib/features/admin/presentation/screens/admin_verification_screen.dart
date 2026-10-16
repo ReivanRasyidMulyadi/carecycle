@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../../../auth/data/models/community_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/providers/community_provider.dart';
@@ -49,6 +50,7 @@ class _AdminVerificationScreenState
 
     return AppScaffold(
       title: 'Panel Verifikasi Komunitas',
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 1),
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),

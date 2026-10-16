@@ -19,10 +19,13 @@ Seluruh berkas dibuat dalam format **W3C SVG Vector murni (100% valid XML)** yan
 
 ### Metode 1: Lewat Web Helper & Clipboard (Super Praktis - Rekomendasi)
 1. Buka file **`figma/index.html`** di browser komputer Anda (klik ganda filenya).
-2. Anda akan melihat seluruh alur layar berjejer rapi dalam 3 User Flow tematik.
-3. Klik tombol **"📋 Salin Master Canvas"** (atau salin layar satuan yang Anda pilih).
-4. Buka [Figma](https://www.figma.com/) dan tekan **`Ctrl + V`** (Paste).
-5. Layar ponsel modern lengkap dengan Dynamic Island, bezel, dan seluruh layer vektor akan langsung terpasang di kanvas Figma Anda!
+2. Anda akan melihat seluruh alur layar berjejer rapi dalam User Flow tematik.
+3. Di banner atas, Anda dapat mengakses:
+   - **📱 Buka Prototipe Interaktif (19 Layar)**: `figma/carecycle-prototype.html` untuk mencoba aplikasi secara interaktif dengan simulator frame ponsel smartphone, transisi, role switcher (Donatur, Komunitas, Admin), dan data realistis.
+   - **📑 Matriks Koneksi Desain ↔ Kode Flutter**: `figma/figma-design-blueprint.md` yang menghubungkan setiap elemen UI/UX dengan file Dart implementasinya.
+4. Klik tombol **"📋 Salin Master Canvas"** (atau salin layar satuan yang Anda pilih).
+5. Buka [Figma](https://www.figma.com/) dan tekan **`Ctrl + V`** (Paste).
+6. Layar ponsel modern lengkap dengan Dynamic Island, bezel, dan seluruh layer vektor akan langsung terpasang di kanvas Figma Anda!
 
 ### Metode 2: Drag & Drop Langsung
 1. Buka Figma dan buat file kerja baru (*New design file*).

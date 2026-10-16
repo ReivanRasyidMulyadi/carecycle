@@ -3,7 +3,7 @@ class AppStrings {
   AppStrings._();
 
   // App
-  static const String appName = 'CareCycle';
+  static const String appName = 'KindShare';
   static const String appTagline = 'Berbagi Kebaikan, Hidupkan Kembali';
 
   // Auth

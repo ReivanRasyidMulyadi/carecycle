@@ -65,11 +65,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo CareCycle
-                  const Icon(
-                    Icons.recycling,
-                    size: 80,
-                    color: AppColors.primary,
+                  // Logo KindShare
+                  Center(
+                    child: Container(
+                      width: 84,
+                      height: 84,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.15),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          width: 84,
+                          height: 84,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: AppSizes.sm),
                   const Text(
@@ -176,9 +196,97 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: AppSizes.sm),
+                  const Divider(color: Colors.black12),
+                  const SizedBox(height: AppSizes.sm),
+
+                  // Demo Akses Cepat (Sesuai carecycle-prototype.html)
+                  Container(
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'DEMO AKSES CEPAT',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: AppSizes.sm),
+                        _buildQuickDemoButton(
+                          title: '👤 Masuk sebagai Donatur',
+                          email: 'donatur@carecycle.id',
+                          bgColor: const Color(0xFFECFDF5),
+                          borderColor: const Color(0xFFA7F3D0),
+                          textColor: AppColors.primary,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildQuickDemoButton(
+                          title: '🏢 Masuk sebagai Komunitas',
+                          email: 'komunitas@carecycle.id',
+                          bgColor: const Color(0xFFEFF6FF),
+                          borderColor: const Color(0xFFBFDBFE),
+                          textColor: const Color(0xFF2563EB),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildQuickDemoButton(
+                          title: '🛡️ Masuk sebagai Admin',
+                          email: 'admin@carecycle.id',
+                          bgColor: const Color(0xFFFAF5FF),
+                          borderColor: const Color(0xFFE9D5FF),
+                          textColor: const Color(0xFF7C3AED),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.md),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickDemoButton({
+    required String title,
+    required String email,
+    required Color bgColor,
+    required Color borderColor,
+    required Color textColor,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: bgColor,
+          side: BorderSide(color: borderColor),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        ),
+        onPressed: () {
+          setState(() {
+            _emailController.text = email;
+            _passwordController.text = 'secret123';
+          });
+          _handleLogin();
+        },
+        child: Text(
+          title,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

@@ -7,6 +7,7 @@ import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/services/ml_kit_service.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../../data/models/item_model.dart';
 import '../providers/catalog_provider.dart';
 
@@ -33,6 +34,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
     return AppScaffold(
       title: 'Katalog Barang Donasi',
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 1),
       body: Column(
         children: [
           // Bar Pencarian & Filter

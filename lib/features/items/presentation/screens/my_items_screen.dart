@@ -8,6 +8,7 @@ import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/carecycle_bottom_nav.dart';
 import '../../data/models/item_model.dart';
 import '../providers/item_provider.dart';
 
@@ -41,6 +42,7 @@ class MyItemsScreen extends ConsumerWidget {
 
     return AppScaffold(
       title: 'Barang Saya',
+      bottomNavigationBar: const CareCycleBottomNav(currentIndex: 3),
       actions: [
         IconButton(
           icon: const Icon(Icons.add_photo_alternate_outlined),
