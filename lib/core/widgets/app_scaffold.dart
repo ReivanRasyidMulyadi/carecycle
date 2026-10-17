@@ -39,7 +39,6 @@ class AppScaffold extends ConsumerWidget {
           : null,
       body: Column(
         children: [
-          // Banner offline
           if (showOfflineBanner)
             connectivityAsync.when(
               data: (results) {
@@ -73,7 +72,6 @@ class AppScaffold extends ConsumerWidget {
               loading: () => const SizedBox.shrink(),
               error: (_, __) => const SizedBox.shrink(),
             ),
-          // Body utama
           Expanded(child: body),
         ],
       ),

@@ -621,7 +621,7 @@ class HomeScreen extends ConsumerWidget {
     } else if (isPending) {
       title = 'Menunggu Verifikasi Admin';
       message =
-          'Dokumen legalitas komunitas Anda saat ini sedang ditinjau oleh tim Admin CareCycle.\n\nFitur pengajuan permintaan barang dan pembuatan kampanye akan aktif segera setelah admin menyetujui akun komunitas Anda.';
+          'Dokumen legalitas komunitas Anda saat ini sedang ditinjau oleh tim Admin KindShare.\n\nFitur pengajuan permintaan barang dan pembuatan kampanye akan aktif segera setelah admin menyetujui akun komunitas Anda.';
     } else {
       title = 'Dokumen Legalitas Belum Lengkap';
       message =

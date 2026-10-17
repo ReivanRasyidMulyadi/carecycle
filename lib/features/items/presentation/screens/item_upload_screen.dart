@@ -226,11 +226,9 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
                 const SizedBox(height: AppSizes.md),
               ],
 
-              // Bagian Unggah Foto Barang
               _buildPhotoPickerSection(),
               const SizedBox(height: AppSizes.md),
 
-              // Banner Rekomendasi Kategori oleh AI ML Kit
               if (_isAnalyzingImage) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -249,7 +247,7 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
                       SizedBox(width: AppSizes.sm),
                       Expanded(
                         child: Text(
-                          'AI sedang menganalisis gambar untuk menyarankan kategori...',
+                          'Menganalisis foto untuk menyarankan kategori...',
                           style: TextStyle(fontSize: 12),
                         ),
                       ),
@@ -262,9 +260,9 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
                 const SizedBox(height: AppSizes.md),
               ],
 
-              // Input Judul Barang
               TextFormField(
                 controller: _titleController,
+                textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(
                   labelText: 'Judul Barang *',
                   hintText: 'Contoh: Kemeja Formal Pria Ukuran L',
@@ -280,7 +278,6 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
               ),
               const SizedBox(height: AppSizes.md),
 
-              // Pilihan Kategori (Pakaian, Buku, Elektronik, Alat Sekolah, Lainnya)
               const Text(
                 'Kategori Barang *',
                 style: TextStyle(
@@ -325,7 +322,6 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
               ),
               const SizedBox(height: AppSizes.md),
 
-              // Pilihan Kondisi Barang
               const Text(
                 'Kondisi Barang *',
                 style: TextStyle(
@@ -358,9 +354,9 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
               ),
               const SizedBox(height: AppSizes.md),
 
-              // Input Lokasi Pengambilan / Kota
               TextFormField(
                 controller: _locationController,
+                textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(
                   labelText: 'Lokasi / Kota Pengambilan',
                   hintText: 'Contoh: Bandung, Jawa Barat',
@@ -370,10 +366,10 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
               ),
               const SizedBox(height: AppSizes.md),
 
-              // Input Deskripsi Barang
               TextFormField(
                 controller: _descController,
                 maxLines: 4,
+                textInputAction: TextInputAction.done,
                 decoration: const InputDecoration(
                   labelText: 'Deskripsi Lengkap *',
                   hintText: 'Jelaskan kondisi barang, ukuran, kelengkapan, dan alasan donasi',
@@ -389,7 +385,6 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
               ),
               const SizedBox(height: AppSizes.xl),
 
-              // Tombol Donasikan / Simpan Draft
               AppButton(
                 label: _isOnline ? 'Donasikan Barang' : 'Simpan Draft (Offline)',
                 isLoading: _isSubmitting,
@@ -470,7 +465,7 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'AI akan otomatis menganalisis gambar untuk menyarankan kategori',
+                    'Deteksi foto akan membantu menyarankan kategori yang sesuai',
                     style: TextStyle(color: AppColors.primary, fontSize: 11),
                   ),
                 ],
@@ -503,7 +498,6 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
     );
   }
 
-  /// Kartu rekomendasi kategori dari AI ML Kit
   Widget _buildAiSuggestionCard(MlCategorySuggestion suggestion) {
     if (!suggestion.hasRecommendation) {
       return Container(
@@ -519,7 +513,7 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
             const SizedBox(width: AppSizes.sm),
             Expanded(
               child: Text(
-                'AI belum dapat mengenali kategori spesifik (terdeteksi: ${suggestion.matchedLabel.isNotEmpty ? suggestion.matchedLabel : "objek umum"}). Silakan pilih kategori secara manual.',
+                'Kategori spesifik belum terdeteksi dari foto (objek: ${suggestion.matchedLabel.isNotEmpty ? suggestion.matchedLabel : "umum"}). Silakan pilih kategori secara manual.',
                 style: const TextStyle(fontSize: 12),
               ),
             ),
@@ -547,7 +541,7 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
                 Row(
                   children: [
                     const Text(
-                      'Saran Kategori AI: ',
+                      'Saran Kategori Otomatis: ',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -566,7 +560,7 @@ class _ItemUploadScreenState extends ConsumerState<ItemUploadScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Dikenali dari objek "${suggestion.matchedLabel}" (akurasi ${(suggestion.confidence * 100).toStringAsFixed(0)}%). Anda bebas mengubah kategori di bawah ini.',
+                  'Terdeteksi objek "${suggestion.matchedLabel}" (${(suggestion.confidence * 100).toStringAsFixed(0)}%). Anda dapat memilih kategori lain di bawah jika kurang pas.',
                   style: const TextStyle(fontSize: 11, color: Colors.black87),
                 ),
               ],

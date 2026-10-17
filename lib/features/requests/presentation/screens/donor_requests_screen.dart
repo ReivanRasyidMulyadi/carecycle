@@ -435,7 +435,7 @@ class _DonorRequestsScreenState extends ConsumerState<DonorRequestsScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Menunggu persetujuan Admin CareCycle. Hanya admin yang berwenang menyetujui (meng-acc) permintaan donasi.',
+                          'Menunggu persetujuan Admin KindShare. Hanya admin yang berwenang menyetujui (meng-acc) permintaan donasi.',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.amber.shade900,

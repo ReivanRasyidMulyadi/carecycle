@@ -437,7 +437,7 @@ class _CommunityVerificationScreenState
       icon = Icons.verified;
       title = 'Komunitas Terverifikasi';
       desc =
-          'Akun komunitas Anda sudah terverifikasi resmi oleh CareCycle. Anda memiliki akses penuh ke fitur pengajuan barang dan kampanye.';
+          'Akun komunitas Anda sudah terverifikasi resmi oleh KindShare. Anda memiliki akses penuh ke fitur pengajuan barang dan kampanye.';
     } else if (status == 'rejected') {
       bgColor = Colors.red.shade50;
       borderColor = Colors.red.shade300;

@@ -65,7 +65,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo KindShare
                   Center(
                     child: Container(
                       width: 84,
@@ -113,10 +112,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: AppSizes.xl),
 
-                  // Input Email
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.email],
+                    autocorrect: false,
                     decoration: const InputDecoration(
                       labelText: AppStrings.email,
                       prefixIcon: Icon(Icons.email_outlined),
@@ -134,10 +135,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: AppSizes.md),
 
-                  // Input Password
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.password],
+                    onFieldSubmitted: (_) => _handleLogin(),
                     decoration: InputDecoration(
                       labelText: AppStrings.password,
                       prefixIcon: const Icon(Icons.lock_outlined),
@@ -166,7 +169,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: AppSizes.lg),
 
-                  // Tombol Masuk
                   AppButton(
                     label: AppStrings.login,
                     isLoading: authState.isLoading,
@@ -174,7 +176,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: AppSizes.lg),
 
-                  // Navigasi ke Halaman Daftar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

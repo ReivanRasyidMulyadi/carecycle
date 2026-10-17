@@ -244,7 +244,7 @@ class AdminAnalyticsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           const Text(
-            'Estimasi timbunan sampah tekstil, perkakas & elektronik yang berhasil dicegah dari TPA berkat penyaluran donasi CareCycle.',
+            'Estimasi timbunan sampah tekstil, perkakas & elektronik yang berhasil dicegah dari TPA berkat penyaluran donasi KindShare.',
             style: TextStyle(color: Colors.white70, fontSize: 12),
           ),
         ],

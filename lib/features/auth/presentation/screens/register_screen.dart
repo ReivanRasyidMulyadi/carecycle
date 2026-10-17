@@ -54,7 +54,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     if (mounted) {
       if (success) {
-        context.showSnackBar('Registrasi berhasil! Selamat datang di CareCycle.');
+        context.showSnackBar('Registrasi berhasil! Selamat datang di KindShare.');
         context.goNamed(AppRouter.home);
       } else {
         final error = ref.read(authNotifierProvider).errorMessage;
@@ -86,7 +86,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'Buat Akun CareCycle',
+                  'Buat Akun KindShare',
                   style: TextStyle(
                     fontSize: AppSizes.fontXl,
                     fontWeight: FontWeight.bold,
@@ -103,7 +103,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.lg),
 
-                // Selector Peran Pengguna (Donatur vs Komunitas)
                 const Text(
                   AppStrings.selectRole,
                   style: TextStyle(
@@ -145,9 +144,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.lg),
 
-                // Nama Lengkap Penanggung Jawab / Donatur
                 TextFormField(
                   controller: _fullNameController,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.name],
                   decoration: const InputDecoration(
                     labelText: AppStrings.fullName,
                     prefixIcon: Icon(Icons.person_outline),
@@ -162,10 +162,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.md),
 
-                // Field Khusus: Nama Komunitas (jika memilih peran Komunitas)
                 if (_selectedRole == 'komunitas') ...[
                   TextFormField(
                     controller: _communityNameController,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.organizationName],
                     decoration: const InputDecoration(
                       labelText: 'Nama Organisasi / Komunitas',
                       prefixIcon: Icon(Icons.business_outlined),
@@ -182,10 +183,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   const SizedBox(height: AppSizes.md),
                 ],
 
-                // Input Email
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.email],
+                  autocorrect: false,
                   decoration: const InputDecoration(
                     labelText: AppStrings.email,
                     prefixIcon: Icon(Icons.email_outlined),
@@ -203,10 +206,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.md),
 
-                // Input Kata Sandi
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.newPassword],
                   decoration: InputDecoration(
                     labelText: AppStrings.password,
                     prefixIcon: const Icon(Icons.lock_outlined),
@@ -235,10 +239,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.md),
 
-                // Konfirmasi Kata Sandi
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _handleRegister(),
                   decoration: InputDecoration(
                     labelText: AppStrings.confirmPassword,
                     prefixIcon: const Icon(Icons.lock_clock_outlined),
@@ -264,7 +269,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.lg),
 
-                // Tombol Daftar
                 AppButton(
                   label: AppStrings.register,
                   isLoading: authState.isLoading,
@@ -272,7 +276,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: AppSizes.md),
 
-                // Link Kembali ke Login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
