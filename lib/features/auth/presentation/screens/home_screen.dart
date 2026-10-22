@@ -74,45 +74,6 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: const CareCycleBottomNav(currentIndex: 0),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.person_outline),
-          tooltip: 'Profil Saya',
-          onPressed: () {
-            context.pushNamed(AppRouter.profile);
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.logout),
-          tooltip: AppStrings.logout,
-          onPressed: () async {
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: const Text(AppStrings.logout),
-                content: const Text(AppStrings.logoutConfirm),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx, false),
-                    child: const Text(AppStrings.no),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text(AppStrings.yes),
-                  ),
-                ],
-              ),
-            );
-
-            if (confirm == true) {
-              await ref.read(authNotifierProvider.notifier).signOut();
-              if (context.mounted) {
-                context.goNamed(AppRouter.login);
-              }
-            }
-          },
-        ),
-      ],
       body: RefreshIndicator(
         onRefresh: () async {
           await ref.read(authNotifierProvider.notifier).refreshCurrentUser();
@@ -170,7 +131,7 @@ class HomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Halo, ${user?.fullName ?? "Pengguna"}',
+                              'Halo, ${user?.fullName ?? "Pengguna"} 👋',
                               style: const TextStyle(
                                 fontSize: AppSizes.fontMd,
                                 fontWeight: FontWeight.bold,
