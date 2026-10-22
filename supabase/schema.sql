@@ -235,8 +235,8 @@ CREATE POLICY "Profil dapat dibaca oleh pengguna terautentikasi"
 CREATE POLICY "Pengguna dapat mengubah profil sendiri"
     ON public.profiles FOR UPDATE
     TO authenticated
-    USING (auth.uid() = id)
-    WITH CHECK (auth.uid() = id);
+    USING (auth.uid() = id OR public.is_admin(auth.uid()))
+    WITH CHECK (auth.uid() = id OR public.is_admin(auth.uid()));
 
 -- Communities Policies
 CREATE POLICY "Profil komunitas dapat dibaca oleh pengguna terautentikasi"

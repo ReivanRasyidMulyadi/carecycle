@@ -170,7 +170,7 @@ class HomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Halo, ${user?.fullName ?? "Pengguna"} 👋',
+                              'Halo, ${user?.fullName ?? "Pengguna"}',
                               style: const TextStyle(
                                 fontSize: AppSizes.fontMd,
                                 fontWeight: FontWeight.bold,

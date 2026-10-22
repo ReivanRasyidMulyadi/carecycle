@@ -75,7 +75,13 @@ class AdminRepository {
         .update({'role': newRole})
         .eq('id', userId)
         .select()
-        .single();
+        .maybeSingle();
+
+    if (data == null) {
+      throw Exception(
+        'Pengguna dengan ID tersebut tidak ditemukan, atau kebijakan akses database mencegah perubahan ini.',
+      );
+    }
 
     return UserModel.fromJson(data);
   }
