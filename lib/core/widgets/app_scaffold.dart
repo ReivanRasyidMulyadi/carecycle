@@ -33,7 +33,41 @@ class AppScaffold extends ConsumerWidget {
     return Scaffold(
       appBar: (title != null || titleWidget != null)
           ? AppBar(
-              title: titleWidget ?? Text(title!),
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.surfaceDark
+                  : Colors.white,
+              foregroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : AppColors.textPrimaryLight,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              centerTitle: false,
+              iconTheme: IconThemeData(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.textPrimaryLight,
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(1.0),
+                child: Container(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white12
+                      : Colors.grey.shade100,
+                  height: 1.0,
+                ),
+              ),
+              title: titleWidget ??
+                  Text(
+                    title!,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : AppColors.textPrimaryLight,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
               actions: actions,
             )
           : null,

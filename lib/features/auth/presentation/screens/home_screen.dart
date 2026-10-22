@@ -19,6 +19,45 @@ class HomeScreen extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
     final user = authState.user;
     final community = authState.community;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isAdmin = user?.isAdmin == true;
+    final isKomunitas = user?.isKomunitas == true;
+
+    final String appHeaderTitle;
+    final String appHeaderSubtitle;
+    final Color rolePrimaryColor;
+    final Color roleBgColor;
+    final Color roleBorderColor;
+
+    if (isAdmin) {
+      appHeaderTitle = '${AppStrings.appName} Admin';
+      appHeaderSubtitle = 'Pusat Kendali Sistem';
+      rolePrimaryColor = const Color(0xFF7E22CE);
+      roleBgColor = const Color(0xFFFAF5FF);
+      roleBorderColor = const Color(0xFFE9D5FF);
+    } else if (isKomunitas) {
+      appHeaderTitle = '${AppStrings.appName} Komunitas';
+      appHeaderSubtitle = 'Penerima & Penyalur Manfaat';
+      rolePrimaryColor = const Color(0xFF2563EB);
+      roleBgColor = const Color(0xFFEFF6FF);
+      roleBorderColor = const Color(0xFFBFDBFE);
+    } else {
+      appHeaderTitle = AppStrings.appName;
+      appHeaderSubtitle = 'Berbagi Berkelanjutan';
+      rolePrimaryColor = AppColors.primary;
+      roleBgColor = const Color(0xFFECFDF5);
+      roleBorderColor = const Color(0xFFA7F3D0);
+    }
+
+    String initials = 'U';
+    if (user?.fullName.trim().isNotEmpty == true) {
+      final parts = user!.fullName.trim().split(RegExp(r'\s+'));
+      if (parts.length >= 2) {
+        initials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      } else {
+        initials = parts[0][0].toUpperCase();
+      }
+    }
 
     return AppScaffold(
       titleWidget: Row(
@@ -27,10 +66,11 @@ class HomeScreen extends ConsumerWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
+              color: rolePrimaryColor,
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: rolePrimaryColor.withOpacity(0.25),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -51,21 +91,20 @@ class HomeScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                AppStrings.appName,
+              Text(
+                appHeaderTitle,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.2,
+                  color: isDark ? Colors.white : rolePrimaryColor,
                 ),
               ),
               Text(
-                'Berbagi Berkelanjutan',
+                appHeaderSubtitle,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white60
-                      : Colors.black54,
+                  color: isDark ? Colors.white60 : Colors.black54,
                   fontWeight: FontWeight.normal,
                 ),
               ),
@@ -93,7 +132,7 @@ class HomeScreen extends ConsumerWidget {
                   side: BorderSide(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white12
-                        : Colors.grey.shade200,
+                        : roleBorderColor.withOpacity(0.5),
                   ),
                 ),
                 child: Padding(
@@ -104,23 +143,20 @@ class HomeScreen extends ConsumerWidget {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: AppColors.primarySwatch.shade50,
+                          color: isDark ? Colors.white.withOpacity(0.08) : roleBgColor,
                           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                           border: Border.all(
-                            color: AppColors.primaryLight.withOpacity(0.4),
+                            color: isDark ? Colors.white24 : roleBorderColor,
                             width: 1.5,
                           ),
                         ),
                         child: Center(
                           child: Text(
-                            (user?.fullName.isNotEmpty == true
-                                    ? user!.fullName[0]
-                                    : 'U')
-                                .toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 22,
+                            initials,
+                            style: TextStyle(
+                              fontSize: initials.length > 1 ? 18 : 22,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: isDark ? Colors.white : rolePrimaryColor,
                             ),
                           ),
                         ),
@@ -160,13 +196,22 @@ class HomeScreen extends ConsumerWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary,
+                                    color: isDark
+                                        ? rolePrimaryColor.withOpacity(0.2)
+                                        : roleBgColor,
                                     borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? rolePrimaryColor
+                                          : roleBorderColor,
+                                    ),
                                   ),
                                   child: Text(
                                     user?.roleDisplay ?? 'Donatur',
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? Colors.white
+                                          : rolePrimaryColor,
                                       fontSize: 10.5,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -511,58 +556,111 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  /// Banner khusus akun Admin
+  /// Banner khusus akun Admin (sesuai carecycle-prototype.html)
   Widget _buildAdminBanner(BuildContext context) {
-    return Card(
-      elevation: 1,
-      color: AppColors.primaryDark,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF581C87), Color(0xFF312E81)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF581C87).withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSizes.md),
-        child: Row(
-          children: [
-            const CircleAvatar(
-              backgroundColor: Colors.white24,
-              child: Icon(Icons.admin_panel_settings, color: Colors.white),
+      padding: const EdgeInsets.all(AppSizes.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                ),
+                child: const Center(
+                  child: Icon(Icons.shield_outlined, color: Colors.white, size: 26),
+                ),
+              ),
+              const SizedBox(width: AppSizes.md),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Panel Administrator',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppSizes.fontSm,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Semua servis & verifikasi normal',
+                      style: TextStyle(color: Color(0xFFE9D5FF), fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF9333EA),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () {
+                  context.pushNamed(AppRouter.adminVerification);
+                },
+                child: const Text('Buka', style: TextStyle(fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.only(top: 8),
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.white12),
+              ),
             ),
-            const SizedBox(width: AppSizes.md),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Panel Administrator',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '3 Menunggu Verifikasi',
+                  style: TextStyle(color: Color(0xFFE9D5FF), fontSize: 11),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade400,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Text(
+                    'Perlu Tindakan',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: AppSizes.fontSm,
+                      fontSize: 10,
                     ),
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    'Tinjau permohonan legalitas komunitas baru',
-                    style: TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              onPressed: () {
-                context.pushNamed(AppRouter.adminVerification);
-              },
-              child: const Text('Buka', style: TextStyle(fontSize: 12)),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

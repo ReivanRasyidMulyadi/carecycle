@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareCycle - Interactive Prototype (19 Layar)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Custom Styling & Design Tokens */
+    :root {
+      --primary: #047857;
+      --primary-light: #10B981;
+      --primary-dark: #065F46;
+      --bg-mint: #F0FDF4;
+      --surface: #FFFFFF;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --info: #3B82F6;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Screen transition */
+    .screen-fade {
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pulse glow */
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.8); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 2.5s infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased flex flex-col items-center py-6 px-4 selection:bg-emerald-500 selection:text-white">
+
+  <!-- ========================================== -->
+  <!-- TOP CONTROL & PRESENTATION TOOLBAR        -->
+  <!-- ========================================== -->
+  <header class="w-full max-w-4xl mb-6 bg-slate-800/90 backdrop-blur border border-slate-700/80 rounded-2xl p-4 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-900/50">
+        ♻️
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-extrabold text-lg text-white tracking-tight">CareCycle Prototype</h1>
+          <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30">19 Layar Interaktif</span>
+        </div>
+        <p class="text-xs text-slate-400">Platform Donasi Barang Bekas Berkelanjutan • Simulasi Figma</p>
+      </div>
+    </div>
+
+    <!-- Quick Role Switcher -->
+    <div class="flex items-center bg-slate-900/80 p-1 rounded-xl border border-slate-700">
+      <button onclick="switchRole('donatur')" id="role-btn-donatur" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-emerald-600 text-white shadow">
+        👤 Donatur
+      </button>
+      <button onclick="switchRole('komunitas')" id="role-btn-komunitas" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">
+        🏢 Komunitas
+      </button>
+      <button onclick="switchRole('admin')" id="role-btn-admin" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">
+        🛡️ Admin
+      </button>
+    </div>
+
+    <!-- Screen Navigator Dropdown & Reset -->
+    <div class="flex items-center gap-2 w-full md:w-auto">
+      <select id="quick-screen-select" onchange="navigateTo(this.value)" class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1 md:w-60">
+        <optgroup label="Autentikasi & Onboarding">
+          <option value="screen-splash">1. Splash Screen</option>
+          <option value="screen-login">2. Login Screen</option>
+          <option value="screen-register">3. Register Screen</option>
+        </optgroup>
+        <optgroup label="Alur Donatur">
+          <option value="screen-home-donatur" selected>4. Home - Donatur</option>
+          <option value="screen-catalog">7. Katalog Publik</option>
+          <option value="screen-item-detail">8. Detail Barang</option>
+          <option value="screen-upload">9. Unggah Donasi (AI)</option>
+          <option value="screen-my-items">10. Barang Saya (Draft)</option>
+          <option value="screen-campaign">11. Open Campaign</option>
+          <option value="screen-requests-donor">18. Acc Permintaan (Donatur)</option>
+          <option value="screen-profile">12. Profil Pengguna</option>
+        </optgroup>
+        <optgroup label="Alur Komunitas">
+          <option value="screen-home-komunitas">5. Home - Komunitas</option>
+          <option value="screen-community-requests">19. Permintaan Komunitas</option>
+          <option value="screen-community-verification">13. Verifikasi Legalitas</option>
+        </optgroup>
+        <optgroup label="Alur Admin">
+          <option value="screen-home-admin">6. Home - Admin</option>
+          <option value="screen-admin-verification">14. Admin Verifikasi Komunitas</option>
+          <option value="screen-admin-users">15. Admin Kelola Pengguna</option>
+          <option value="screen-admin-analytics">16. Admin Statistik & Eco-Impact</option>
+          <option value="screen-admin-items">17. Admin Moderasi Barang</option>
+        </optgroup>
+      </select>
+      <button onclick="restartPrototype()" title="Mulai ulang ke Splash" class="p-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- PHONE MOCKUP FRAME (390 x 844 iPhone-like) -->
+  <!-- ========================================== -->
+  <main class="relative">
+    <!-- Outer Bezel Container -->
+    <div class="w-[390px] h-[844px] bg-black rounded-[52px] p-[10px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_40px_rgba(4,120,87,0.25)] border-[4px] border-slate-700/80 relative flex flex-col overflow-hidden">
+      
+      <!-- Screen Inner Bezel -->
+      <div class="relative w-full h-full bg-[#F0FDF4] rounded-[42px] overflow-hidden flex flex-col border border-slate-900 select-none text-[#1F2937]">
+        
+        <!-- STATUS BAR (iOS Style 44px) -->
+        <div id="phone-status-bar" class="w-full h-11 pt-2 px-6 flex justify-between items-center z-50 text-xs font-semibold tracking-tight transition-colors duration-300 text-gray-800">
+          <span id="status-time">09:41</span>
+          
+          <!-- Dynamic Island Notch -->
+          <div class="w-24 h-5 bg-black rounded-full flex items-center justify-end pr-2 gap-1.5 shadow-sm">
+            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-700"></div>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <!-- Signal -->
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+            <!-- 5G -->
+            <span class="text-[10px] font-bold">5G</span>
+            <!-- Battery -->
+            <div class="w-5 h-2.5 border border-current rounded-sm p-0.5 flex items-center">
+              <div class="h-full w-3.5 bg-current rounded-2xs"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SCREEN VIEW CONTAINER (Scrollable)        -->
+        <!-- ========================================== -->
+        <div id="screen-container" class="flex-1 overflow-y-auto no-scrollbar relative flex flex-col">
+          
+          <!-- SCREEN 1: SPLASH SCREEN -->
+          <section id="screen-splash" class="screen-view absolute inset-0 bg-[#047857] text-white flex flex-col items-center justify-between py-16 px-6 z-40 text-center">
+            <div class="pt-10">
+              <span class="bg-white/10 text-emerald-100 text-xs px-3 py-1 rounded-full uppercase tracking-widest font-semibold">CareCycle Mobile</span>
+            </div>
+            
+            <div class="flex flex-col items-center gap-5">
+              <div class="w-28 h-28 rounded-full bg-white flex items-center justify-center text-5xl shadow-2xl pulse-glow transform hover:scale-105 transition">
+                ♻️
+              </div>
+              <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white mb-2">CareCycle</h1>
+                <p class="text-emerald-100 text-sm font-medium max-w-xs leading-relaxed">
+                  "Berbagi Kebaikan, Hidupkan Kembali"
+                </p>
+              </div>
+              <div class="flex items-center gap-2 mt-4 bg-emerald-800/60 px-4 py-1.5 rounded-full text-xs text-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                Memuat platform donasi pintar...
+              </div>
+            </div>
+
+            <div class="w-full max-w-xs flex flex-col gap-3">
+              <button onclick="navigateTo('screen-login')" class="w-full h-12 bg-white text-[#047857] font-bold rounded-xl shadow-lg hover:bg-emerald-50 active:scale-98 transition flex items-center justify-center gap-2">
+                <span>Mulai Sekarang</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </button>
+              <p class="text-[11px] text-emerald-200/80">Ketuk untuk melanjutkan ke Login</p>
+            </div>
+          </section>
+
+          <!-- SCREEN 2: LOGIN SCREEN -->
+          <section id="screen-login" class="screen-view hidden min-h-full bg-white flex flex-col justify-between p-6">
+            <div>
+              <!-- Header -->
+              <div class="text-center pt-4 mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-[#047857] text-white flex items-center justify-center text-2xl mx-auto shadow-md mb-3">
+                  ♻️
+                </div>
+                <h2 class="text-2xl font-extrabold text-[#1F2937]">CareCycle</h2>
+                <p class="text-xs text-[#6B7280] mt-1">Masuk ke akun untuk berbagi & mengelola donasi</p>
+              </div>
+
+              <!-- Form Inputs -->
+              <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat Email</label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
+                    </span>
+                    <input type="email" id="login-email" value="donatur@carecycle.id" required class="w-full h-[52px] pl-10 pr-4 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#047857]" placeholder="nama@email.com">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-gray-700 mb-1">Kata Sandi</label>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </span>
+                    <input type="password" id="login-password" value="secret123" required class="w-full h-[52px] pl-10 pr-10 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#047857]" placeholder="••••••••">
+                    <button type="button" onclick="togglePasswordVisibility('login-password')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs pt-1">
+                  <label class="flex items-center gap-2 cursor-pointer text-gray-600">
+                    <input type="checkbox" checked class="rounded text-[#047857] focus:ring-[#047857]">
+                    <span>Ingat saya</span>
+                  </label>
+                  <a href="#" onclick="showToast('Fitur reset kata sandi dikirim ke email')" class="text-[#047857] font-semibold hover:underline">Lupa Sandi?</a>
+                </div>
+
+                <button type="submit" class="w-full h-12 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl shadow-md active:scale-98 transition flex items-center justify-center gap-2">
+                  <span>Masuk</span>
+                </button>
+              </form>
+
+              <div class="text-center mt-4">
+                <span class="text-xs text-gray-500">Belum punya akun? </span>
+                <button onclick="navigateTo('screen-register')" class="text-xs font-bold text-[#047857] hover:underline">Daftar sekarang</button>
+              </div>
+            </div>
+
+            <!-- Demo Role Logins -->
+            <div class="pt-6 border-t border-gray-100">
+              <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider text-center mb-2.5">Demo Akses Cepat</p>
+              <div class="grid grid-cols-1 gap-2">
+                <button onclick="quickLoginAs('donatur')" class="w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[#047857] rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition">
+                  <span>👤 Masuk sebagai Donatur</span>
+                </button>
+                <button onclick="quickLoginAs('komunitas')" class="w-full py-2.5 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#3B82F6] rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition">
+                  <span>🏢 Masuk sebagai Komunitas</span>
+                </button>
+                <button onclick="quickLoginAs('admin')" class="w-full py-2.5 px-3 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition">
+                  <span>🛡️ Masuk sebagai Admin</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 3: REGISTER SCREEN -->
+          <section id="screen-register" class="screen-view hidden min-h-full bg-white flex flex-col p-6">
+            <!-- AppBar -->
+            <div class="flex items-center gap-3 pb-4 border-b border-gray-100">
+              <button onclick="navigateTo('screen-login')" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <div>
+                <h3 class="font-extrabold text-base text-gray-900">Buat Akun Baru</h3>
+                <p class="text-[11px] text-gray-500">Pilih peran dan isi biodata Anda</p>
+              </div>
+            </div>
+
+            <!-- Role Selector Cards -->
+            <div class="mt-4">
+              <label class="block text-xs font-bold text-gray-700 mb-2">Pilih Peran Anda</label>
+              <div class="grid grid-cols-2 gap-2.5">
+                <!-- Donatur Card -->
+                <div onclick="selectRegisterRole('donatur')" id="reg-card-donatur" class="p-3 rounded-2xl border-2 border-[#047857] bg-[#F0FDF4] cursor-pointer transition text-left flex flex-col justify-between h-28 shadow-sm">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-base">
+                    🤝
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-extrabold text-[#047857]">Donatur</h4>
+                    <p class="text-[10px] text-gray-500 leading-tight">Individu pemberi donasi barang</p>
+                  </div>
+                </div>
+
+                <!-- Komunitas Card -->
+                <div onclick="selectRegisterRole('komunitas')" id="reg-card-komunitas" class="p-3 rounded-2xl border-2 border-gray-200 bg-white hover:border-gray-300 cursor-pointer transition text-left flex flex-col justify-between h-28">
+                  <div class="w-8 h-8 rounded-xl bg-blue-100 text-[#3B82F6] flex items-center justify-center text-base">
+                    🏛️
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-extrabold text-gray-800">Komunitas</h4>
+                    <p class="text-[10px] text-gray-500 leading-tight">Yayasan, Panti Asuhan, Organisasi</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form -->
+            <form onsubmit="handleRegisterSubmit(event)" class="space-y-3 mt-4 flex-1">
+              <!-- Organisasi field (conditional) -->
+              <div id="reg-org-field" class="hidden">
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Organisasi / Yayasan</label>
+                <input type="text" id="reg-org-name" class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Contoh: Yayasan Harapan Bersama">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                <input type="text" id="reg-name" value="Budi Santoso" required class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Nama Lengkap Anda">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Alamat Email</label>
+                <input type="email" id="reg-email" value="budi@example.com" required class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="nama@email.com">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Kata Sandi</label>
+                <input type="password" required class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Minimal 8 karakter">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Konfirmasi Sandi</label>
+                <input type="password" required class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Ketik ulang kata sandi">
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="w-full h-12 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl shadow-md transition">
+                  Daftar Sekarang
+                </button>
+              </div>
+            </form>
+
+            <div class="text-center py-2">
+              <span class="text-xs text-gray-500">Sudah punya akun? </span>
+              <button onclick="navigateTo('screen-login')" class="text-xs font-bold text-[#047857]">Masuk</button>
+            </div>
+          </section>
+
+          <!-- SCREEN 4: HOME SCREEN - DONATUR -->
+          <section id="screen-home-donatur" class="screen-view hidden flex-col pb-20">
+            <!-- Top App Bar -->
+            <div class="bg-white px-5 py-3 border-b border-gray-100 flex items-center justify-between sticky top-0 z-30">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-[#047857] text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                  ♻️
+                </div>
+                <div>
+                  <h3 class="text-base font-extrabold text-[#047857] tracking-tight">CareCycle</h3>
+                  <p class="text-[9px] text-gray-400 -mt-1">Berbagi Berkelanjutan</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="navigateTo('screen-profile')" class="w-8 h-8 rounded-full bg-emerald-100 text-[#047857] font-bold text-xs flex items-center justify-center border border-emerald-300">
+                  AD
+                </button>
+                <button onclick="navigateTo('screen-login')" title="Keluar" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:text-red-500 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-4 space-y-4">
+              <!-- Welcome Card -->
+              <div class="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-[#047857] font-extrabold text-base flex items-center justify-center border-2 border-emerald-200">
+                    AD
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h4 class="font-extrabold text-sm text-gray-900">Halo, Ahmad Donatur 👋</h4>
+                    </div>
+                    <p class="text-xs text-gray-500">Siap menyelamatkan barang hari ini?</p>
+                  </div>
+                </div>
+                <span class="bg-emerald-100 text-[#047857] text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                  Donatur
+                </span>
+              </div>
+
+              <!-- Care Points & Gamification Card -->
+              <div class="bg-gradient-to-r from-[#047857] to-[#10B981] rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                
+                <div class="flex justify-between items-start mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xl">🌿</span>
+                    <div>
+                      <p class="text-xs text-emerald-100 font-medium">Care Points</p>
+                      <h3 class="text-2xl font-black tracking-tight">120 Poin</h3>
+                    </div>
+                  </div>
+                  <span class="bg-white/20 backdrop-blur px-2.5 py-1 rounded-full text-xs font-bold text-white border border-white/30 flex items-center gap-1">
+                    ⭐ Level: Hero
+                  </span>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="w-full bg-black/20 rounded-full h-2 mb-2 overflow-hidden">
+                  <div class="bg-yellow-300 h-2 rounded-full" style="width: 60%"></div>
+                </div>
+                <div class="flex justify-between text-[11px] text-emerald-100">
+                  <span>12 Barang Diselamatkan</span>
+                  <span>80 poin menuju Savior 🏆</span>
+                </div>
+              </div>
+
+              <!-- 2x3 Grid Menu -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-700 mb-2.5 uppercase tracking-wider">Menu Donatur</h4>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <!-- Unggah Donasi -->
+                  <div onclick="navigateTo('screen-upload')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center text-lg">
+                      📤
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Unggah Donasi</h5>
+                      <p class="text-[10px] text-gray-500">Scan AI & upload</p>
+                    </div>
+                  </div>
+
+                  <!-- Barang Saya -->
+                  <div onclick="navigateTo('screen-my-items')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-[#3B82F6] flex items-center justify-center text-lg">
+                      📦
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Barang Saya</h5>
+                      <p class="text-[10px] text-gray-500">4 barang aktif</p>
+                    </div>
+                  </div>
+
+                  <!-- Katalog Publik -->
+                  <div onclick="navigateTo('screen-catalog')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-[#F59E0B] flex items-center justify-center text-lg">
+                      🛍️
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Katalog Publik</h5>
+                      <p class="text-[10px] text-gray-500">Jelajahi barang</p>
+                    </div>
+                  </div>
+
+                  <!-- Open Campaign -->
+                  <div onclick="navigateTo('screen-campaign')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg">
+                      📢
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Open Campaign</h5>
+                      <p class="text-[10px] text-gray-500">Bantu komunitas</p>
+                    </div>
+                  </div>
+
+                  <!-- Acc Permintaan -->
+                  <div onclick="navigateTo('screen-requests-donor')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 cursor-pointer transition flex items-center gap-3 relative">
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+                      📨
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Acc Permintaan</h5>
+                      <p class="text-[10px] text-gray-500">3 pengajuan</p>
+                    </div>
+                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500"></span>
+                  </div>
+
+                  <!-- Dampak & Sertifikat -->
+                  <div onclick="navigateTo('screen-profile')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-lg">
+                      🎖️
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Dampak & Sertifikat</h5>
+                      <p class="text-[10px] text-gray-500">Lihat jejak hijau</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Campaign Spotlight -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-gray-800">Kampanye Mendesak</span>
+                  <button onclick="navigateTo('screen-campaign')" class="text-[11px] font-bold text-[#047857]">Lihat Semua</button>
+                </div>
+                <div class="bg-emerald-50/60 rounded-xl p-3 border border-emerald-100">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-bold text-emerald-800">📚 Buku Paket SD Panti Pelita</span>
+                    <span class="text-[9px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded font-semibold">Verified</span>
+                  </div>
+                  <div class="w-full bg-emerald-200 rounded-full h-1.5 my-2">
+                    <div class="bg-[#047857] h-1.5 rounded-full" style="width: 70%"></div>
+                  </div>
+                  <div class="flex justify-between text-[10px] text-gray-600">
+                    <span>Terkumpul 35 dari 50 barang</span>
+                    <span class="font-bold text-[#047857]">70%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 5: HOME SCREEN - KOMUNITAS -->
+          <section id="screen-home-komunitas" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-5 py-3 border-b border-gray-100 flex items-center justify-between sticky top-0 z-30">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-[#3B82F6] text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                  🏢
+                </div>
+                <div>
+                  <h3 class="text-base font-extrabold text-gray-900 tracking-tight">CareCycle Komunitas</h3>
+                  <p class="text-[9px] text-gray-400 -mt-1">Penerima & Penyalur Manfaat</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="navigateTo('screen-profile')" class="w-8 h-8 rounded-full bg-blue-100 text-[#3B82F6] font-bold text-xs flex items-center justify-center border border-blue-300">
+                  YH
+                </button>
+                <button onclick="navigateTo('screen-login')" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:text-red-500 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-4 space-y-4">
+              <!-- Welcome Header -->
+              <div class="bg-white rounded-2xl p-4 shadow-sm border border-blue-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#3B82F6] font-extrabold text-base flex items-center justify-center border-2 border-blue-200">
+                    YH
+                  </div>
+                  <div>
+                    <h4 class="font-extrabold text-sm text-gray-900">Halo, Yayasan Harapan 👋</h4>
+                    <p class="text-xs text-gray-500">Jakarta Selatan • Organisasi Sosial</p>
+                  </div>
+                </div>
+                <span class="bg-blue-100 text-[#3B82F6] text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-200">
+                  Komunitas
+                </span>
+              </div>
+
+              <!-- Verification Notice Banner (Amber) -->
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-start gap-3 shadow-sm">
+                <span class="text-xl">⚠️</span>
+                <div class="flex-1">
+                  <h5 class="text-xs font-bold text-amber-900">Dokumen Legalitas Sedang Ditinjau</h5>
+                  <p class="text-[11px] text-amber-700 mt-0.5">Admin sedang memverifikasi SK Kemenkumham Anda untuk membuka akses Open Campaign penuh.</p>
+                  <button onclick="navigateTo('screen-community-verification')" class="mt-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1 rounded-lg transition">
+                    Cek Status Dokumen &rarr;
+                  </button>
+                </div>
+              </div>
+
+              <!-- 2x3 Grid Menu -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-700 mb-2.5 uppercase tracking-wider">Aktivitas Komunitas</h4>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <!-- Permintaan Saya -->
+                  <div onclick="navigateTo('screen-community-requests')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-[#3B82F6] flex items-center justify-center text-lg">
+                      📋
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Permintaan Saya</h5>
+                      <p class="text-[10px] text-gray-500">2 sedang jalan</p>
+                    </div>
+                  </div>
+
+                  <!-- Open Campaign (with lock) -->
+                  <div onclick="navigateTo('screen-campaign')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 cursor-pointer transition flex items-center gap-3 relative">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg">
+                      📢
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Open Campaign</h5>
+                      <p class="text-[10px] text-gray-500">Galang donasi</p>
+                    </div>
+                    <span class="absolute top-2 right-2 text-[10px]" title="Perlu verifikasi">🔒</span>
+                  </div>
+
+                  <!-- Ajukan Permintaan / Cari Barang -->
+                  <div onclick="navigateTo('screen-catalog')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center text-lg">
+                      ➕
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Ajukan Donasi</h5>
+                      <p class="text-[10px] text-gray-500">Pilih dari katalog</p>
+                    </div>
+                  </div>
+
+                  <!-- Katalog Publik -->
+                  <div onclick="navigateTo('screen-catalog')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-[#F59E0B] flex items-center justify-center text-lg">
+                      🛍️
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Katalog Publik</h5>
+                      <p class="text-[10px] text-gray-500">Semua item donasi</p>
+                    </div>
+                  </div>
+
+                  <!-- Profil & Legalitas -->
+                  <div onclick="navigateTo('screen-community-verification')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
+                      📄
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Legalitas Akun</h5>
+                      <p class="text-[10px] text-gray-500">SK & Surat Izin</p>
+                    </div>
+                  </div>
+
+                  <!-- Panduan Komunitas -->
+                  <div onclick="showToast('Buku Panduan SOP Penyaluran Bantuan dibuka')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-lg">
+                      💡
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Panduan SOP</h5>
+                      <p class="text-[10px] text-gray-500">Tata cara terima</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Status Tracking -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                <h4 class="text-xs font-bold text-gray-800 mb-2">Pengiriman Sedang Berjalan</h4>
+                <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-[#047857] flex items-center justify-center font-bold text-xs">
+                      👕
+                    </div>
+                    <div>
+                      <p class="text-xs font-bold text-gray-800">Baju Kaos Pria Size L</p>
+                      <p class="text-[10px] text-gray-500">SiCepat Resi: CC-88192849</p>
+                    </div>
+                  </div>
+                  <button onclick="navigateTo('screen-community-requests')" class="text-[10px] font-bold text-[#047857] bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                    Konfirmasi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 6: HOME SCREEN - ADMIN -->
+          <section id="screen-home-admin" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-purple-900 text-white px-5 py-3 flex items-center justify-between sticky top-0 z-30 shadow-md">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-purple-700 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                  🛡️
+                </div>
+                <div>
+                  <h3 class="text-base font-extrabold tracking-tight">CareCycle Admin</h3>
+                  <p class="text-[9px] text-purple-200 -mt-1">Pusat Kendali Sistem</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="bg-purple-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-purple-500">
+                  Super Admin
+                </span>
+                <button onclick="navigateTo('screen-login')" class="w-8 h-8 rounded-full bg-purple-800 text-purple-200 hover:text-white flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-4 space-y-4">
+              <!-- Purple Banner -->
+              <div class="bg-gradient-to-r from-purple-800 to-indigo-900 rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-2xl backdrop-blur">
+                    🛡️
+                  </div>
+                  <div>
+                    <h4 class="font-extrabold text-sm">Panel Administrator</h4>
+                    <p class="text-xs text-purple-200">Semua servis & verifikasi normal</p>
+                  </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-purple-700/60 flex items-center justify-between text-xs text-purple-200">
+                  <span>3 Menunggu Verifikasi</span>
+                  <span class="bg-amber-400 text-black font-bold text-[10px] px-2 py-0.5 rounded-full">Perlu Tindakan</span>
+                </div>
+              </div>
+
+              <!-- 2x4 Menu Grid -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-700 mb-2.5 uppercase tracking-wider">Manajemen Platform</h4>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <!-- Verifikasi Komunitas -->
+                  <div onclick="navigateTo('screen-admin-verification')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3 relative">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-lg">
+                      ✅
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Verifikasi Komunitas</h5>
+                      <p class="text-[10px] text-gray-500">3 permohonan</p>
+                    </div>
+                    <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500"></span>
+                  </div>
+
+                  <!-- Acc Permintaan Donasi -->
+                  <div onclick="navigateTo('screen-requests-donor')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center text-lg">
+                      🤝
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Acc Permintaan</h5>
+                      <p class="text-[10px] text-gray-500">Persetujuan donasi</p>
+                    </div>
+                  </div>
+
+                  <!-- Kelola Pengguna -->
+                  <div onclick="navigateTo('screen-admin-users')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-[#3B82F6] flex items-center justify-center text-lg">
+                      👥
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Kelola Pengguna</h5>
+                      <p class="text-[10px] text-gray-500">156 akun</p>
+                    </div>
+                  </div>
+
+                  <!-- Statistik Platform -->
+                  <div onclick="navigateTo('screen-admin-analytics')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-lg">
+                      📊
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Statistik Platform</h5>
+                      <p class="text-[10px] text-gray-500">Dampak & Eco-data</p>
+                    </div>
+                  </div>
+
+                  <!-- Moderasi Barang -->
+                  <div onclick="navigateTo('screen-admin-items')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+                      🛡️
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Moderasi Barang</h5>
+                      <p class="text-[10px] text-gray-500">Cek kelayakan</p>
+                    </div>
+                  </div>
+
+                  <!-- Semua Kampanye -->
+                  <div onclick="navigateTo('screen-campaign')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-[#F59E0B] flex items-center justify-center text-lg">
+                      📢
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Semua Kampanye</h5>
+                      <p class="text-[10px] text-gray-500">Monitoring dana</p>
+                    </div>
+                  </div>
+
+                  <!-- Audit Log -->
+                  <div onclick="showToast('Log Audit Sistem: Semua log tercatat dengan enkripsi')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
+                      📋
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Audit Log</h5>
+                      <p class="text-[10px] text-gray-500">Aktivitas real-time</p>
+                    </div>
+                  </div>
+
+                  <!-- Profil Admin -->
+                  <div onclick="navigateTo('screen-profile')" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm hover:border-purple-200 cursor-pointer transition flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg">
+                      ⚙️
+                    </div>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-800">Profil Admin</h5>
+                      <p class="text-[10px] text-gray-500">Pengaturan sistem</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Metrics Widget -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                <h4 class="text-xs font-bold text-gray-800 mb-2">Ringkasan Cepat Platform</h4>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                  <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-100">
+                    <p class="text-[10px] text-emerald-800 font-semibold">Tersedia</p>
+                    <p class="text-base font-black text-[#047857]">67</p>
+                  </div>
+                  <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                    <p class="text-[10px] text-blue-800 font-semibold">Komunitas</p>
+                    <p class="text-base font-black text-[#3B82F6]">12</p>
+                  </div>
+                  <div class="bg-amber-50 p-2 rounded-xl border border-amber-100">
+                    <p class="text-[10px] text-amber-800 font-semibold">Tinjauan</p>
+                    <p class="text-base font-black text-[#F59E0B]">5</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 7: CATALOG SCREEN -->
+          <section id="screen-catalog" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-base font-extrabold text-gray-900">Katalog Donasi</h3>
+                <span class="text-xs font-semibold text-[#047857] bg-emerald-50 px-2 py-0.5 rounded-full">6 Barang Tersedia</span>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="relative">
+                <input type="text" id="catalog-search" oninput="filterCatalog()" placeholder="Cari baju, buku, elektronik..." class="w-full h-10 pl-9 pr-4 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#047857]">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
+              </div>
+
+              <!-- Category Chips Scroll -->
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 text-xs">
+                <button onclick="setCatalogCategory('Semua')" class="cat-chip active px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-[#047857] text-white">Semua</button>
+                <button onclick="setCatalogCategory('Pakaian')" class="cat-chip px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-gray-100 text-gray-600">Pakaian</button>
+                <button onclick="setCatalogCategory('Buku')" class="cat-chip px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-gray-100 text-gray-600">Buku</button>
+                <button onclick="setCatalogCategory('Elektronik')" class="cat-chip px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-gray-100 text-gray-600">Elektronik</button>
+                <button onclick="setCatalogCategory('Alat Sekolah')" class="cat-chip px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-gray-100 text-gray-600">Alat Sekolah</button>
+                <button onclick="setCatalogCategory('Lainnya')" class="cat-chip px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-gray-100 text-gray-600">Lainnya</button>
+              </div>
+            </div>
+
+            <!-- 2-Column Item Grid -->
+            <div class="p-3">
+              <div id="catalog-items-grid" class="grid grid-cols-2 gap-2.5">
+                <!-- Items populated via JS -->
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 8: ITEM DETAIL SCREEN -->
+          <section id="screen-item-detail" class="screen-view hidden flex-col pb-24 bg-white">
+            <!-- Header Image with Overlay Buttons -->
+            <div class="relative w-full h-64 bg-slate-100">
+              <div id="detail-image-box" class="w-full h-full flex items-center justify-center text-7xl bg-emerald-50 text-[#047857]">
+                👕
+              </div>
+              <!-- Floating Top Actions -->
+              <div class="absolute top-3 inset-x-3 flex justify-between items-center">
+                <button onclick="goBack()" class="w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center text-gray-700">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <div class="flex items-center gap-2">
+                  <button onclick="showToast('Tautan barang berhasil disalin')" class="w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center text-gray-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                  </button>
+                  <button onclick="toggleFavorite(this)" class="w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center text-gray-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-4 space-y-4">
+              <!-- Realtime Status Banner -->
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center gap-1.5 bg-emerald-100 text-[#047857] text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Tersedia untuk Diajukan
+                </span>
+                <span class="text-xs text-gray-400">ID: #DON-9921</span>
+              </div>
+
+              <!-- Title & Category -->
+              <div>
+                <h3 id="detail-title" class="text-xl font-extrabold text-gray-900 leading-snug">Baju Kaos Pria Size L</h3>
+                <div class="flex items-center gap-2 mt-2">
+                  <span id="detail-category" class="bg-emerald-50 text-[#047857] text-xs font-bold px-2.5 py-0.5 rounded-lg border border-emerald-200">Pakaian</span>
+                  <span id="detail-condition" class="bg-blue-50 text-[#3B82F6] text-xs font-bold px-2.5 py-0.5 rounded-lg border border-blue-200">Layak Pakai</span>
+                  <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-lg border border-amber-200">🤖 AI 94% Valid</span>
+                </div>
+              </div>
+
+              <!-- Location & Date -->
+              <div class="flex items-center gap-3 text-xs text-gray-500 py-2 border-y border-gray-100">
+                <div class="flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                  <span>Jakarta Selatan</span>
+                </div>
+                <span>•</span>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <span>Diunggah 2 jam lalu</span>
+                </div>
+              </div>
+
+              <!-- Donor Profile Card -->
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-100 text-[#047857] font-extrabold flex items-center justify-center text-sm">
+                    AD
+                  </div>
+                  <div>
+                    <h5 class="text-xs font-bold text-gray-900">Ahmad Donatur</h5>
+                    <p class="text-[10px] text-gray-500">Donatur Terverifikasi • ⭐ 4.9 (12 Donasi)</p>
+                  </div>
+                </div>
+                <button onclick="showToast('Profil Ahmad Donatur dibuka')" class="text-xs font-bold text-[#047857]">Lihat</button>
+              </div>
+
+              <!-- Description -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-900 mb-1.5">Deskripsi Barang</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                  Kaos katun combed 30s warna abu-abu misty ukuran L. Kondisi masih sangat baik, tidak ada sobekan atau noda membandel. Sudah dicuci bersih higienis dan siap digunakan.
+                </p>
+              </div>
+
+              <!-- Eco Impact Estimation -->
+              <div class="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100 flex items-center gap-3">
+                <span class="text-2xl">🌱</span>
+                <div>
+                  <h5 class="text-xs font-bold text-[#047857]">Dampak Lingkungan Donasi Ini</h5>
+                  <p class="text-[11px] text-emerald-800">Menyelamatkan perkiraan 0.4 kg sampah tekstil dari TPA & menghemat ~2,700 liter air.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fixed Bottom Action Bar -->
+            <div class="absolute bottom-0 inset-x-0 bg-white border-t border-gray-100 p-3 flex items-center gap-3 shadow-lg z-30">
+              <div id="detail-action-container" class="w-full">
+                <!-- Dynamically adjusted by role -->
+                <button onclick="handleDetailAction()" id="detail-main-btn" class="w-full h-12 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                  <span>Ajukan Permintaan Donasi</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 9: ITEM UPLOAD SCREEN -->
+          <section id="screen-upload" class="screen-view hidden flex-col pb-24 bg-white">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-3 sticky top-0 z-30">
+              <button onclick="goBack()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <h3 class="text-base font-extrabold text-gray-900">Unggah Donasi Barang</h3>
+            </div>
+
+            <form onsubmit="handleUploadSubmit(event)" class="p-4 space-y-4">
+              <!-- Photo Upload Area -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5">Foto Barang Donasi</label>
+                <div class="border-2 border-dashed border-emerald-300 bg-emerald-50/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center">
+                  <div class="w-12 h-12 rounded-full bg-emerald-100 text-[#047857] flex items-center justify-center text-2xl mb-2">
+                    📸
+                  </div>
+                  <p class="text-xs font-bold text-gray-800">Ambil Foto atau Pilih dari Galeri</p>
+                  <p class="text-[10px] text-gray-500 mt-0.5">Mendukung deteksi otomatis AI ML Kit</p>
+                  <div class="flex items-center gap-2 mt-3">
+                    <button type="button" onclick="simulateAIPhotoDetection()" class="px-3 py-1.5 bg-[#047857] text-white rounded-lg text-xs font-bold shadow-sm">
+                      📷 Kamera
+                    </button>
+                    <button type="button" onclick="simulateAIPhotoDetection()" class="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-xs font-bold">
+                      🖼️ Galeri
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI ML Kit Banner -->
+              <div id="ai-suggestion-box" class="bg-blue-50 border border-blue-200 rounded-2xl p-3.5 flex items-start gap-3 shadow-sm">
+                <span class="text-2xl">🤖</span>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <h5 class="text-xs font-bold text-blue-900">AI ML Kit Suggestion</h5>
+                    <span class="text-[10px] bg-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded-full">Akurasi 92%</span>
+                  </div>
+                  <p class="text-[11px] text-blue-700 mt-1">Kategori terdeteksi: <strong>Pakaian (Kaos Pria)</strong>. Kondisi visual tampak layak pakai.</p>
+                  <button type="button" onclick="applyAISuggestion()" class="mt-2 text-xs font-bold text-white bg-[#3B82F6] hover:bg-blue-600 px-3 py-1 rounded-lg">
+                    Terapkan Rekomendasi AI
+                  </button>
+                </div>
+              </div>
+
+              <!-- Category Chips -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5">Kategori Barang</label>
+                <div class="flex flex-wrap gap-2 text-xs">
+                  <button type="button" onclick="selectUploadCategory(this, 'Pakaian')" class="upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-[#047857] text-white flex items-center gap-1">
+                    <span>✨ Pakaian (AI)</span>
+                  </button>
+                  <button type="button" onclick="selectUploadCategory(this, 'Buku')" class="upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-gray-100 text-gray-700">
+                    Buku
+                  </button>
+                  <button type="button" onclick="selectUploadCategory(this, 'Elektronik')" class="upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-gray-100 text-gray-700">
+                    Elektronik
+                  </button>
+                  <button type="button" onclick="selectUploadCategory(this, 'Alat Sekolah')" class="upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-gray-100 text-gray-700">
+                    Alat Sekolah
+                  </button>
+                  <button type="button" onclick="selectUploadCategory(this, 'Lainnya')" class="upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-gray-100 text-gray-700">
+                    Lainnya
+                  </button>
+                </div>
+              </div>
+
+              <!-- Condition Chips -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5">Kondisi Barang</label>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                  <button type="button" onclick="selectUploadCondition(this)" class="upload-cond-btn py-2 rounded-xl font-bold border-2 border-[#047857] bg-emerald-50 text-[#047857]">
+                    Layak Pakai
+                  </button>
+                  <button type="button" onclick="selectUploadCondition(this)" class="upload-cond-btn py-2 rounded-xl font-bold border-2 border-gray-200 bg-white text-gray-700">
+                    Sangat Baik
+                  </button>
+                  <button type="button" onclick="selectUploadCondition(this)" class="upload-cond-btn py-2 rounded-xl font-bold border-2 border-gray-200 bg-white text-gray-700">
+                    Baru
+                  </button>
+                </div>
+              </div>
+
+              <!-- Location Input -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pengambilan</label>
+                <input type="text" id="upload-location" value="Jakarta Selatan" required class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]">
+              </div>
+
+              <!-- Title Input -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Judul Donasi</label>
+                <input type="text" id="upload-title" value="Baju Kaos Pria Size L" required class="w-full h-11 px-3.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Contoh: Baju Kaos Katun L">
+              </div>
+
+              <!-- Description -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Deskripsi Tambahan</label>
+                <textarea id="upload-desc" rows="3" class="w-full p-3 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Jelaskan ukuran, bahan, atau catatan penting...">Kaos katun tebal, warna abu-abu muda, kondisi bersih dan rapi.</textarea>
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="w-full h-12 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                  <span>Donasikan Barang</span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- SCREEN 10: MY ITEMS SCREEN -->
+          <section id="screen-my-items" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 flex items-center justify-between sticky top-0 z-30">
+              <div>
+                <h3 class="text-base font-extrabold text-gray-900">Barang Saya</h3>
+                <p class="text-[10px] text-gray-500">Kelola donasi & status draft offline</p>
+              </div>
+              <button onclick="navigateTo('screen-upload')" class="w-8 h-8 rounded-full bg-[#047857] text-white flex items-center justify-center shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              </button>
+            </div>
+
+            <!-- Offline Draft Sync Banner -->
+            <div id="draft-banner" class="mx-4 mt-3 bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-2.5">
+                <span class="text-lg">⚡</span>
+                <div>
+                  <h5 class="text-xs font-bold text-amber-900">2 draft menunggu koneksi</h5>
+                  <p class="text-[10px] text-amber-700">Tersimpan di penyimpanan lokal</p>
+                </div>
+              </div>
+              <button onclick="syncOfflineDrafts()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition">
+                Sinkronkan
+              </button>
+            </div>
+
+            <!-- List of Items -->
+            <div class="p-4 space-y-3" id="my-items-list">
+              <!-- Item 1: Tersedia -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center text-2xl flex-shrink-0">
+                  👕
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-emerald-100 text-[#047857] text-[9px] font-bold px-2 py-0.5 rounded-full">Tersedia</span>
+                    <span class="text-[10px] text-gray-400">2 jam lalu</span>
+                  </div>
+                  <h4 class="text-xs font-bold text-gray-900 truncate mt-0.5">Baju Kaos Pria Size L</h4>
+                  <p class="text-[10px] text-gray-500">Pakaian • Layak Pakai</p>
+                </div>
+                <button onclick="deleteMyItem(this)" class="text-gray-400 hover:text-red-500 p-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+
+              <!-- Item 2: Diajukan -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl bg-amber-100 text-[#F59E0B] flex items-center justify-center text-2xl flex-shrink-0">
+                  👔
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-full">Diajukan (3 Komunitas)</span>
+                    <span class="text-[10px] text-gray-400">Kemarin</span>
+                  </div>
+                  <h4 class="text-xs font-bold text-gray-900 truncate mt-0.5">Kemeja Flanel Kotak</h4>
+                  <p class="text-[10px] text-gray-500">Pakaian • Sangat Baik</p>
+                </div>
+                <button onclick="navigateTo('screen-requests-donor')" class="text-xs font-bold text-[#047857] bg-emerald-50 px-2.5 py-1 rounded-lg">
+                  Lihat
+                </button>
+              </div>
+
+              <!-- Item 3: Selesai -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl bg-blue-100 text-[#3B82F6] flex items-center justify-center text-2xl flex-shrink-0">
+                  📚
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-blue-100 text-[#3B82F6] text-[9px] font-bold px-2 py-0.5 rounded-full">Selesai Didonasikan</span>
+                    <span class="text-[10px] text-gray-400">5 hari lalu</span>
+                  </div>
+                  <h4 class="text-xs font-bold text-gray-900 truncate mt-0.5">Buku Ensiklopedia Sains</h4>
+                  <p class="text-[10px] text-gray-500">Buku • Yayasan Harapan</p>
+                </div>
+                <span class="text-emerald-500 font-bold text-xs">✓</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 11: CAMPAIGN SCREEN -->
+          <section id="screen-campaign" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-base font-extrabold text-gray-900">Open Campaign</h3>
+                <button onclick="showCreateCampaignModal()" class="w-7 h-7 rounded-full bg-[#047857] text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                  +
+                </button>
+              </div>
+
+              <!-- Filter Tabs -->
+              <div class="flex border-b border-gray-100 text-xs">
+                <button onclick="filterCampaignTab(this, 'semua')" class="camp-tab active flex-1 py-2 font-bold border-b-2 border-[#047857] text-[#047857]">Semua</button>
+                <button onclick="filterCampaignTab(this, 'berjalan')" class="camp-tab flex-1 py-2 font-semibold text-gray-500 border-b-2 border-transparent">Sedang Berjalan</button>
+                <button onclick="filterCampaignTab(this, 'selesai')" class="camp-tab flex-1 py-2 font-semibold text-gray-500 border-b-2 border-transparent">Selesai</button>
+              </div>
+            </div>
+
+            <!-- Campaign Cards List -->
+            <div class="p-4 space-y-4">
+              <!-- Campaign 1 -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <span class="bg-emerald-50 text-[#047857] text-[10px] font-bold px-2 py-0.5 rounded-md">Buku & Edukasi</span>
+                    <h4 class="text-sm font-extrabold text-gray-900 mt-1">Donasi Buku untuk Panti Asuhan</h4>
+                  </div>
+                  <span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-2 py-0.5 rounded-full">5 Hari Lagi</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                  <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">YH</div>
+                  <span>Yayasan Harapan</span>
+                  <span class="text-emerald-600 text-xs font-bold">✓ Terverifikasi</span>
+                </div>
+
+                <p class="text-xs text-gray-600 leading-relaxed">
+                  Dibutuhkan 50 buku bacaan, cerita bergambar, dan modul pelajaran dasar untuk anak panti asuhan usia 6-12 tahun.
+                </p>
+
+                <!-- Progress Bar -->
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-500 font-medium">Terkumpul: <strong>15 dari 50 barang</strong></span>
+                    <span class="font-extrabold text-[#047857]">30%</span>
+                  </div>
+                  <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div class="bg-[#047857] h-2 rounded-full" style="width: 30%"></div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-2 pt-1">
+                  <button onclick="showToast('Terima kasih! Anda siap mendukung kampanye ini')" class="flex-1 h-10 bg-[#047857] text-white text-xs font-bold rounded-xl shadow-sm hover:bg-[#065F46] transition">
+                    Dukung Donasi
+                  </button>
+                  <button onclick="showToast('Detail rincian kampanye')" class="px-3 h-10 border border-gray-200 text-gray-700 text-xs font-bold rounded-xl">
+                    Detail
+                  </button>
+                </div>
+              </div>
+
+              <!-- Campaign 2 -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <span class="bg-blue-50 text-[#3B82F6] text-[10px] font-bold px-2 py-0.5 rounded-md">Pakaian & Sekolah</span>
+                    <h4 class="text-sm font-extrabold text-gray-900 mt-1">Seragam & Tas Sekolah Layak</h4>
+                  </div>
+                  <span class="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">12 Hari Lagi</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                  <div class="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[10px] font-bold">PK</div>
+                  <span>Panti Asuhan Kasih</span>
+                  <span class="text-emerald-600 text-xs font-bold">✓ Terverifikasi</span>
+                </div>
+
+                <p class="text-xs text-gray-600 leading-relaxed">
+                  Membantu anak-anak pesisir mendapatkan tas dan seragam merah putih serta pramuka untuk semester baru.
+                </p>
+
+                <!-- Progress Bar -->
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-500 font-medium">Terkumpul: <strong>32 dari 40 barang</strong></span>
+                    <span class="font-extrabold text-[#047857]">80%</span>
+                  </div>
+                  <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div class="bg-[#047857] h-2 rounded-full" style="width: 80%"></div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button onclick="showToast('Dukungan donasi tas/seragam')" class="flex-1 h-10 bg-[#047857] text-white text-xs font-bold rounded-xl shadow-sm">
+                    Dukung Donasi
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 12: PROFILE SCREEN -->
+          <section id="screen-profile" class="screen-view hidden flex-col pb-20 bg-gray-50">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 flex items-center justify-between sticky top-0 z-30">
+              <h3 class="text-base font-extrabold text-gray-900">Profil Saya</h3>
+              <button onclick="showToast('Pengaturan preferensi dibuka')" class="text-gray-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </button>
+            </div>
+
+            <!-- Profile Header -->
+            <div class="bg-white p-5 border-b border-gray-100 flex flex-col items-center text-center">
+              <div class="relative">
+                <div id="profile-avatar" class="w-20 h-20 rounded-full bg-emerald-100 text-[#047857] text-2xl font-black flex items-center justify-center border-4 border-white shadow-md">
+                  AD
+                </div>
+                <span id="profile-role-badge" class="absolute bottom-0 right-0 bg-[#047857] text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white">
+                  Donatur
+                </span>
+              </div>
+              <h4 id="profile-name" class="font-black text-base text-gray-900 mt-2">Ahmad Donatur</h4>
+              <p id="profile-email" class="text-xs text-gray-500">donatur@carecycle.id</p>
+              
+              <div class="flex items-center gap-2 mt-2">
+                <span class="bg-emerald-50 text-[#047857] text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                  ✓ Akun Terverifikasi
+                </span>
+                <span class="text-xs text-gray-400">•</span>
+                <span class="text-xs text-gray-500">Gabung Okt 2024</span>
+              </div>
+
+              <button onclick="showToast('Formulir edit profil')" class="mt-3 px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition">
+                Edit Informasi Akun
+              </button>
+            </div>
+
+            <div class="p-4 space-y-4">
+              <!-- Gamification Card (Donatur) -->
+              <div id="profile-gamification-card" class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-gray-800">Dampak & Level Donatur</span>
+                  <span class="text-xs font-black text-[#047857] bg-emerald-50 px-2 py-0.5 rounded">Level 2: Hero</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
+                  <div class="bg-[#047857] h-2 rounded-full" style="width: 60%"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-center pt-2 border-t border-gray-50 text-xs">
+                  <div>
+                    <p class="text-gray-400 text-[10px]">Barang Diselamatkan</p>
+                    <p class="font-extrabold text-gray-800">12 Item</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-400 text-[10px]">Sampah Dicegah</p>
+                    <p class="font-extrabold text-[#047857]">8.4 Kg</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- General Settings List -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50 text-xs">
+                <div class="p-3.5 flex items-center justify-between cursor-pointer hover:bg-gray-50" onclick="showToast('Ganti Kata Sandi')">
+                  <div class="flex items-center gap-3">
+                    <span class="text-base">🔒</span>
+                    <span class="font-semibold text-gray-800">Ganti Kata Sandi</span>
+                  </div>
+                  <span class="text-gray-400">&rarr;</span>
+                </div>
+
+                <div class="p-3.5 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="text-base">🌙</span>
+                    <span class="font-semibold text-gray-800">Mode Gelap</span>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" onchange="toggleDarkMode(this)" class="sr-only peer">
+                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#047857]"></div>
+                  </label>
+                </div>
+
+                <div class="p-3.5 flex items-center justify-between cursor-pointer hover:bg-gray-50" onclick="showToast('Notifikasi Diaktifkan')">
+                  <div class="flex items-center gap-3">
+                    <span class="text-base">🔔</span>
+                    <span class="font-semibold text-gray-800">Notifikasi & Pengingat</span>
+                  </div>
+                  <span class="text-gray-400">&rarr;</span>
+                </div>
+
+                <div class="p-3.5 flex items-center justify-between cursor-pointer hover:bg-gray-50" onclick="showToast('Bantuan & FAQ CareCycle')">
+                  <div class="flex items-center gap-3">
+                    <span class="text-base">❓</span>
+                    <span class="font-semibold text-gray-800">Pusat Bantuan & Syarat Layanan</span>
+                  </div>
+                  <span class="text-gray-400">&rarr;</span>
+                </div>
+              </div>
+
+              <!-- Logout Button -->
+              <button onclick="navigateTo('screen-login')" class="w-full h-11 bg-white hover:bg-red-50 border border-red-200 text-red-600 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                <span>Keluar dari Akun</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- SCREEN 13: COMMUNITY VERIFICATION SCREEN -->
+          <section id="screen-community-verification" class="screen-view hidden flex-col pb-24 bg-white">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-3 sticky top-0 z-30">
+              <button onclick="goBack()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <h3 class="text-base font-extrabold text-gray-900">Verifikasi Legalitas</h3>
+            </div>
+
+            <div class="p-4 space-y-4">
+              <!-- Current Status Card -->
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
+                <span class="text-2xl">⏳</span>
+                <div>
+                  <h4 class="text-xs font-bold text-amber-900">Status: Menunggu Peninjauan Admin</h4>
+                  <p class="text-[11px] text-amber-700">Diajukan pada 14 Okt 2026. Estimasi verifikasi 1x24 jam kerja.</p>
+                </div>
+              </div>
+
+              <!-- Form Details -->
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Nama Resmi Organisasi</label>
+                  <input type="text" value="Yayasan Harapan Kasih" readonly class="w-full h-11 px-3.5 text-xs bg-gray-100 border border-gray-200 rounded-xl text-gray-700">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Nomor Akta Notaris / Kemenkumham</label>
+                  <input type="text" value="AHU-0012948.AH.01.04.2021" readonly class="w-full h-11 px-3.5 text-xs bg-gray-100 border border-gray-200 rounded-xl text-gray-700">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Visi & Misi Ringkas</label>
+                  <textarea rows="2" readonly class="w-full p-3 text-xs bg-gray-100 border border-gray-200 rounded-xl text-gray-700">Memberdayakan pendidikan dan kesejahteraan anak-anak yatim piatu di kawasan Jakarta Selatan.</textarea>
+                </div>
+              </div>
+
+              <!-- Document Preview Card -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5">Berkas Terunggah</label>
+                <div class="border border-emerald-200 bg-emerald-50/60 rounded-2xl p-3.5 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl">📄</span>
+                    <div>
+                      <h5 class="text-xs font-bold text-gray-900">SK_Kemenkumham_Yayasan.pdf</h5>
+                      <p class="text-[10px] text-gray-500">2.4 MB • PDF Terverifikasi</p>
+                    </div>
+                  </div>
+                  <button onclick="showToast('Membuka pratinjau SK Kemenkumham...')" class="text-xs font-bold text-[#047857]">Lihat</button>
+                </div>
+              </div>
+
+              <!-- Upload Replacement Buttons -->
+              <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1.5">Perbarui Berkas Legalitas</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="showToast('Pilih dokumen PDF / Gambar baru')" class="py-2.5 px-3 border border-gray-200 hover:border-emerald-300 rounded-xl text-xs font-bold text-gray-700 bg-white flex items-center justify-center gap-1.5">
+                    <span>📁 Pilih File PDF</span>
+                  </button>
+                  <button onclick="showToast('Kamera dokumen fisik')" class="py-2.5 px-3 border border-gray-200 hover:border-emerald-300 rounded-xl text-xs font-bold text-gray-700 bg-white flex items-center justify-center gap-1.5">
+                    <span>📷 Foto Dokumen</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="pt-2">
+                <button onclick="showToast('Pembaruan dokumen dikirim ke antrean verifikasi Admin')" class="w-full h-12 bg-[#047857] text-white font-bold rounded-xl shadow-md transition">
+                  Kirim Dokumen Verifikasi
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 14: ADMIN VERIFICATION SCREEN -->
+          <section id="screen-admin-verification" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-base font-extrabold text-gray-900">Verifikasi Komunitas</h3>
+                <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">3 Menunggu</span>
+              </div>
+
+              <!-- Filter Chips -->
+              <div class="flex items-center gap-1.5 text-xs">
+                <button class="px-2.5 py-1 rounded-full bg-purple-700 text-white font-bold">Menunggu (3)</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">Terverifikasi (12)</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">Ditolak (2)</button>
+              </div>
+            </div>
+
+            <!-- List of Community Applications -->
+            <div class="p-4 space-y-3" id="admin-verification-list">
+              <!-- Application 1 -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h4 class="text-sm font-extrabold text-gray-900">Yayasan Harapan Kasih</h4>
+                    <p class="text-[10px] text-gray-500">Jakarta Selatan • Diajukan 14 Okt 2026</p>
+                  </div>
+                  <span class="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">Menunggu</span>
+                </div>
+
+                <p class="text-xs text-gray-600">
+                  Fokus santri & anak yatim. SK Notaris AHU-0012948.AH.01.04.2021.
+                </p>
+
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex items-center justify-between text-xs">
+                  <span class="font-medium text-gray-700">📄 SK_Kemenkumham.pdf</span>
+                  <button onclick="showToast('Membuka PDF SK Notaris')" class="font-bold text-purple-700">Lihat Berkas</button>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button onclick="handleAdminApprove(this, 'Yayasan Harapan Kasih')" class="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition">
+                    Setujui Akun
+                  </button>
+                  <button onclick="handleAdminReject(this, 'Yayasan Harapan Kasih')" class="px-3 h-9 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl text-xs transition">
+                    Tolak
+                  </button>
+                </div>
+              </div>
+
+              <!-- Application 2 -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h4 class="text-sm font-extrabold text-gray-900">Panti Asuhan Pelita Bangsa</h4>
+                    <p class="text-[10px] text-gray-500">Bandung • Diajukan 15 Okt 2026</p>
+                  </div>
+                  <span class="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">Menunggu</span>
+                </div>
+
+                <p class="text-xs text-gray-600">
+                  Surat Rekomendasi Dinas Sosial No. 460/889/Dinsos-2022.
+                </p>
+
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 flex items-center justify-between text-xs">
+                  <span class="font-medium text-gray-700">📄 Izin_Operasional_Dinsos.pdf</span>
+                  <button onclick="showToast('Membuka Izin Dinsos')" class="font-bold text-purple-700">Lihat Berkas</button>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button onclick="handleAdminApprove(this, 'Panti Asuhan Pelita Bangsa')" class="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition">
+                    Setujui Akun
+                  </button>
+                  <button onclick="handleAdminReject(this, 'Panti Asuhan Pelita Bangsa')" class="px-3 h-9 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl text-xs transition">
+                    Tolak
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 15: ADMIN USERS SCREEN -->
+          <section id="screen-admin-users" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <h3 class="text-base font-extrabold text-gray-900 mb-2">Kelola Pengguna</h3>
+              
+              <!-- Search -->
+              <input type="text" placeholder="Cari nama atau email..." class="w-full h-10 px-3 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-600 mb-2">
+
+              <!-- Filter Chips -->
+              <div class="flex items-center gap-1.5 text-xs overflow-x-auto no-scrollbar">
+                <button class="px-2.5 py-1 rounded-full bg-purple-700 text-white font-bold whitespace-nowrap">Semua (156)</button>
+                <button class="px-2.5 py-1 rounded-full bg-emerald-100 text-[#047857] font-semibold whitespace-nowrap">Donatur (128)</button>
+                <button class="px-2.5 py-1 rounded-full bg-blue-100 text-[#3B82F6] font-semibold whitespace-nowrap">Komunitas (24)</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold whitespace-nowrap">Admin (4)</button>
+              </div>
+            </div>
+
+            <!-- User List -->
+            <div class="p-4 space-y-2.5">
+              <!-- User 1 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-100 text-[#047857] font-extrabold flex items-center justify-center text-xs">
+                    AD
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h4 class="text-xs font-bold text-gray-900">Ahmad Donatur</h4>
+                      <span class="text-[9px] bg-emerald-100 text-[#047857] font-bold px-1.5 py-0.2 rounded">Donatur</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500">donatur@carecycle.id • 120 Care Points</p>
+                  </div>
+                </div>
+                <button onclick="showToast('Menu pengguna: Ahmad Donatur')" class="text-gray-400 hover:text-gray-700 p-1">⋮</button>
+              </div>
+
+              <!-- User 2 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-blue-100 text-[#3B82F6] font-extrabold flex items-center justify-center text-xs">
+                    YH
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h4 class="text-xs font-bold text-gray-900">Yayasan Harapan</h4>
+                      <span class="text-[9px] bg-blue-100 text-[#3B82F6] font-bold px-1.5 py-0.2 rounded">Komunitas</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500">harapan@yayasan.org • Pending Verif</p>
+                  </div>
+                </div>
+                <button onclick="showToast('Menu pengguna: Yayasan Harapan')" class="text-gray-400 hover:text-gray-700 p-1">⋮</button>
+              </div>
+
+              <!-- User 3 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-100 text-[#047857] font-extrabold flex items-center justify-center text-xs">
+                    SN
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h4 class="text-xs font-bold text-gray-900">Siti Nurhaliza</h4>
+                      <span class="text-[9px] bg-emerald-100 text-[#047857] font-bold px-1.5 py-0.2 rounded">Donatur</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500">siti@gmail.com • 45 Care Points</p>
+                  </div>
+                </div>
+                <button onclick="showToast('Menu pengguna: Siti Nurhaliza')" class="text-gray-400 hover:text-gray-700 p-1">⋮</button>
+              </div>
+
+              <!-- User 4 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 font-extrabold flex items-center justify-center text-xs">
+                    SA
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h4 class="text-xs font-bold text-gray-900">Super Admin</h4>
+                      <span class="text-[9px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.2 rounded">Admin</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500">admin@carecycle.id • Root Master</p>
+                  </div>
+                </div>
+                <button onclick="showToast('Akses Admin Root terkunci')" class="text-gray-400 hover:text-gray-700 p-1">⋮</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 16: ADMIN ANALYTICS SCREEN -->
+          <section id="screen-admin-analytics" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30 flex items-center justify-between">
+              <h3 class="text-base font-extrabold text-gray-900">Statistik Platform</h3>
+              <span class="text-xs text-gray-400">Live Metric</span>
+            </div>
+
+            <div class="p-4 space-y-4">
+              <!-- Eco Impact Hero Banner -->
+              <div class="bg-gradient-to-br from-[#047857] to-[#10B981] rounded-2xl p-4 text-white shadow-lg space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl">🌍</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-100">Dampak Ekologis Platform</span>
+                </div>
+                <h4 class="text-2xl font-black tracking-tight">125 Kg Sampah</h4>
+                <p class="text-xs text-emerald-100">Berhasil dicegah masuk ke Tempat Pembuangan Akhir (TPA).</p>
+                <div class="pt-2 border-t border-emerald-600/50 flex justify-between text-[11px] text-emerald-100">
+                  <span>💨 Pengurangan Emisi: 312.5 Kg CO2e</span>
+                </div>
+              </div>
+
+              <!-- Metrics 2x2: Users -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Metrik Pengguna</h4>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Total Akun Terdaftar</p>
+                    <p class="text-lg font-black text-gray-900">156</p>
+                    <span class="text-[9px] text-emerald-600 font-bold">+12 minggu ini</span>
+                  </div>
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Donatur Aktif</p>
+                    <p class="text-lg font-black text-[#047857]">89</p>
+                    <span class="text-[9px] text-gray-500">57% partisipasi</span>
+                  </div>
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Komunitas Terverifikasi</p>
+                    <p class="text-lg font-black text-[#3B82F6]">12</p>
+                    <span class="text-[9px] text-blue-600 font-bold">100% aktif</span>
+                  </div>
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Menunggu Verifikasi</p>
+                    <p class="text-lg font-black text-amber-600">5</p>
+                    <span class="text-[9px] text-amber-700 font-bold">Perlu review</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metrics 2x2: Items -->
+              <div>
+                <h4 class="text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Performa Barang</h4>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Total Barang Donasi</p>
+                    <p class="text-lg font-black text-gray-900">234</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Barang Tersedia</p>
+                    <p class="text-lg font-black text-emerald-600">67</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Donasi Selesai</p>
+                    <p class="text-lg font-black text-[#047857]">145</p>
+                  </div>
+                  <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p class="text-[10px] text-gray-400">Tingkat Persetujuan (Acc)</p>
+                    <p class="text-lg font-black text-purple-700">87%</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Request Status Bar Breakdown -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-2">
+                <div class="flex justify-between text-xs">
+                  <span class="font-bold text-gray-800">Status Seluruh Pengajuan</span>
+                  <span class="text-gray-500">Total 85</span>
+                </div>
+                <div class="w-full h-3 rounded-full bg-gray-100 flex overflow-hidden">
+                  <div class="bg-[#047857] h-full" style="width: 73%" title="Disetujui"></div>
+                  <div class="bg-amber-400 h-full" style="width: 18%" title="Menunggu"></div>
+                  <div class="bg-rose-500 h-full" style="width: 9%" title="Ditolak"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-gray-500 pt-1">
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#047857]"></span> Disetujui (62)</span>
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Menunggu (15)</span>
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Ditolak (8)</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 17: ADMIN ITEMS SCREEN (MODERASI BARANG) -->
+          <section id="screen-admin-items" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <h3 class="text-base font-extrabold text-gray-900 mb-2">Moderasi Barang</h3>
+              <input type="text" placeholder="Filter judul barang..." class="w-full h-10 px-3 text-xs bg-gray-50 border border-gray-200 rounded-xl mb-2">
+              <div class="flex items-center gap-1.5 text-xs overflow-x-auto no-scrollbar">
+                <button class="px-2.5 py-1 rounded-full bg-purple-700 text-white font-bold whitespace-nowrap">Semua</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold whitespace-nowrap">Tersedia</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold whitespace-nowrap">Diminta</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold whitespace-nowrap">Diproses</button>
+              </div>
+            </div>
+
+            <!-- Item List for Moderation -->
+            <div class="p-4 space-y-3">
+              <!-- Item 1 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between gap-3">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-[#047857] flex items-center justify-center text-xl flex-shrink-0">
+                  👕
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-emerald-100 text-[#047857] text-[9px] font-bold px-1.5 py-0.2 rounded">Tersedia</span>
+                    <span class="text-[9px] text-gray-400">Pakaian</span>
+                  </div>
+                  <h4 class="text-xs font-bold text-gray-900 truncate">Baju Kaos Pria Size L</h4>
+                  <p class="text-[10px] text-gray-500">Donatur: Ahmad Donatur</p>
+                </div>
+                <button onclick="handleModerateItem('Baju Kaos Pria Size L')" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl text-xs transition">
+                  Moderasi
+                </button>
+              </div>
+
+              <!-- Item 2 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between gap-3">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                  📖
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-emerald-100 text-[#047857] text-[9px] font-bold px-1.5 py-0.2 rounded">Tersedia</span>
+                    <span class="text-[9px] text-gray-400">Buku</span>
+                  </div>
+                  <h4 class="text-xs font-bold text-gray-900 truncate">Buku Paket Sains SD</h4>
+                  <p class="text-[10px] text-gray-500">Donatur: Siti Nurhaliza</p>
+                </div>
+                <button onclick="handleModerateItem('Buku Paket Sains SD')" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl text-xs transition">
+                  Moderasi
+                </button>
+              </div>
+
+              <!-- Item 3 -->
+              <div class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between gap-3">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0">
+                  🔌
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.2 rounded">Diproses</span>
+                    <span class="text-[9px] text-gray-400">Elektronik</span>
+                  </div>
+                  <h4 class="text-xs font-bold text-gray-900 truncate">Blender Philips 2L</h4>
+                  <p class="text-[10px] text-gray-500">Donatur: Budi Setiawan</p>
+                </div>
+                <button onclick="handleModerateItem('Blender Philips 2L')" class="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-xl text-xs transition">
+                  Moderasi
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 18: DONOR REQUESTS SCREEN (ACC PERMINTAAN DONASI) -->
+          <section id="screen-requests-donor" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <div class="flex items-center gap-3 mb-2">
+                <button onclick="goBack()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <div>
+                  <h3 class="text-base font-extrabold text-gray-900">Acc Permintaan Donasi</h3>
+                  <p class="text-[10px] text-gray-500">Tinjau permohonan dari komunitas</p>
+                </div>
+              </div>
+
+              <!-- Filter Tabs -->
+              <div class="flex items-center gap-1.5 text-xs">
+                <button class="px-3 py-1 rounded-full bg-[#047857] text-white font-bold">Menunggu (3)</button>
+                <button class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">Disetujui (5)</button>
+                <button class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold">Ditolak (1)</button>
+              </div>
+            </div>
+
+            <!-- List of Donor Requests -->
+            <div class="p-4 space-y-3.5" id="donor-requests-list">
+              <!-- Request 1 -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center text-2xl flex-shrink-0">
+                    👕
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-[10px] text-gray-400">Pengajuan untuk barang Anda:</span>
+                    <h4 class="text-xs font-black text-gray-900 truncate">Baju Kaos Pria Size L</h4>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-3 border border-gray-100 space-y-1.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-gray-900">Yayasan Harapan Kasih</span>
+                    <span class="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.2 rounded">Verified Komunitas</span>
+                  </div>
+                  <p class="text-[11px] text-gray-600 leading-tight">
+                    "Sangat dibutuhkan untuk pakaian santri asrama binaan kami yang membutuhkan pakaian ganti layak."
+                  </p>
+                  <p class="text-[10px] text-gray-500 pt-0.5">Metode: <strong>Diambil Mandiri / Kurir Komunitas</strong></p>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button onclick="handleDonorApprove(this, 'Yayasan Harapan Kasih')" class="flex-1 h-10 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl text-xs transition">
+                    Acc Permintaan
+                  </button>
+                  <button onclick="handleDonorReject(this)" class="px-4 h-10 border border-red-200 text-red-600 hover:bg-red-50 font-bold rounded-xl text-xs transition">
+                    Tolak
+                  </button>
+                </div>
+              </div>
+
+              <!-- Request 2 -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-blue-100 text-[#3B82F6] flex items-center justify-center text-2xl flex-shrink-0">
+                    📖
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-[10px] text-gray-400">Pengajuan untuk:</span>
+                    <h4 class="text-xs font-black text-gray-900 truncate">Buku Paket Sains SD</h4>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-3 border border-gray-100 space-y-1.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-gray-900">Panti Asuhan Kasih</span>
+                    <span class="text-[9px] bg-blue-100 text-blue-700 font-bold px-1.5 py-0.2 rounded">Verified</span>
+                  </div>
+                  <p class="text-[11px] text-gray-600 leading-tight">
+                    "Untuk ruang pojok baca adik-adik asuh kami tingkat sekolah dasar."
+                  </p>
+                  <p class="text-[10px] text-gray-500 pt-0.5">Metode: <strong>CareCycle Logistik Pick-up</strong></p>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button onclick="handleDonorApprove(this, 'Panti Asuhan Kasih')" class="flex-1 h-10 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl text-xs transition">
+                    Acc Permintaan
+                  </button>
+                  <button onclick="handleDonorReject(this)" class="px-4 h-10 border border-red-200 text-red-600 hover:bg-red-50 font-bold rounded-xl text-xs transition">
+                    Tolak
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCREEN 19: COMMUNITY REQUESTS SCREEN -->
+          <section id="screen-community-requests" class="screen-view hidden flex-col pb-20">
+            <!-- App Bar -->
+            <div class="bg-white px-4 py-3 border-b border-gray-100 sticky top-0 z-30">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-base font-extrabold text-gray-900">Permintaan Donasi Saya</h3>
+                <span class="text-xs font-bold text-[#3B82F6] bg-blue-50 px-2 py-0.5 rounded-full">Komunitas</span>
+              </div>
+
+              <!-- Filter Tabs -->
+              <div class="flex items-center gap-1.5 text-xs overflow-x-auto no-scrollbar">
+                <button class="px-2.5 py-1 rounded-full bg-[#3B82F6] text-white font-bold whitespace-nowrap">Semua</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold whitespace-nowrap">Menunggu</button>
+                <button class="px-2.5 py-1 rounded-full bg-emerald-100 text-[#047857] font-semibold whitespace-nowrap">Disetujui</button>
+                <button class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-semibold whitespace-nowrap">Diterima</button>
+              </div>
+            </div>
+
+            <!-- List of Community Requests -->
+            <div class="p-4 space-y-3.5">
+              <!-- Item 1: Disetujui (Ready to confirm receipt) -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-[#047857] flex items-center justify-center text-2xl flex-shrink-0">
+                      👕
+                    </div>
+                    <div>
+                      <h4 class="text-xs font-black text-gray-900">Baju Kaos Pria Size L</h4>
+                      <p class="text-[10px] text-gray-500">Donatur: Ahmad Donatur (Jaksel)</p>
+                    </div>
+                  </div>
+                  <span class="bg-emerald-100 text-[#047857] text-[9px] font-bold px-2 py-0.5 rounded-full">Disetujui</span>
+                </div>
+
+                <div class="bg-blue-50/70 rounded-xl p-3 border border-blue-100 text-[11px] space-y-1">
+                  <p class="text-blue-900 font-bold">🚚 Status Pengiriman: Dalam Perjalanan</p>
+                  <p class="text-blue-700">Ekspedisi SiCepat Express • Resi: <strong>CC-88192849</strong></p>
+                </div>
+
+                <button onclick="handleConfirmReceived(this)" class="w-full h-11 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                  <span>✓ Konfirmasi Barang Diterima</span>
+                </button>
+              </div>
+
+              <!-- Item 2: Menunggu Konfirmasi Donatur -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl flex-shrink-0">
+                      🪑
+                    </div>
+                    <div>
+                      <h4 class="text-xs font-black text-gray-900">Meja Belajar Lipat</h4>
+                      <p class="text-[10px] text-gray-500">Donatur: Budi Setiawan (Bekasi)</p>
+                    </div>
+                  </div>
+                  <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-full">Menunggu Acc</span>
+                </div>
+
+                <p class="text-[11px] text-gray-600">
+                  Alasan: "Fasilitas belajar anak asuh di panti asuhan."
+                </p>
+
+                <button onclick="showToast('Permintaan dibatalkan')" class="w-full h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-xl text-xs transition">
+                  Batalkan Pengajuan
+                </button>
+              </div>
+
+              <!-- Item 3: Diterima Selesai -->
+              <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-2 opacity-80">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center text-lg flex-shrink-0">
+                      📚
+                    </div>
+                    <div>
+                      <h4 class="text-xs font-bold text-gray-900">Buku Ensiklopedia</h4>
+                      <p class="text-[10px] text-gray-500">Diterima pada 12 Okt 2026</p>
+                    </div>
+                  </div>
+                  <span class="bg-gray-100 text-gray-600 text-[9px] font-bold px-2 py-0.5 rounded-full">Selesai</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- DYNAMIC BOTTOM NAVIGATION BAR             -->
+        <!-- ========================================== -->
+        <nav id="bottom-nav-bar" class="w-full h-16 bg-white border-t border-gray-100 flex items-center justify-around px-2 z-40 select-none shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+          <!-- Populated dynamically based on role -->
+        </nav>
+
+        <!-- HOME INDICATOR (iOS Bar 134x5) -->
+        <div class="w-full h-5 bg-white flex items-center justify-center z-50">
+          <div class="w-32 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- TOAST NOTIFICATION CONTAINER               -->
+  <!-- ========================================== -->
+  <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-3">
+    <div id="toast-box" class="bg-slate-900/95 backdrop-blur text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs font-semibold">
+      <span id="toast-icon">✨</span>
+      <span id="toast-message">Pesan notifikasi</span>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: REQUEST DONATION (KOMUNITAS)       -->
+  <!-- ========================================== -->
+  <div id="modal-request-donation" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden flex items-end justify-center p-0 md:p-4">
+    <div class="bg-white w-full max-w-sm rounded-t-[32px] md:rounded-[32px] p-5 shadow-2xl animate-fade-in space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h4 class="font-black text-sm text-gray-900">Ajukan Permintaan Donasi</h4>
+        <button onclick="closeRequestModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Nama Organisasi</label>
+          <input type="text" value="Yayasan Harapan Kasih" readonly class="w-full h-10 px-3 text-xs bg-gray-100 border border-gray-200 rounded-xl text-gray-700">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Keperluan / Kebutuhan Penerima</label>
+          <textarea id="request-reason" rows="3" class="w-full p-3 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#047857]" placeholder="Contoh: Sangat dibutuhkan untuk anak-anak asuh panti...">Untuk santri binaan asrama yang membutuhkan pakaian ganti layak pakai.</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">Rencana Pengambilan / Pengiriman</label>
+          <select id="request-delivery" class="w-full h-10 px-3 text-xs bg-gray-50 border border-gray-200 rounded-xl">
+            <option>Kurir CareCycle Logistik (Rekomendasi)</option>
+            <option>Diambil Mandiri oleh Komunitas</option>
+            <option>Drop-point Terdekat</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-2 flex gap-2">
+        <button onclick="closeRequestModal()" class="flex-1 h-11 border border-gray-200 text-gray-600 font-bold rounded-xl text-xs">
+          Batal
+        </button>
+        <button onclick="submitDonationRequest()" class="flex-1 h-11 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl text-xs transition">
+          Kirim Pengajuan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT: LOGIC, DATA & NAVIGATION       -->
+  <!-- ========================================== -->
+  <script>
+    // App State
+    const state = {
+      currentRole: 'donatur', // 'donatur' | 'komunitas' | 'admin'
+      currentScreen: 'screen-home-donatur',
+      history: ['screen-home-donatur'],
+      selectedCategory: 'Semua',
+      selectedItem: null,
+      catalogItems: [
+        {
+          id: 1,
+          title: "Baju Kaos Pria Size L",
+          category: "Pakaian",
+          condition: "Layak Pakai",
+          location: "Jakarta Selatan",
+          status: "Tersedia",
+          statusColor: "emerald",
+          icon: "👕",
+          donor: "Ahmad Donatur",
+          desc: "Kaos pria katun adem ukuran L. Kondisi masih sangat bagus, bersih, dan wangi.",
+          ecoImpact: "0.4 kg sampah tekstil dicegah"
+        },
+        {
+          id: 2,
+          title: "Buku Paket Sains SD",
+          category: "Buku",
+          condition: "Sangat Baik",
+          location: "Bandung",
+          status: "Tersedia",
+          statusColor: "emerald",
+          icon: "📚",
+          donor: "Siti Nurhaliza",
+          desc: "Paket lengkap buku sains dan eksperimen anak SD kelas 4-6.",
+          ecoImpact: "1.2 kg kertas didaur ulang"
+        },
+        {
+          id: 3,
+          title: "Blender Philips 2L",
+          category: "Elektronik",
+          condition: "Layak Pakai",
+          location: "Surabaya",
+          status: "Diproses",
+          statusColor: "amber",
+          icon: "🔌",
+          donor: "Budi Setiawan",
+          desc: "Blender kaca kapasitas 2 liter, motor berfungsi normal.",
+          ecoImpact: "2.5 kg e-waste dicegah"
+        },
+        {
+          id: 4,
+          title: "Tas Ransel Sekolah",
+          category: "Alat Sekolah",
+          condition: "Baru",
+          location: "Jakarta Timur",
+          status: "Tersedia",
+          statusColor: "emerald",
+          icon: "🎒",
+          donor: "Ratna Sari",
+          desc: "Tas ransel sekolah warna navy, masih ada label.",
+          ecoImpact: "0.8 kg plastik diselamatkan"
+        },
+        {
+          id: 5,
+          title: "Sepatu Sneakers 42",
+          category: "Pakaian",
+          condition: "Sangat Baik",
+          location: "Depok",
+          status: "Tersedia",
+          statusColor: "emerald",
+          icon: "👟",
+          donor: "Faisal Reza",
+          desc: "Sepatu kasual warna abu-abu, sol masih tebal dan kuat.",
+          ecoImpact: "1.0 kg limbah dicegah"
+        },
+        {
+          id: 6,
+          title: "Meja Belajar Lipat",
+          category: "Lainnya",
+          condition: "Layak Pakai",
+          location: "Bekasi",
+          status: "Tersedia",
+          statusColor: "emerald",
+          icon: "🪑",
+          donor: "Hendri Kusuma",
+          desc: "Meja kayu lipat anak praktis untuk belajar di lantai.",
+          ecoImpact: "3.2 kg kayu diselamatkan"
+        }
+      ]
+    };
+
+    // Role definitions & Nav Tabs
+    const roleNavConfig = {
+      donatur: [
+        { id: 'screen-home-donatur', label: 'Beranda', icon: '🏠' },
+        { id: 'screen-catalog', label: 'Katalog', icon: '🛍️' },
+        { id: 'screen-upload', label: 'Unggah', icon: '➕', special: true },
+        { id: 'screen-my-items', label: 'Barang Saya', icon: '📦' },
+        { id: 'screen-profile', label: 'Profil', icon: '👤' }
+      ],
+      komunitas: [
+        { id: 'screen-home-komunitas', label: 'Beranda', icon: '🏠' },
+        { id: 'screen-catalog', label: 'Katalog', icon: '🛍️' },
+        { id: 'screen-community-requests', label: 'Permintaan', icon: '📋' },
+        { id: 'screen-profile', label: 'Profil', icon: '👤' }
+      ],
+      admin: [
+        { id: 'screen-home-admin', label: 'Beranda', icon: '🏠' },
+        { id: 'screen-admin-verification', label: 'Verifikasi', icon: '✅' },
+        { id: 'screen-admin-users', label: 'Pengguna', icon: '👥' },
+        { id: 'screen-admin-analytics', label: 'Statistik', icon: '📊' },
+        { id: 'screen-profile', label: 'Profil', icon: '⚙️' }
+      ]
+    };
+
+    // Screens where bottom navigation is hidden
+    const noNavScreens = [
+      'screen-splash',
+      'screen-login',
+      'screen-register',
+      'screen-item-detail',
+      'screen-upload',
+      'screen-community-verification',
+      'screen-requests-donor'
+    ];
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCatalog();
+      renderBottomNav();
+      navigateTo('screen-home-donatur', false);
+      updateStatusTime();
+      setInterval(updateStatusTime, 60000);
+    });
+
+    function updateStatusTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('status-time').innerText = `${hours}:${minutes}`;
+    }
+
+    // Role Switcher Function
+    function switchRole(role) {
+      state.currentRole = role;
+
+      // Update buttons in top bar
+      ['donatur', 'komunitas', 'admin'].forEach(r => {
+        const btn = document.getElementById(`role-btn-${r}`);
+        if (r === role) {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-emerald-600 text-white shadow";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+        }
+      });
+
+      // Update profile info depending on role
+      updateProfileData();
+
+      // Render updated bottom nav
+      renderBottomNav();
+
+      // Navigate to the role's home screen
+      const homeScreenMap = {
+        donatur: 'screen-home-donatur',
+        komunitas: 'screen-home-komunitas',
+        admin: 'screen-home-admin'
+      };
+      navigateTo(homeScreenMap[role]);
+      showToast(`Beralih ke mode ${role.toUpperCase()}`, 'info');
+    }
+
+    // Render Bottom Nav
+    function renderBottomNav() {
+      const navBar = document.getElementById('bottom-nav-bar');
+      const tabs = roleNavConfig[state.currentRole] || roleNavConfig.donatur;
+      
+      navBar.innerHTML = tabs.map(tab => {
+        const isActive = state.currentScreen === tab.id;
+        if (tab.special) {
+          return `
+            <button onclick="navigateTo('${tab.id}')" class="flex flex-col items-center justify-center -mt-5 group focus:outline-none">
+              <div class="w-12 h-12 rounded-full bg-[#047857] text-white flex items-center justify-center text-xl shadow-lg border-2 border-white group-active:scale-95 transition">
+                ${tab.icon}
+              </div>
+              <span class="text-[10px] font-bold text-[#047857] mt-1">${tab.label}</span>
+            </button>
+          `;
+        }
+        return `
+          <button onclick="navigateTo('${tab.id}')" class="flex flex-col items-center justify-center py-1 flex-1 group focus:outline-none transition ${isActive ? 'text-[#047857] font-bold' : 'text-gray-400 font-medium'}">
+            <span class="text-lg transition-transform group-active:scale-90">${tab.icon}</span>
+            <span class="text-[10px] mt-0.5">${tab.label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // Navigate to a screen
+    function navigateTo(screenId, pushHistory = true) {
+      if (!document.getElementById(screenId)) return;
+
+      // Hide all screens
+      document.querySelectorAll('.screen-view').forEach(screen => {
+        screen.classList.add('hidden');
+      });
+
+      // Show target screen
+      const targetScreen = document.getElementById(screenId);
+      targetScreen.classList.remove('hidden');
+      targetScreen.classList.add('screen-fade');
+
+      // Scroll to top
+      document.getElementById('screen-container').scrollTop = 0;
+
+      // Manage history
+      if (pushHistory && state.currentScreen !== screenId) {
+        state.history.push(state.currentScreen);
+      }
+      state.currentScreen = screenId;
+
+      // Update dropdown in toolbar
+      const select = document.getElementById('quick-screen-select');
+      if (select) select.value = screenId;
+
+      // Show / Hide Bottom Nav
+      const navBar = document.getElementById('bottom-nav-bar');
+      if (noNavScreens.includes(screenId)) {
+        navBar.classList.add('hidden');
+      } else {
+        navBar.classList.remove('hidden');
+        renderBottomNav();
+      }
+
+      // Update Detail screen button based on role if navigating to item detail
+      if (screenId === 'screen-item-detail') {
+        updateDetailScreenRoleActions();
+      }
+    }
+
+    // Go back in navigation stack
+    function goBack() {
+      if (state.history.length > 0) {
+        const prev = state.history.pop();
+        navigateTo(prev, false);
+      } else {
+        const defaultHome = {
+          donatur: 'screen-home-donatur',
+          komunitas: 'screen-home-komunitas',
+          admin: 'screen-home-admin'
+        }[state.currentRole];
+        navigateTo(defaultHome, false);
+      }
+    }
+
+    function restartPrototype() {
+      navigateTo('screen-splash');
+      showToast('Prototype di-reset ke awal');
+    }
+
+    // Quick Login Demo
+    function quickLoginAs(role) {
+      switchRole(role);
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      if (email.includes('admin')) switchRole('admin');
+      else if (email.includes('yayasan') || email.includes('komunitas')) switchRole('komunitas');
+      else switchRole('donatur');
+      showToast('Berhasil masuk ke akun!');
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      showToast('Pendaftaran akun berhasil! Silakan masuk.');
+      navigateTo('screen-login');
+    }
+
+    function selectRegisterRole(role) {
+      const cardDonatur = document.getElementById('reg-card-donatur');
+      const cardKomunitas = document.getElementById('reg-card-komunitas');
+      const orgField = document.getElementById('reg-org-field');
+
+      if (role === 'donatur') {
+        cardDonatur.className = "p-3 rounded-2xl border-2 border-[#047857] bg-[#F0FDF4] cursor-pointer transition text-left flex flex-col justify-between h-28 shadow-sm";
+        cardKomunitas.className = "p-3 rounded-2xl border-2 border-gray-200 bg-white hover:border-gray-300 cursor-pointer transition text-left flex flex-col justify-between h-28";
+        orgField.classList.add('hidden');
+      } else {
+        cardKomunitas.className = "p-3 rounded-2xl border-2 border-[#047857] bg-[#F0FDF4] cursor-pointer transition text-left flex flex-col justify-between h-28 shadow-sm";
+        cardDonatur.className = "p-3 rounded-2xl border-2 border-gray-200 bg-white hover:border-gray-300 cursor-pointer transition text-left flex flex-col justify-between h-28";
+        orgField.classList.remove('hidden');
+      }
+    }
+
+    function togglePasswordVisibility(id) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') input.type = 'text';
+      else input.type = 'password';
+    }
+
+    // Catalog Rendering & Filtering
+    function renderCatalog() {
+      const grid = document.getElementById('catalog-items-grid');
+      const items = state.catalogItems.filter(item => {
+        const matchesCategory = state.selectedCategory === 'Semua' || item.category === state.selectedCategory;
+        return matchesCategory;
+      });
+
+      grid.innerHTML = items.map(item => `
+        <div onclick="openItemDetail(${item.id})" class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between group">
+          <!-- Thumbnail -->
+          <div class="h-32 bg-emerald-50/70 flex items-center justify-center text-5xl relative group-hover:scale-105 transition-transform duration-300">
+            ${item.icon}
+            <span class="absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${item.status === 'Tersedia' ? 'bg-emerald-100 text-[#047857]' : 'bg-amber-100 text-amber-800'}">
+              ${item.status}
+            </span>
+          </div>
+
+          <!-- Body -->
+          <div class="p-3 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-[9px] font-bold text-gray-400 uppercase">${item.category}</span>
+              <h4 class="text-xs font-bold text-gray-900 line-clamp-2 leading-tight mt-0.5">${item.title}</h4>
+            </div>
+
+            <div class="mt-2.5 pt-2 border-t border-gray-50 flex items-center justify-between text-[10px] text-gray-500">
+              <span class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-700 font-semibold">${item.condition}</span>
+              <span>📍 ${item.location}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setCatalogCategory(cat) {
+      state.selectedCategory = cat;
+      document.querySelectorAll('.cat-chip').forEach(btn => {
+        if (btn.innerText.trim() === cat) {
+          btn.className = "cat-chip active px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-[#047857] text-white";
+        } else {
+          btn.className = "cat-chip px-3 py-1 rounded-full whitespace-nowrap font-semibold bg-gray-100 text-gray-600";
+        }
+      });
+      renderCatalog();
+    }
+
+    function filterCatalog() {
+      const q = document.getElementById('catalog-search').value.toLowerCase();
+      const grid = document.getElementById('catalog-items-grid');
+      const filtered = state.catalogItems.filter(item => 
+        item.title.toLowerCase().includes(q) || 
+        item.category.toLowerCase().includes(q) ||
+        item.location.toLowerCase().includes(q)
+      );
+
+      grid.innerHTML = filtered.map(item => `
+        <div onclick="openItemDetail(${item.id})" class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between group">
+          <div class="h-32 bg-emerald-50/70 flex items-center justify-center text-5xl relative">
+            ${item.icon}
+            <span class="absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${item.status === 'Tersedia' ? 'bg-emerald-100 text-[#047857]' : 'bg-amber-100 text-amber-800'}">
+              ${item.status}
+            </span>
+          </div>
+          <div class="p-3 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-[9px] font-bold text-gray-400 uppercase">${item.category}</span>
+              <h4 class="text-xs font-bold text-gray-900 line-clamp-2 leading-tight mt-0.5">${item.title}</h4>
+            </div>
+            <div class="mt-2.5 pt-2 border-t border-gray-50 flex items-center justify-between text-[10px] text-gray-500">
+              <span class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-700 font-semibold">${item.condition}</span>
+              <span>📍 ${item.location}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openItemDetail(id) {
+      const item = state.catalogItems.find(i => i.id === id) || state.catalogItems[0];
+      state.selectedItem = item;
+
+      document.getElementById('detail-title').innerText = item.title;
+      document.getElementById('detail-category').innerText = item.category;
+      document.getElementById('detail-condition').innerText = item.condition;
+      document.getElementById('detail-image-box').innerText = item.icon;
+
+      navigateTo('screen-item-detail');
+    }
+
+    function updateDetailScreenRoleActions() {
+      const container = document.getElementById('detail-action-container');
+      if (state.currentRole === 'komunitas') {
+        container.innerHTML = `
+          <button onclick="openRequestModal()" class="w-full h-12 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <span>Ajukan Permintaan Donasi</span>
+          </button>
+        `;
+      } else if (state.currentRole === 'admin') {
+        container.innerHTML = `
+          <button onclick="handleModerateItem(document.getElementById('detail-title').innerText)" class="w-full h-12 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <span>🛡️ Moderasi / Takedown Barang Ini</span>
+          </button>
+        `;
+      } else {
+        // Donatur
+        container.innerHTML = `
+          <button onclick="navigateTo('screen-requests-donor')" class="w-full h-12 bg-[#047857] hover:bg-[#065F46] text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+            <span>Lihat Permintaan Masuk (3)</span>
+          </button>
+        `;
+      }
+    }
+
+    function toggleFavorite(btn) {
+      btn.classList.toggle('text-rose-500');
+      showToast('Disimpan ke daftar favorit');
+    }
+
+    // Upload & AI ML Kit Simulations
+    function simulateAIPhotoDetection() {
+      showToast('🤖 AI ML Kit sedang memindai foto...');
+      setTimeout(() => {
+        document.getElementById('ai-suggestion-box').classList.remove('hidden');
+        showToast('Foto teridentifikasi: Pakaian (92% cocok)!');
+      }, 700);
+    }
+
+    function applyAISuggestion() {
+      document.getElementById('upload-title').value = "Baju Kaos Pria Katun L";
+      showToast('Rekomendasi AI berhasil diterapkan!');
+    }
+
+    function selectUploadCategory(btn, cat) {
+      document.querySelectorAll('.upload-cat-btn').forEach(b => {
+        b.className = "upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-gray-100 text-gray-700";
+      });
+      btn.className = "upload-cat-btn px-3 py-1.5 rounded-xl font-bold bg-[#047857] text-white";
+    }
+
+    function selectUploadCondition(btn) {
+      document.querySelectorAll('.upload-cond-btn').forEach(b => {
+        b.className = "upload-cond-btn py-2 rounded-xl font-bold border-2 border-gray-200 bg-white text-gray-700";
+      });
+      btn.className = "upload-cond-btn py-2 rounded-xl font-bold border-2 border-[#047857] bg-emerald-50 text-[#047857]";
+    }
+
+    function handleUploadSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('upload-title').value;
+      showToast(`Barang "${title}" berhasil didonasikan!`);
+      navigateTo('screen-my-items');
+    }
+
+    function syncOfflineDrafts() {
+      const banner = document.getElementById('draft-banner');
+      banner.innerHTML = `
+        <div class="flex items-center gap-2 text-emerald-800 text-xs font-bold py-1">
+          <span class="animate-spin">🔄</span>
+          <span>Menyinkronkan 2 draft ke server CareCycle...</span>
+        </div>
+      `;
+      setTimeout(() => {
+        banner.remove();
+        showToast('Semua draft offline berhasil disinkronkan!');
+      }, 1200);
+    }
+
+    function deleteMyItem(btn) {
+      if (confirm('Hapus barang ini dari daftar donasi Anda?')) {
+        btn.closest('.bg-white').remove();
+        showToast('Barang berhasil dihapus');
+      }
+    }
+
+    // Request Modal (Komunitas)
+    function openRequestModal() {
+      document.getElementById('modal-request-donation').classList.remove('hidden');
+    }
+
+    function closeRequestModal() {
+      document.getElementById('modal-request-donation').classList.add('hidden');
+    }
+
+    function submitDonationRequest() {
+      closeRequestModal();
+      showToast('Permintaan donasi berhasil diajukan ke donatur!');
+      navigateTo('screen-community-requests');
+    }
+
+    // Community and Donor actions
+    function handleConfirmReceived(btn) {
+      btn.outerHTML = `
+        <div class="text-center py-2 bg-emerald-50 rounded-xl text-emerald-800 text-xs font-bold border border-emerald-200">
+          ✓ Barang Diterima & Poin Dampak Dikirimkan!
+        </div>
+      `;
+      showToast('Konfirmasi penerimaan berhasil! Terima kasih.');
+    }
+
+    function handleDonorApprove(btn, orgName) {
+      const card = btn.closest('.bg-white');
+      card.innerHTML = `
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center space-y-2">
+          <p class="text-xs font-bold text-[#047857]">✓ Permintaan untuk ${orgName} Disetujui!</p>
+          <p class="text-[11px] text-gray-600">Kurir logistik telah dijadwalkan untuk penjemputan barang.</p>
+          <button onclick="showToast('Hubungi Komunitas via WhatsApp')" class="px-3 py-1 bg-[#047857] text-white text-xs font-bold rounded-lg shadow-sm">
+            Chat WhatsApp Komunitas
+          </button>
+        </div>
+      `;
+      showToast(`Permintaan ${orgName} telah di-ACC!`);
+    }
+
+    function handleDonorReject(btn) {
+      btn.closest('.bg-white').remove();
+      showToast('Pengajuan ditolak');
+    }
+
+    // Admin Actions
+    function handleAdminApprove(btn, orgName) {
+      const card = btn.closest('.bg-white');
+      card.innerHTML = `
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center text-xs font-bold text-[#047857]">
+          ✓ ${orgName} Terverifikasi Resmi!
+        </div>
+      `;
+      showToast(`${orgName} berhasil diverifikasi!`);
+    }
+
+    function handleAdminReject(btn, orgName) {
+      const card = btn.closest('.bg-white');
+      card.innerHTML = `
+        <div class="p-3 bg-red-50 border border-red-200 rounded-xl text-center text-xs font-bold text-red-600">
+          ✕ Pengajuan ${orgName} Ditolak
+        </div>
+      `;
+      showToast(`Pengajuan ditolak`);
+    }
+
+    function handleModerateItem(itemTitle) {
+      showToast(`Menu moderasi untuk "${itemTitle}": Konten sesuai standar.`);
+    }
+
+    // Profile Screen Data Sync
+    function updateProfileData() {
+      const nameEl = document.getElementById('profile-name');
+      const emailEl = document.getElementById('profile-email');
+      const avatarEl = document.getElementById('profile-avatar');
+      const badgeEl = document.getElementById('profile-role-badge');
+      const gameCard = document.getElementById('profile-gamification-card');
+
+      if (state.currentRole === 'komunitas') {
+        nameEl.innerText = "Yayasan Harapan Kasih";
+        emailEl.innerText = "kontak@harapan.org";
+        avatarEl.innerText = "YH";
+        avatarEl.className = "w-20 h-20 rounded-full bg-blue-100 text-[#3B82F6] text-2xl font-black flex items-center justify-center border-4 border-white shadow-md";
+        badgeEl.innerText = "Komunitas";
+        badgeEl.className = "absolute bottom-0 right-0 bg-[#3B82F6] text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white";
+        gameCard.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-gray-800">Legalitas & Rekam Jejak</span>
+            <span class="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Sedang Ditinjau</span>
+          </div>
+          <p class="text-xs text-gray-600">SK Kemenkumham Terunggah • 18 Donasi Diterima</p>
+        `;
+      } else if (state.currentRole === 'admin') {
+        nameEl.innerText = "Super Administrator";
+        emailEl.innerText = "admin@carecycle.id";
+        avatarEl.innerText = "SA";
+        avatarEl.className = "w-20 h-20 rounded-full bg-purple-100 text-purple-700 text-2xl font-black flex items-center justify-center border-4 border-white shadow-md";
+        badgeEl.innerText = "Admin";
+        badgeEl.className = "absolute bottom-0 right-0 bg-purple-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white";
+        gameCard.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-gray-800">Status Akses Root</span>
+            <span class="text-xs font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded">Super User</span>
+          </div>
+          <p class="text-xs text-gray-600">Hak akses penuh untuk moderasi, verifikasi, dan metrik.</p>
+        `;
+      } else {
+        // Donatur
+        nameEl.innerText = "Ahmad Donatur";
+        emailEl.innerText = "donatur@carecycle.id";
+        avatarEl.innerText = "AD";
+        avatarEl.className = "w-20 h-20 rounded-full bg-emerald-100 text-[#047857] text-2xl font-black flex items-center justify-center border-4 border-white shadow-md";
+        badgeEl.innerText = "Donatur";
+        badgeEl.className = "absolute bottom-0 right-0 bg-[#047857] text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white";
+        gameCard.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-gray-800">Dampak & Level Donatur</span>
+            <span class="text-xs font-black text-[#047857] bg-emerald-50 px-2 py-0.5 rounded">Level 2: Hero</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
+            <div class="bg-[#047857] h-2 rounded-full" style="width: 60%"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-center pt-2 border-t border-gray-50 text-xs">
+            <div>
+              <p class="text-gray-400 text-[10px]">Barang Diselamatkan</p>
+              <p class="font-extrabold text-gray-800">12 Item</p>
+            </div>
+            <div>
+              <p class="text-gray-400 text-[10px]">Sampah Dicegah</p>
+              <p class="font-extrabold text-[#047857]">8.4 Kg</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function toggleDarkMode(toggle) {
+      if (toggle.checked) {
+        showToast('Mode Gelap diaktifkan');
+      } else {
+        showToast('Mode Terang diaktifkan');
+      }
+    }
+
+    function showCreateCampaignModal() {
+      if (state.currentRole !== 'komunitas' && state.currentRole !== 'admin') {
+        showToast('Hanya Komunitas terverifikasi yang dapat membuat kampanye!', 'warning');
+        return;
+      }
+      showToast('Formulir pembuatan Open Campaign baru');
+    }
+
+    function filterCampaignTab(btn, tab) {
+      document.querySelectorAll('.camp-tab').forEach(b => {
+        b.className = "camp-tab flex-1 py-2 font-semibold text-gray-500 border-b-2 border-transparent";
+      });
+      btn.className = "camp-tab active flex-1 py-2 font-bold border-b-2 border-[#047857] text-[#047857]";
+      showToast(`Filter kampanye: ${tab}`);
+    }
+
+    // Toast Notification System
+    let toastTimeout;
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const msgEl = document.getElementById('toast-message');
+      const iconEl = document.getElementById('toast-icon');
+
+      const icons = {
+        success: '✨',
+        warning: '⚠️',
+        error: '❌',
+        info: 'ℹ️'
+      };
+
+      iconEl.innerText = icons[type] || '✨';
+      msgEl.innerText = message;
+
+      container.classList.remove('opacity-0', 'translate-y-3');
+      container.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        container.classList.remove('opacity-100', 'translate-y-0');
+        container.classList.add('opacity-0', 'translate-y-3');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
