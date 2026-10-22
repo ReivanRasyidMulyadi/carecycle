@@ -181,9 +181,8 @@ class AppRouter {
     // Jika sudah login namun masih berada di halaman login/register
     if (isLoggedIn && isAuthRoute) return homePath;
 
-    // Guard khusus admin: hanya role 'admin' yang boleh akses rute admin dan permintaan donasi masuk
-    final isAdminOnlyRoute = state.matchedLocation.startsWith('/admin') ||
-        state.matchedLocation == donorRequestsPath;
+    // Guard khusus admin: hanya role 'admin' yang boleh akses rute /admin
+    final isAdminOnlyRoute = state.matchedLocation.startsWith('/admin');
 
     if (isAdminOnlyRoute) {
       final userRole = HiveService.getUserRole();
